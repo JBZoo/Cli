@@ -79,6 +79,7 @@ abstract class CliCommand extends Command
     /**
      * @param string $optionName
      * @return bool
+     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
      */
     protected function getOptBool(string $optionName): bool
     {
@@ -132,6 +133,8 @@ abstract class CliCommand extends Command
      * @param bool         $newline
      * @param int          $options
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
     protected function _($messages, bool $newline = false, int $options = 0): void
     {

@@ -51,9 +51,13 @@ class CliApplication extends Application
         }
 
         foreach ($files as $file) {
+            if (!file_exists($file)) {
+                continue;
+            }
+
             require_once $file;
 
-            $taskNamespace = trim(str_replace('/', '\\', strstr(\dirname($file), 'Commands')));
+            $taskNamespace = trim(str_replace('/', '\\', (string)strstr(\dirname($file), 'Commands')));
             $commandClassName = "{$gloabalNamespace}\\{$taskNamespace}\\" . FS::filename($file);
 
             if (class_exists($commandClassName)) {
