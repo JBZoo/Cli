@@ -1,0 +1,42 @@
+{
+    "name"         : "jbzoo/cli",
+    "type"         : "library",
+    "description"  : "__DESCRIPTION__",
+    "license"      : "MIT",
+
+    "authors"      : [
+        {
+            "name"  : "Denis Smetannikov",
+            "email" : "admin@jbzoo.com",
+            "role"  : "lead"
+        }
+    ],
+
+    "require"      : {
+        "php" : ">=7.2"
+    },
+
+    "require-dev"  : {
+        "jbzoo/toolbox-dev" : "^2.13.1"
+    },
+
+    "autoload"     : {
+        "psr-4" : {
+            "JBZoo\\Cli\\" : "src"
+        }
+    },
+
+    "autoload-dev" : {
+        "classmap" : ["tests"]
+    },
+
+    "config"       : {
+        "optimize-autoloader" : true
+    },
+
+    "extra"        : {
+        "branch-alias" : {
+            "dev-master" : "1.x-dev"
+        }
+    }
+}
