@@ -128,6 +128,25 @@ abstract class CliCommand extends Command
     }
 
     /**
+     * @return string|null
+     */
+    protected static function getStdIn(): ?string
+    {
+        // It can be read only once, so we save result as internal varaible
+        static $result;
+
+        if (null === $result && 0 === ftell(STDIN)) {
+            $result = '';
+
+            while (!feof(STDIN)) {
+                $result .= fread(STDIN, 1024);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Alias to write new line
      * @param string|array $messages
      * @param bool         $newline

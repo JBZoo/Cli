@@ -25,7 +25,7 @@ use function JBZoo\Data\json;
 /**
  *
  */
-class Test1 extends CliCommand
+class CliOptions extends CliCommand
 {
     /**
      * @inheritDoc
@@ -35,7 +35,7 @@ class Test1 extends CliCommand
         $defaultValue = '456.8';
 
         $this
-            ->setName('CliOptionsTest')
+            ->setName('test:cli-options')
             // None
             ->addOption('opt-none', null, InputOption::VALUE_NONE, '')
             // Required
@@ -48,9 +48,7 @@ class Test1 extends CliCommand
             ->addOption('opt-array-optional', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '')
             ->addOption('opt-array-req', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, '')
             ->addOption('opt-array-req-default', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, '',
-                [$defaultValue])
-            ->addUsage('adasdasdasdasda')
-            ->mergeApplicationDefinition(true);
+                [$defaultValue]);
 
         parent::configure();
     }
