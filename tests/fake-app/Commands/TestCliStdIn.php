@@ -23,7 +23,7 @@ use Symfony\Component\Console\Input\InputOption;
 /**
  *
  */
-class CliStdIn extends CliCommand
+class TestCliStdIn extends CliCommand
 {
     /**
      * @inheritDoc

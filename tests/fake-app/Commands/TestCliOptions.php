@@ -25,7 +25,7 @@ use function JBZoo\Data\json;
 /**
  *
  */
-class CliOptions extends CliCommand
+class TestCliOptions extends CliCommand
 {
     /**
      * @inheritDoc

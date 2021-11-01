@@ -18,16 +18,15 @@ declare(strict_types=1);
 namespace JBZoo\PHPUnit;
 
 use JBZoo\Cli\CliApplication;
-use JBZoo\TestApp\Commands\CliOptions;
 use JBZoo\Utils\Cli;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
- * Class CliTestHelper
+ * Class Helper
  * @package JBZoo\PHPUnit
  */
-class CliTestHelper extends PHPUnit
+class Helper extends PHPUnit
 {
     /**
      * @param string $command
