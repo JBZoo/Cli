@@ -18,6 +18,9 @@ declare(strict_types=1);
 namespace JBZoo\PHPUnit;
 
 use JBZoo\Cli\CliApplication;
+use JBZoo\TestApp\Commands\TestCliOptions;
+use JBZoo\TestApp\Commands\TestCliStdIn;
+use JBZoo\TestApp\Commands\TestSleep;
 use JBZoo\Utils\Cli;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -51,7 +54,9 @@ class Helper extends PHPUnit
     public static function executeVirtaul(string $command, array $args = []): string
     {
         $application = new CliApplication();
-        $application->add(new CliOptions());
+        $application->add(new TestCliOptions());
+        $application->add(new TestCliStdIn());
+        $application->add(new TestSleep());
         $command = $application->find($command);
 
         $buffer = new BufferedOutput();
