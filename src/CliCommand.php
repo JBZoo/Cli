@@ -135,9 +135,8 @@ abstract class CliCommand extends Command
         // It can be read only once, so we save result as internal varaible
         static $result;
 
-        if (null === $result && 0 === ftell(STDIN)) {
+        if (null === $result) {
             $result = '';
-
             while (!feof(STDIN)) {
                 $result .= fread(STDIN, 1024);
             }
