@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace JBZoo\Cli;
 
 use JBZoo\Utils\Arr;
+use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -52,7 +53,23 @@ abstract class CliCommand extends Command
         $this->input = $input;
         $this->output = $output;
 
-        return $this->executeAction();
+        $startTime = microtime(true);
+        $result = $this->executeAction();
+        $finishTime = microtime(true);
+
+        if ($this->isDebug()) {
+            $totalTime = number_format($finishTime - $startTime, 3);
+            $curMemory = Sys::getMemory(false);
+            $maxMemory = Sys::getMemory(true);
+
+            $this->_([
+                '---- ---- ---- ---- ---- ---- ---- ---- ----',
+                "* Execution Time  : {$totalTime} sec;",
+                "* Memory (cur/max): {$curMemory} / {$maxMemory};",
+            ]);
+        }
+
+        return $result;
     }
 
     /**
@@ -148,14 +165,42 @@ abstract class CliCommand extends Command
     /**
      * Alias to write new line
      * @param string|array $messages
+     * @param string       $verboseLevel
      * @param bool         $newline
-     * @param int          $options
      * @return void
      *
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
-    protected function _($messages, bool $newline = false, int $options = 0): void
+    protected function _($messages, string $verboseLevel = '', bool $newline = true): void
     {
-        $this->output->write($messages, $newline, $options);
+        $verboseLevel = \strtolower(\trim($verboseLevel));
+
+        if ($verboseLevel === 'vvv') {
+            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_DEBUG);
+        } elseif ($verboseLevel === 'vv') {
+            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_VERY_VERBOSE);
+        } elseif ($verboseLevel === 'v') {
+            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_VERBOSE);
+        } elseif ($verboseLevel === '') {
+            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_NORMAL);
+        } elseif ($verboseLevel === 'q') {
+            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_QUIET);
+        } elseif ($verboseLevel === 'debug') {
+            $this->_('Debug: ' . $messages, 'vvv');
+        } elseif ($verboseLevel === 'warn') {
+            $this->_('<comment>Warn:</comment> ' . $messages, 'vv');
+        } elseif ($verboseLevel === 'info') {
+            $this->_('<info>Info:</info> ' . $messages, 'v');
+        } elseif ($verboseLevel === 'error') {
+            $this->_('<error>Error:</error> ' . $messages, 'q');
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isDebug(): bool
+    {
+        return $this->output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG;
     }
 }
