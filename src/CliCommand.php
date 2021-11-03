@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace JBZoo\Cli;
 
 use JBZoo\Utils\Arr;
-use JBZoo\Utils\Dates;
 use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -67,10 +66,6 @@ abstract class CliCommand extends Command
     {
         $this->startTime = microtime(true);
 
-        // Set global limits
-        Sys::setMemory('2048M');
-        Sys::setTime(Dates::HOUR * 24);
-
         $this->input = $input;
         $this->output = $output;
 
@@ -84,7 +79,12 @@ abstract class CliCommand extends Command
             $formatter->setStyle("bg-{$color}", new OutputFormatterStyle(null, $color));
         }
 
-        $result = $this->executeAction();
+        try {
+            $result = $this->executeAction();
+        } catch (\Exception $exception) {
+            $this->showProfiler();
+            throw $exception;
+        }
 
         $this->showProfiler();
 
@@ -258,6 +258,10 @@ abstract class CliCommand extends Command
         $curMemory = Sys::getMemory(false);
         $maxMemory = Sys::getMemory(true);
 
-        $this->_("Memory Usage: {$curMemory}; Memory Peak: {$maxMemory}); Total Time: {$totalTime} sec");
+        $this->_(implode('; ', [
+            "Memory Usage: <green>{$curMemory}</green>",
+            "Memory Peak: <green>{$maxMemory}</green>",
+            "Total Time: <green>{$totalTime} sec</green>"
+        ]));
     }
 }
