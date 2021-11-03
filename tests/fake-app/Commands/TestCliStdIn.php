@@ -28,7 +28,7 @@ class TestCliStdIn extends CliCommand
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('test:cli-stdin')

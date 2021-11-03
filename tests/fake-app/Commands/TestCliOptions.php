@@ -30,7 +30,7 @@ class TestCliOptions extends CliCommand
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $defaultValue = '456.8';
 

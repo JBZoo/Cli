@@ -22,6 +22,8 @@ return array_merge($default, [
         'src',
 
         'vendor/symfony/console',
+        'vendor/symfony/process',
+        'vendor/bluepsyduck/symfony-process-manager/src',
         'vendor/jbzoo/utils',
     ]
 ]);

@@ -27,7 +27,7 @@ class TestOutput extends CliCommand
     /**
      * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('test:output');
         parent::configure();

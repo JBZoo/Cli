@@ -19,16 +19,17 @@ namespace JBZoo\TestApp;
 
 use JBZoo\Cli\CliApplication;
 
-const PATH_ROOT = __DIR__;
+define('JBZOO_PATH_ROOT', __DIR__);
+define('JBZOO_PATH_BIN', JBZOO_PATH_ROOT . '/' . pathinfo(__FILE__, PATHINFO_BASENAME));
 
 $composerAutoloadFiles = array_values(array_filter([
-    realpath(PATH_ROOT . '/vendor/autoload.php'),
-    realpath(dirname(PATH_ROOT, 1) . '/vendor/autoload.php'),
-    realpath(dirname(PATH_ROOT, 2) . '/vendor/autoload.php'),
-    realpath(dirname(PATH_ROOT, 3) . '/vendor/autoload.php'),
-    realpath(dirname(PATH_ROOT, 4) . '/vendor/autoload.php'),
-    realpath(dirname(PATH_ROOT, 5) . '/vendor/autoload.php'),
-    realpath(dirname(PATH_ROOT, 6) . '/vendor/autoload.php'),
+    realpath(JBZOO_PATH_ROOT . '/vendor/autoload.php'),
+    realpath(dirname(JBZOO_PATH_ROOT, 1) . '/vendor/autoload.php'),
+    realpath(dirname(JBZOO_PATH_ROOT, 2) . '/vendor/autoload.php'),
+    realpath(dirname(JBZOO_PATH_ROOT, 3) . '/vendor/autoload.php'),
+    realpath(dirname(JBZOO_PATH_ROOT, 4) . '/vendor/autoload.php'),
+    realpath(dirname(JBZOO_PATH_ROOT, 5) . '/vendor/autoload.php'),
+    realpath(dirname(JBZOO_PATH_ROOT, 6) . '/vendor/autoload.php'),
 ]));
 
 $composerAutoloadFile = $composerAutoloadFiles[0] ?? null;
@@ -38,7 +39,6 @@ if ($composerAutoloadFile) {
     throw new \RuntimeException("Composer autoload file not found");
 }
 
-
 $application = new CliApplication('Dummy App', '@git-version@');
-$application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);
+$application->registerCommandsByPath(JBZOO_PATH_ROOT . '/Commands', __NAMESPACE__);
 $application->run();

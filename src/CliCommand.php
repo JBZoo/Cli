@@ -49,11 +49,11 @@ abstract class CliCommand extends Command
     protected $output;
 
     /**
-     * @var float|null
+     * @var float
      */
-    private $startTime;
+    private $startTime = 0.0;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addOption('profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information');
 
@@ -187,12 +187,11 @@ abstract class CliCommand extends Command
      * @param string|array $messages
      * @param string       $verboseLevel
      * @param bool         $newline
-     * @param bool         $cycled
      * @return void
      *
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
-    protected function _($messages, string $verboseLevel = '', bool $newline = true, bool $cycled = false): void
+    protected function _($messages, string $verboseLevel = '', bool $newline = true): void
     {
         $verboseLevel = \strtolower(\trim($verboseLevel));
 
@@ -202,8 +201,6 @@ abstract class CliCommand extends Command
             }
             return;
         }
-
-        /** @var $messages string */
 
         $profilePrefix = '';
         if ($this->isProfile()) {
@@ -223,13 +220,13 @@ abstract class CliCommand extends Command
         } elseif ($verboseLevel === 'q') {
             $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_QUIET);
         } elseif ($verboseLevel === 'debug') {
-            $this->_('<bg-magenta>Debug:</bg-magenta> ' . $messages, 'vvv', $newline, true);
+            $this->_('<bg-magenta>Debug:</bg-magenta> ' . $messages, 'vvv', $newline);
         } elseif ($verboseLevel === 'warn') {
-            $this->_('<bg-yellow>Warn:</bg-yellow> ' . $messages, 'vv', $newline, true);
+            $this->_('<bg-yellow>Warn:</bg-yellow> ' . $messages, 'vv', $newline);
         } elseif ($verboseLevel === 'info') {
-            $this->_('<bg-blue>Info:</bg-blue> ' . $messages, 'v', $newline, true);
+            $this->_('<bg-blue>Info:</bg-blue> ' . $messages, 'v', $newline);
         } elseif ($verboseLevel === 'error') {
-            $this->_('<bg-red>Error:</bg-red> ' . $messages, 'q', $newline, true);
+            $this->_('<bg-red>Error:</bg-red> ' . $messages, 'q', $newline);
         } else {
             throw new Exception("Undefined mode: {$verboseLevel}");
         }
