@@ -45,7 +45,7 @@ class Helper extends PHPUnit
         $rootPath = __DIR__ . '/fake-app';
         $args['no-ansi'] = null;
 
-        return Cli::exec("{$prefix} php {$rootPath}/bin.php {$command}", $args, $rootPath);
+        return Cli::exec("{$prefix} php {$rootPath}/cli-wrapper.php {$command}", $args, $rootPath);
     }
 
     /**
