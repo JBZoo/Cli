@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
+use JBZoo\Event\EventManager;
 use JBZoo\Utils\FS;
 use Symfony\Component\Console\Application;
 
@@ -26,6 +27,11 @@ use Symfony\Component\Console\Application;
  */
 class CliApplication extends Application
 {
+    /**
+     * @var EventManager|null
+     */
+    private $eventManager;
+
     /**
      * Register commands by directory path
      *
@@ -63,7 +69,7 @@ class CliApplication extends Application
             if (class_exists($commandClassName)) {
                 $reflection = new \ReflectionClass($commandClassName);
             } else {
-                throw new Exception("Command/class \"{$commandClassName}\" can'be loaded from the file \"{$file}\"");
+                throw new Exception("Command/Class \"{$commandClassName}\" can'be loaded from the file \"{$file}\"");
             }
 
             if (!$reflection->isAbstract() && $reflection->isSubclassOf(CliCommand::class)) {
@@ -74,5 +80,23 @@ class CliApplication extends Application
         }
 
         return true;
+    }
+
+    /**
+     * @param EventManager $eventManager
+     * @return $this
+     */
+    public function setEventManager(EventManager $eventManager): self
+    {
+        $this->eventManager = $eventManager;
+        return $this;
+    }
+
+    /**
+     * @return EventManager|null
+     */
+    public function getEventManager(): ?EventManager
+    {
+        return $this->eventManager;
     }
 }

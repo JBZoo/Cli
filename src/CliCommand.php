@@ -52,6 +52,9 @@ abstract class CliCommand extends Command
      */
     private $startTime = 0.0;
 
+    /**
+     * @inheritDoc
+     */
     protected function configure(): void
     {
         $this->addOption('profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information');
@@ -65,9 +68,10 @@ abstract class CliCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->startTime = microtime(true);
-
         $this->input = $input;
         $this->output = $output;
+
+        $this->trigger('exec.before', [$this, $input, $output]);
 
         $formatter = $this->output->getFormatter();
         $colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
@@ -80,15 +84,18 @@ abstract class CliCommand extends Command
         }
 
         try {
-            $result = $this->executeAction();
+            $exitCode = $this->executeAction();
         } catch (\Exception $exception) {
+            $this->trigger('exception', [$this, $input, $output, $exception]);
+
             $this->showProfiler();
             throw $exception;
         }
 
+        $this->trigger('exec.after', [$this, $input, $output, $exitCode]);
         $this->showProfiler();
 
-        return $result;
+        return $exitCode;
     }
 
     /**
@@ -263,5 +270,30 @@ abstract class CliCommand extends Command
             "Memory Peak: <green>{$maxMemory}</green>",
             "Total Time: <green>{$totalTime} sec</green>"
         ]));
+    }
+
+    /**
+     * @param string        $eventName
+     * @param array         $arguments
+     * @param callable|null $continueCallback
+     * @return int
+     */
+    protected function trigger(string $eventName, array $arguments = [], ?callable $continueCallback = null): int
+    {
+        $application = $this->getApplication();
+        if (!$application) {
+            return 0;
+        }
+
+        if ($application instanceof CliApplication) {
+            $eManager = $application->getEventManager();
+            if (!$eManager) {
+                return 0;
+            }
+
+            return $eManager->trigger("jbzoo.cli.{$eventName}", $arguments, $continueCallback);
+        }
+
+        return 0;
     }
 }

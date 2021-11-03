@@ -21,9 +21,11 @@ return array_merge($default, [
     'directory_list' => [
         'src',
 
+        'vendor/jbzoo/utils',
+        'vendor/jbzoo/event',
+
         'vendor/symfony/console',
         'vendor/symfony/process',
         'vendor/bluepsyduck/symfony-process-manager/src',
-        'vendor/jbzoo/utils',
     ]
 ]);
