@@ -66,14 +66,6 @@ class TestSleepMulti extends CliCommandMultiProc
      */
     protected function getListOfChildIds(): array
     {
-        return ['1', '2'];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function afterFinishAllProcesses(array $procPool): void
-    {
-        dump($procPool['82']);
+        return ['1', '2', '3', '4', '5', '6', '7', '8'];
     }
 }

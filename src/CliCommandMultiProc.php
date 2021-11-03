@@ -225,7 +225,9 @@ abstract class CliCommandMultiProc extends CliCommand
             $options['quiet'],
             $options['verbose'],
             $options['version'],
-            $options['ansi']
+            $options['ansi'],
+            $options['profile'],
+            $options['no-ansi']
         );
 
         $options['pm-proc-id'] = $procId;
