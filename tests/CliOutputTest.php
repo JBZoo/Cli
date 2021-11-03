@@ -85,7 +85,8 @@ class CliOutputTest extends PHPUnit
             'Warn: Verbose2 -vv',
 
             'Debug1 -vvv',
-            'Debug: Debug2 -vvv',
+            'Debug: Message #1 -vvv',
+            'Debug: Message #2 -vvv',
 
             'Quite -q',
         ]), $output);

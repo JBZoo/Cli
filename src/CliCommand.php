@@ -163,7 +163,8 @@ abstract class CliCommand extends Command
     }
 
     /**
-     * Alias to write new line
+     * Alias to write new line in std output
+     *
      * @param string|array $messages
      * @param string       $verboseLevel
      * @param bool         $newline
@@ -173,26 +174,35 @@ abstract class CliCommand extends Command
      */
     protected function _($messages, string $verboseLevel = '', bool $newline = true): void
     {
+        if (is_array($messages)) {
+            foreach ($messages as $message) {
+                $this->_($message, $verboseLevel, $newline);
+            }
+            return;
+        }
+
         $verboseLevel = \strtolower(\trim($verboseLevel));
 
-        if ($verboseLevel === 'vvv') {
+        if ($verboseLevel === '') {
+            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_NORMAL);
+        } elseif ($verboseLevel === 'vvv') {
             $this->output->write($messages, $newline, OutputInterface::VERBOSITY_DEBUG);
         } elseif ($verboseLevel === 'vv') {
             $this->output->write($messages, $newline, OutputInterface::VERBOSITY_VERY_VERBOSE);
         } elseif ($verboseLevel === 'v') {
             $this->output->write($messages, $newline, OutputInterface::VERBOSITY_VERBOSE);
-        } elseif ($verboseLevel === '') {
-            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_NORMAL);
         } elseif ($verboseLevel === 'q') {
             $this->output->write($messages, $newline, OutputInterface::VERBOSITY_QUIET);
         } elseif ($verboseLevel === 'debug') {
-            $this->_('Debug: ' . $messages, 'vvv');
+            $this->_('Debug: ' . $messages, 'vvv', $newline);
         } elseif ($verboseLevel === 'warn') {
-            $this->_('<comment>Warn:</comment> ' . $messages, 'vv');
+            $this->_('<comment>Warn:</comment> ' . $messages, 'vv', $newline);
         } elseif ($verboseLevel === 'info') {
-            $this->_('<info>Info:</info> ' . $messages, 'v');
+            $this->_('<info>Info:</info> ' . $messages, 'v', $newline);
         } elseif ($verboseLevel === 'error') {
-            $this->_('<error>Error:</error> ' . $messages, 'q');
+            $this->_('<error>Error:</error> ' . $messages, 'q', $newline);
+        } else {
+            throw new Exception("Undefined mode: {$verboseLevel}");
         }
     }
 

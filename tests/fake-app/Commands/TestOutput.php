@@ -38,8 +38,7 @@ class TestOutput extends CliCommand
      */
     protected function executeAction(): int
     {
-        $this->_('Normal 1');
-        $this->_('Normal 2', '');
+        $this->_(['Normal 1', 'Normal 2']);
         $this->_('Message', 'error');
 
         $this->_('Info1 -v', 'v');
@@ -49,7 +48,7 @@ class TestOutput extends CliCommand
         $this->_('Verbose2 -vv', 'warn');
 
         $this->_('Debug1 -vvv', 'vvv');
-        $this->_('Debug2 -vvv', 'debug');
+        $this->_(['Message #1 -vvv', 'Message #2 -vvv'], 'debug');
 
         $this->_('Quite -q', 'q');
 
