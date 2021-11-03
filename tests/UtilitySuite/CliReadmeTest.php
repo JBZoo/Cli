@@ -28,4 +28,13 @@ class CliReadmeTest extends AbstractReadmeTest
      * @var string
      */
     protected $packageName = 'Cli';
+
+    /**
+     * @inheritDoc
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->params['travis'] = false;
+    }
 }

@@ -1,8 +1,12 @@
 {
     "name"         : "jbzoo/cli",
     "type"         : "library",
-    "description"  : "__DESCRIPTION__",
+    "description"  : "The framework helps create CLI tools and provides new tools for symfony/console, symfony/process.",
     "license"      : "MIT",
+    "keywords"     : [
+        "jbzoo", "terminal", "console", "cli", "command-line", "console-application", "symfony", "process",
+        "symfony-console", "symfony-process"
+    ],
 
     "authors"      : [
         {
