@@ -95,6 +95,9 @@ abstract class CliCommandMultiProc extends CliCommand
      */
     abstract protected function getListOfChildIds(): array;
 
+    /**
+     * @phan-suppress PhanPluginPossiblyStaticProtectedMethod
+     */
     protected function beforeStartAllProcesses(): void
     {
         // noop
@@ -103,6 +106,8 @@ abstract class CliCommandMultiProc extends CliCommand
     /**
      * @param array $procPool
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @phan-suppress PhanPluginPossiblyStaticProtectedMethod
+     * @phan-suppress PhanUnusedProtectedNoOverrideMethodParameter
      */
     protected function afterFinishAllProcesses(array $procPool): void
     {
@@ -232,18 +237,15 @@ abstract class CliCommandMultiProc extends CliCommand
         $argumentsList = [];
 
         foreach ($arguments as $argKey => $argValue) {
+            if (is_array($argValue)) {
+                continue;
+            }
+
             /** @var string $argValue */
             if ($argKey !== 'command') {
+                /** @phan-suppress-next-line PhanPartialTypeMismatchArgumentInternal */
                 $argumentsList[] = '"' . \addcslashes($argValue, '"') . '"';
             }
-        }
-
-        if (!defined('JBZOO_PATH_BIN')) {
-            throw new Exception('asd');
-        }
-
-        if (!defined('JBZOO_PATH_ROOT')) {
-            throw new Exception('asd');
         }
 
         // Build full command line
