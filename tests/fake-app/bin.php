@@ -19,8 +19,8 @@ namespace JBZoo\TestApp;
 
 use JBZoo\Cli\CliApplication;
 
-define('JBZOO_PATH_ROOT', __DIR__);
-define('JBZOO_PATH_BIN', JBZOO_PATH_ROOT . '/' . pathinfo(__FILE__, PATHINFO_BASENAME));
+//define('JBZOO_PATH_ROOT', __DIR__);
+//define('JBZOO_PATH_BIN', JBZOO_PATH_ROOT . '/' . pathinfo(__FILE__, PATHINFO_BASENAME));
 
 $composerAutoloadFiles = array_values(array_filter([
     realpath(JBZOO_PATH_ROOT . '/vendor/autoload.php'),
