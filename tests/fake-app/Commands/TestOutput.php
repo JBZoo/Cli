@@ -50,7 +50,7 @@ class TestOutput extends CliCommand
         $this->_('Debug1 -vvv', 'vvv');
         $this->_(['Message #1 -vvv', 'Message #2 -vvv'], 'debug');
 
-        $this->_('Quite -q', 'q');
+        $this->_('Quiet -q', 'q');
 
         return 0;
     }

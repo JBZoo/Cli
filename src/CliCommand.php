@@ -18,9 +18,12 @@ declare(strict_types=1);
 namespace JBZoo\Cli;
 
 use JBZoo\Utils\Arr;
+use JBZoo\Utils\Dates;
 use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\bool;
@@ -46,28 +49,44 @@ abstract class CliCommand extends Command
     protected $output;
 
     /**
+     * @var float|null
+     */
+    private $startTime;
+
+    protected function configure()
+    {
+        $this->addOption('profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information');
+
+        parent::configure();
+    }
+
+    /**
      * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->startTime = microtime(true);
+
+        // Set global limits
+        Sys::setMemory('2048M');
+        Sys::setTime(Dates::HOUR * 24);
+
         $this->input = $input;
         $this->output = $output;
 
-        $startTime = microtime(true);
-        $result = $this->executeAction();
-        $finishTime = microtime(true);
-
-        if ($this->isDebug()) {
-            $totalTime = number_format($finishTime - $startTime, 3);
-            $curMemory = Sys::getMemory(false);
-            $maxMemory = Sys::getMemory(true);
-
-            $this->_([
-                '---- ---- ---- ---- ---- ---- ---- ---- ----',
-                "* Execution Time  : {$totalTime} sec;",
-                "* Memory (cur/max): {$curMemory} / {$maxMemory};",
-            ]);
+        $formatter = $this->output->getFormatter();
+        $colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
+        foreach ($colors as $color) {
+            $formatter->setStyle($color, new OutputFormatterStyle($color));
+            $formatter->setStyle("{$color}-blink", new OutputFormatterStyle($color, null, ['blink']));
+            $formatter->setStyle("{$color}-bold", new OutputFormatterStyle($color, null, ['bold']));
+            $formatter->setStyle("{$color}-under", new OutputFormatterStyle($color, null, ['underscore']));
+            $formatter->setStyle("bg-{$color}", new OutputFormatterStyle(null, $color));
         }
+
+        $result = $this->executeAction();
+
+        $this->showProfiler();
 
         return $result;
     }
@@ -168,12 +187,15 @@ abstract class CliCommand extends Command
      * @param string|array $messages
      * @param string       $verboseLevel
      * @param bool         $newline
+     * @param bool         $cycled
      * @return void
      *
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
-    protected function _($messages, string $verboseLevel = '', bool $newline = true): void
+    protected function _($messages, string $verboseLevel = '', bool $newline = true, bool $cycled = false): void
     {
+        $verboseLevel = \strtolower(\trim($verboseLevel));
+
         if (is_array($messages)) {
             foreach ($messages as $message) {
                 $this->_($message, $verboseLevel, $newline);
@@ -181,26 +203,33 @@ abstract class CliCommand extends Command
             return;
         }
 
-        $verboseLevel = \strtolower(\trim($verboseLevel));
+        /** @var $messages string */
+
+        $profilePrefix = '';
+        if ($this->isProfile()) {
+            $totalTime = number_format(microtime(true) - $this->startTime, 3);
+            $curMemory = Sys::getMemory(false);
+            $profilePrefix = "<green>[</green>{$curMemory}<green>/</green>{$totalTime}s<green>]</green> ";
+        }
 
         if ($verboseLevel === '') {
-            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_NORMAL);
+            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_NORMAL);
         } elseif ($verboseLevel === 'vvv') {
-            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_DEBUG);
+            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_DEBUG);
         } elseif ($verboseLevel === 'vv') {
-            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_VERY_VERBOSE);
+            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_VERY_VERBOSE);
         } elseif ($verboseLevel === 'v') {
-            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_VERBOSE);
+            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_VERBOSE);
         } elseif ($verboseLevel === 'q') {
-            $this->output->write($messages, $newline, OutputInterface::VERBOSITY_QUIET);
+            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_QUIET);
         } elseif ($verboseLevel === 'debug') {
-            $this->_('Debug: ' . $messages, 'vvv', $newline);
+            $this->_('<bg-magenta>Debug:</bg-magenta> ' . $messages, 'vvv', $newline, true);
         } elseif ($verboseLevel === 'warn') {
-            $this->_('<comment>Warn:</comment> ' . $messages, 'vv', $newline);
+            $this->_('<bg-yellow>Warn:</bg-yellow> ' . $messages, 'vv', $newline, true);
         } elseif ($verboseLevel === 'info') {
-            $this->_('<info>Info:</info> ' . $messages, 'v', $newline);
+            $this->_('<bg-blue>Info:</bg-blue> ' . $messages, 'v', $newline, true);
         } elseif ($verboseLevel === 'error') {
-            $this->_('<error>Error:</error> ' . $messages, 'q', $newline);
+            $this->_('<bg-red>Error:</bg-red> ' . $messages, 'q', $newline, true);
         } else {
             throw new Exception("Undefined mode: {$verboseLevel}");
         }
@@ -212,5 +241,26 @@ abstract class CliCommand extends Command
     protected function isDebug(): bool
     {
         return $this->output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isProfile(): bool
+    {
+        return $this->getOptBool('profile');
+    }
+
+    private function showProfiler(): void
+    {
+        if (!$this->isProfile()) {
+            return;
+        }
+
+        $totalTime = number_format(microtime(true) - $this->startTime, 3);
+        $curMemory = Sys::getMemory(false);
+        $maxMemory = Sys::getMemory(true);
+
+        $this->_("Memory Usage: {$curMemory}; Memory Peak: {$maxMemory}); Total Time: {$totalTime} sec");
     }
 }

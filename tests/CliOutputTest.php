@@ -29,7 +29,7 @@ class CliOutputTest extends PHPUnit
             'Normal 1',
             'Normal 2',
             'Error: Message',
-            'Quite -q',
+            'Quiet -q',
         ]), trim(Helper::executeReal('test:output')));
     }
 
@@ -43,7 +43,7 @@ class CliOutputTest extends PHPUnit
             'Info1 -v',
             'Info: Info2 -v',
 
-            'Quite -q',
+            'Quiet -q',
         ]), trim(Helper::executeReal('test:output', ['v' => null])));
 
         isSame(
@@ -65,7 +65,7 @@ class CliOutputTest extends PHPUnit
             'Verbose1 -vv',
             'Warn: Verbose2 -vv',
 
-            'Quite -q',
+            'Quiet -q',
         ]), trim(Helper::executeReal('test:output', ['-vv' => null])));
     }
 
@@ -88,19 +88,18 @@ class CliOutputTest extends PHPUnit
             'Debug: Message #1 -vvv',
             'Debug: Message #2 -vvv',
 
-            'Quite -q',
+            'Quiet -q',
         ]), $output);
-
-        isContain(implode("\n", [
-            '---- ---- ---- ---- ---- ---- ---- ---- ----',
-            '* Execution Time  :',
-        ]), $output);
-
-        isContain('* Memory (cur/max):', $output);
     }
 
-    public function testQuite()
+    public function testQuiet()
     {
-        isContain('Quite -q', trim(Helper::executeReal('test:output', ['q' => null])));
+        isContain('Quiet -q', trim(Helper::executeReal('test:output', ['q' => null])));
+        isContain('Quiet -q', trim(Helper::executeReal('test:output', ['quiet' => null])));
+    }
+
+    public function testProfile()
+    {
+        isContain('Memory Usage:', trim(Helper::executeReal('test:output', ['profile' => null])));
     }
 }

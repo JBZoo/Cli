@@ -42,7 +42,10 @@ class TestSleep extends CliCommand
      */
     protected function executeAction(): int
     {
+        $this->_('Started');
         sleep($this->getOptInt('sleep'));
+        $this->_('Finished');
+
         return 0;
     }
 }
