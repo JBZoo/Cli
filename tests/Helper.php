@@ -23,6 +23,7 @@ use JBZoo\TestApp\Commands\TestCliStdIn;
 use JBZoo\TestApp\Commands\TestSleep;
 use JBZoo\TestApp\Commands\TestSleepMulti;
 use JBZoo\Utils\Cli;
+use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
@@ -49,9 +50,13 @@ class Helper extends PHPUnit
         $cwd = __DIR__ . '/fake-app';
         $options['no-ansi'] = null;
 
-        $realCommand = $preAction . ' php ' . Cli::build("{$cwd}/cli-wrapper.php {$command}",
-                $options) . '' . $postAction;
-        $realCommand = trim($realCommand);
+        $realCommand = trim(implode(' ', [
+            $preAction,
+            Sys::getBinary(),
+            Cli::build("{$cwd}/cli-wrapper.php {$command}", $options),
+            '',
+            $postAction
+        ]));
 
         $process = Process::fromShellCommandline($realCommand, $cwd, null, null, 3600);
         $process->run();

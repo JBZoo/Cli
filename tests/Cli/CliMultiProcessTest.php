@@ -17,22 +17,18 @@ declare(strict_types=1);
 
 namespace JBZoo\PHPUnit;
 
-use JBZoo\Utils\Env;
-
 use function JBZoo\Data\json;
 
 /**
  * Class CliMultiProcess
  * @package JBZoo\PHPUnit
  */
-class CliMultiProcess extends PHPUnit
+class CliMultiProcessTest extends PHPUnit
 {
     public function testAsRealExecution()
     {
         $start = microtime(true);
-        $result = Helper::executeReal('test:sleep-multi 123 " qwerty "', [
-            'sleep' => 1
-        ], 'JBZOO_TEST_VAR=123456');
+        $result = Helper::executeReal('test:sleep-multi 123 " qwerty "', ['sleep' => 1], 'JBZOO_TEST_VAR=123456');
 
         $time = microtime(true) - $start;
 
