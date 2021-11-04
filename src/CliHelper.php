@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
+use JBZoo\Utils\Env;
 use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
@@ -107,7 +108,12 @@ class CliHelper
      */
     public static function getRootPath(): string
     {
-        return defined('JBZOO_PATH_ROOT') ? (string)JBZOO_PATH_ROOT : '';
+        $rootPath = defined('JBZOO_PATH_ROOT') ? (string)JBZOO_PATH_ROOT : null;
+        if (!$rootPath) {
+            return Env::string('JBZOO_PATH_ROOT');
+        }
+
+        return $rootPath;
     }
 
     /**
@@ -115,7 +121,12 @@ class CliHelper
      */
     public static function getBinPath(): string
     {
-        return defined('JBZOO_PATH_BIN') ? (string)JBZOO_PATH_BIN : '';
+        $binPath = defined('JBZOO_PATH_BIN') ? (string)JBZOO_PATH_BIN : null;
+        if (!$binPath) {
+            return Env::string('JBZOO_PATH_BIN');
+        }
+
+        return $binPath;
     }
 
     /**

@@ -18,8 +18,11 @@ declare(strict_types=1);
 namespace JBZoo\TestApp\Commands;
 
 use JBZoo\Cli\CliCommandMultiProc;
+use JBZoo\Utils\Env;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+
+use function JBZoo\Data\json;
 
 /**
  * Class TestSleepMulti
@@ -35,9 +38,9 @@ class TestSleepMulti extends CliCommandMultiProc
         $this
             ->setName('test:sleep-multi')
             ->addOption('sleep', null, InputOption::VALUE_REQUIRED, 'Timeout in seconds to sleep the PHP script', 5)
-            ->addArgument('arg-1', InputArgument::REQUIRED, 'Custom Agrument #1')
-            ->addArgument('arg-2', InputArgument::REQUIRED, 'Custom Agrument #2')
-            ->addArgument('arg-3', InputArgument::OPTIONAL, 'Custom Agrument #3', 'qwerty');
+            ->addArgument('arg-1', InputArgument::OPTIONAL, 'Custom Agrument #1', 'QWERTY-1')
+            ->addArgument('arg-2', InputArgument::OPTIONAL, 'Custom Agrument #2', 'QWERTY-2')
+            ->addArgument('arg-3', InputArgument::OPTIONAL, 'Custom Agrument #3', 'QWERTY-3');
 
         parent::configure();
     }
@@ -52,6 +55,8 @@ class TestSleepMulti extends CliCommandMultiProc
             'Sleep : ' . $this->getOptString('sleep'),
             'Arg #1: ' . $this->input->getArgument('arg-1'),
             'Arg #2: ' . $this->input->getArgument('arg-2'),
+            'Arg #3: ' . $this->input->getArgument('arg-3'),
+            'Env Var: ' . Env::string('JBZOO_TEST_VAR'),
         ]);
 
         sleep($this->getOptInt('sleep'));
@@ -66,6 +71,22 @@ class TestSleepMulti extends CliCommandMultiProc
      */
     protected function getListOfChildIds(): array
     {
-        return ['1', '2', '3', '4', '5', '6', '7', '8'];
+        return ['1', '2', '3', '4', '5'];
+    }
+
+    /**
+     * @param array $procPool
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @phan-suppress PhanPluginPossiblyStaticProtectedMethod
+     * @phan-suppress PhanUnusedProtectedNoOverrideMethodParameter
+     */
+    protected function afterFinishAllProcesses(array $procPool): void
+    {
+        $result = [];
+        foreach ($procPool as $procId => $procInfo) {
+            $result[] = $procInfo['std_out'];
+        }
+
+        $this->_(json($result));
     }
 }

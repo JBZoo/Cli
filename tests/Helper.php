@@ -21,6 +21,7 @@ use JBZoo\Cli\CliApplication;
 use JBZoo\TestApp\Commands\TestCliOptions;
 use JBZoo\TestApp\Commands\TestCliStdIn;
 use JBZoo\TestApp\Commands\TestSleep;
+use JBZoo\TestApp\Commands\TestSleepMulti;
 use JBZoo\Utils\Cli;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -34,21 +35,22 @@ class Helper extends PHPUnit
 {
     /**
      * @param string $command
-     * @param array  $args
+     * @param array  $options
      * @param string $preAction
      * @param string $postAction
      * @return array
      */
     public static function executeReal(
         string $command,
-        array $args = [],
+        array $options = [],
         string $preAction = '',
         string $postAction = ''
     ): array {
         $cwd = __DIR__ . '/fake-app';
-        $args['no-ansi'] = null;
+        $options['no-ansi'] = null;
 
-        $realCommand = $preAction . 'php ' . Cli::build("{$cwd}/cli-wrapper.php {$command}", $args) . '' . $postAction;
+        $realCommand = $preAction . ' php ' . Cli::build("{$cwd}/cli-wrapper.php {$command}",
+                $options) . '' . $postAction;
         $realCommand = trim($realCommand);
 
         $process = Process::fromShellCommandline($realCommand, $cwd, null, null, 3600);
@@ -59,20 +61,26 @@ class Helper extends PHPUnit
 
     /**
      * @param string $command
-     * @param array  $args
+     * @param array  $inputString
      * @return string
      */
-    public static function executeVirtaul(string $command, array $args = []): string
+    public static function executeVirtaul(string $command, array $options = []): string
     {
+        $rootPath = dirname(__DIR__);
+
+        putenv("JBZOO_PATH_BIN={$rootPath}/tests/fake-app/cli-wrapper.php");
+        putenv("JBZOO_PATH_ROOT={$rootPath}/tests/fake-app");
+
         $application = new CliApplication();
         $application->add(new TestCliOptions());
         $application->add(new TestCliStdIn());
         $application->add(new TestSleep());
+        $application->add(new TestSleepMulti());
         $command = $application->find($command);
 
         $buffer = new BufferedOutput();
-        $args = new StringInput(Cli::build('', $args));
-        $exitCode = $command->run($args, $buffer);
+        $inputString = new StringInput(Cli::build('', $options));
+        $exitCode = $command->run($inputString, $buffer);
 
         if ($exitCode) {
             throw new Exception($buffer->fetch());
