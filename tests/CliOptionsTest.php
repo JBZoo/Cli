@@ -28,7 +28,7 @@ class CliOptionsTest extends PHPUnit
     public function testOptionNone()
     {
         $option = 'opt-none';
-        $output = json(Helper::executeReal('test:cli-options'))->getArrayCopy();
+        $output = json(Helper::executeReal('test:cli-options')[1])->getArrayCopy();
         isSame([
             "Default" => false,
             "Bool"    => false,
@@ -38,7 +38,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => [false]
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}")[1])->getArrayCopy();
         isSame([
             "Default" => true,
             "Bool"    => true,
@@ -52,7 +52,7 @@ class CliOptionsTest extends PHPUnit
     public function testOptionRequired()
     {
         $option = 'opt-req';
-        $output = json(Helper::executeReal('test:cli-options'))->getArrayCopy();
+        $output = json(Helper::executeReal('test:cli-options')[1])->getArrayCopy();
         isSame([
             "Default" => null,
             "Bool"    => false,
@@ -62,7 +62,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => []
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5'")[1])->getArrayCopy();
         isSame([
             "Default" => '123.5',
             "Bool"    => true,
@@ -72,7 +72,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => ['123.5']
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='false'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='false'")[1])->getArrayCopy();
         isSame([
             "Default" => 'false',
             "Bool"    => false,
@@ -86,7 +86,7 @@ class CliOptionsTest extends PHPUnit
     public function testOptionRequiredAndDefault()
     {
         $option = 'opt-req-default';
-        $output = json(Helper::executeReal('test:cli-options'))->getArrayCopy();
+        $output = json(Helper::executeReal('test:cli-options')[1])->getArrayCopy();
         isSame([
             "Default" => '456.8',
             "Bool"    => true,
@@ -96,7 +96,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => ['456.8']
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5'")[1])->getArrayCopy();
         isSame([
             "Default" => '123.5',
             "Bool"    => true,
@@ -106,7 +106,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => ['123.5']
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='0'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='0'")[1])->getArrayCopy();
         isSame([
             "Default" => '0',
             "Bool"    => false,
@@ -116,7 +116,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => ['0']
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='false'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='false'")[1])->getArrayCopy();
         isSame([
             "Default" => 'false',
             "Bool"    => false,
@@ -130,7 +130,7 @@ class CliOptionsTest extends PHPUnit
     public function testOptionOptional()
     {
         $option = 'opt-optional';
-        $output = json(Helper::executeReal('test:cli-options'))->getArrayCopy();
+        $output = json(Helper::executeReal('test:cli-options')[1])->getArrayCopy();
         isSame([
             "Default" => null,
             "Bool"    => false,
@@ -140,7 +140,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => []
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5'")[1])->getArrayCopy();
         isSame([
             'Default' => '123.5',
             'Bool'    => true,
@@ -150,7 +150,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['123.5'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='0'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='0'")[1])->getArrayCopy();
         isSame([
             'Default' => '0',
             'Bool'    => false,
@@ -160,7 +160,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['0'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='false'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='false'")[1])->getArrayCopy();
         isSame([
             'Default' => 'false',
             'Bool'    => false,
@@ -174,7 +174,7 @@ class CliOptionsTest extends PHPUnit
     public function testOptionOptionalDefault()
     {
         $option = 'opt-optional-default';
-        $output = json(Helper::executeReal('test:cli-options'))->getArrayCopy();
+        $output = json(Helper::executeReal('test:cli-options')[1])->getArrayCopy();
         isSame([
             "Default" => '456.8',
             "Bool"    => true,
@@ -184,7 +184,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => ['456.8']
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5'")[1])->getArrayCopy();
         isSame([
             'Default' => '123.5',
             'Bool'    => true,
@@ -194,7 +194,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['123.5'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='0'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='0'")[1])->getArrayCopy();
         isSame([
             'Default' => '0',
             'Bool'    => false,
@@ -204,7 +204,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['0'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='false'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='false'")[1])->getArrayCopy();
         isSame([
             'Default' => 'false',
             'Bool'    => false,
@@ -218,7 +218,7 @@ class CliOptionsTest extends PHPUnit
     public function testOptionArrayOptional()
     {
         $option = 'opt-array-optional';
-        $output = json(Helper::executeReal('test:cli-options'))->getArrayCopy();
+        $output = json(Helper::executeReal('test:cli-options')[1])->getArrayCopy();
         isSame([
             "Default" => [],
             "Bool"    => false,
@@ -228,7 +228,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => []
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5' --{$option}='789.1'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5' --{$option}='789.1'")[1])->getArrayCopy();
         isSame([
             'Default' => ['123.5', '789.1'],
             'Bool'    => true,
@@ -238,7 +238,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['123.5', '789.1'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}=0 --{$option}='789.1'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}=0 --{$option}='789.1'")[1])->getArrayCopy();
         isSame([
             'Default' => ['0', '789.1'],
             'Bool'    => true,
@@ -248,7 +248,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['0', '789.1'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='false' --{$option}='789.1'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='false' --{$option}='789.1'")[1])->getArrayCopy();
         isSame([
             'Default' => ['false', '789.1'],
             'Bool'    => true,
@@ -262,7 +262,7 @@ class CliOptionsTest extends PHPUnit
     public function testOptionArrayRequired()
     {
         $option = 'opt-array-req';
-        $output = json(Helper::executeReal('test:cli-options'))->getArrayCopy();
+        $output = json(Helper::executeReal('test:cli-options')[1])->getArrayCopy();
         isSame([
             "Default" => [],
             "Bool"    => false,
@@ -272,7 +272,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => []
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5' --{$option}='789.1'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5' --{$option}='789.1'")[1])->getArrayCopy();
         isSame([
             'Default' => ['123.5', '789.1'],
             'Bool'    => true,
@@ -282,7 +282,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['123.5', '789.1'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}=0 --{$option}='789.1'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}=0 --{$option}='789.1'")[1])->getArrayCopy();
         isSame([
             'Default' => ['0', '789.1'],
             'Bool'    => true,
@@ -292,7 +292,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['0', '789.1'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='false' --{$option}='789.1'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='false' --{$option}='789.1'")[1])->getArrayCopy();
         isSame([
             'Default' => ['false', '789.1'],
             'Bool'    => true,
@@ -306,7 +306,7 @@ class CliOptionsTest extends PHPUnit
     public function testOptionArrayRequiredDefault()
     {
         $option = 'opt-array-req-default';
-        $output = json(Helper::executeReal('test:cli-options'))->getArrayCopy();
+        $output = json(Helper::executeReal('test:cli-options')[1])->getArrayCopy();
         isSame([
             "Default" => ['456.8'],
             "Bool"    => true,
@@ -316,7 +316,7 @@ class CliOptionsTest extends PHPUnit
             "Array"   => ['456.8']
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5' --{$option}='789.1'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='123.5' --{$option}='789.1'")[1])->getArrayCopy();
         isSame([
             'Default' => ['123.5', '789.1'],
             'Bool'    => true,
@@ -326,7 +326,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['123.5', '789.1'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}=0 --{$option}='789.1'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}=0 --{$option}='789.1'")[1])->getArrayCopy();
         isSame([
             'Default' => ['0', '789.1'],
             'Bool'    => true,
@@ -336,7 +336,7 @@ class CliOptionsTest extends PHPUnit
             'Array'   => ['0', '789.1'],
         ], $output[$option]);
 
-        $output = json(Helper::executeReal("test:cli-options --{$option}='false' --{$option}='789.1'"))->getArrayCopy();
+        $output = json(Helper::executeReal("test:cli-options --{$option}='false' --{$option}='789.1'")[1])->getArrayCopy();
         isSame([
             'Default' => ['false', '789.1'],
             'Bool'    => true,

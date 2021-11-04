@@ -26,8 +26,10 @@ class CliMultiProcess extends PHPUnit
     public function testNormal()
     {
         $start = microtime(true);
-        Helper::executeReal('test:sleep-multi 123 " qwerty " --sleep=1 --no-ansi');
+        $output = Helper::executeReal('test:sleep-multi 123 " qwerty " --sleep=1 --profile');
         $time = microtime(true) - $start;
+
+        echo $output;
 
         isTrue($time < 5);
     }

@@ -18,6 +18,8 @@ declare(strict_types=1);
 namespace JBZoo\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
+use JBZoo\Cli\Exception;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  *
@@ -29,7 +31,10 @@ class TestOutput extends CliCommand
      */
     protected function configure(): void
     {
-        $this->setName('test:output');
+        $this
+            ->setName('test:output')
+            ->addOption('exception', null, InputOption::VALUE_OPTIONAL, 'Throw exception', '');
+
         parent::configure();
     }
 
@@ -45,12 +50,19 @@ class TestOutput extends CliCommand
         $this->_('Info2 -v', 'info');
 
         $this->_('Verbose1 -vv', 'vv');
-        $this->_('Verbose2 -vv', 'warn');
+        $this->_('Verbose2 -vv', 'warning');
 
         $this->_('Debug1 -vvv', 'vvv');
-        $this->_(['Message #1 -vvv', 'Message #2 -vvv'], 'debug');
+        $this->_([
+            'Message #1 -vvv',
+            'Message #2 -vvv'
+        ], 'debug');
 
         $this->_('Quiet -q', 'q');
+
+        if ($exception = $this->getOptString('exception')) {
+            throw new Exception($exception);
+        }
 
         return 0;
     }

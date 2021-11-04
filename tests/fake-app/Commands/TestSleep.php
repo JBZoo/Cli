@@ -32,7 +32,8 @@ class TestSleep extends CliCommand
     {
         $this
             ->setName('test:sleep')
-            ->addOption('sleep', null, InputOption::VALUE_REQUIRED, '', 5);
+            ->addOption('sleep', null, InputOption::VALUE_REQUIRED, '', 5)
+            ->setProcessTitle('asdsssss');
 
         parent::configure();
     }

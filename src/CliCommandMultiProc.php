@@ -31,7 +31,7 @@ abstract class CliCommandMultiProc extends CliCommand
 {
     private const PM_DEFAULT_MAX_PROCESSES = 20;
     private const PM_DEFAULT_INTERVAL      = 100;
-    private const PM_DEFAULT_START_DELAY   = 0;
+    private const PM_DEFAULT_START_DELAY   = 1;
     private const PM_DEFAULT_TIMEOUT       = 3600;
 
     /**
@@ -44,8 +44,6 @@ abstract class CliCommandMultiProc extends CliCommand
      */
     protected function configure(): void
     {
-        parent::configure();
-
         $this
             ->addOption(
                 'pm-max',
@@ -82,6 +80,8 @@ abstract class CliCommandMultiProc extends CliCommand
                 'Process Manager. Unique ID of process to execute one child proccess.',
                 ''
             );
+
+        parent::configure();
     }
 
     /**
@@ -213,22 +213,11 @@ abstract class CliCommandMultiProc extends CliCommand
     private function createSubProcess(string $procId): Process
     {
         // Prepare option list from the parent process
-        $options = $this->input->getOptions();
+        $options = array_filter($this->input->getOptions(), static function ($optionValue): bool {
+            return $optionValue !== false && $optionValue !== '';
+        });
 
-        unset(
-            $options['pm-max'],
-            $options['pm-interval'],
-            $options['pm-start-delay'],
-            $options['pm-max-timeout'],
-            $options['pm-proc-id'],
-            $options['help'],
-            $options['quiet'],
-            $options['verbose'],
-            $options['version'],
-            $options['ansi'],
-            $options['profile'],
-            $options['no-ansi']
-        );
+        unset($options['ansi']);
 
         $options['pm-proc-id'] = $procId;
         $options['no-ansi'] = null;

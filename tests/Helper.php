@@ -24,6 +24,7 @@ use JBZoo\TestApp\Commands\TestSleep;
 use JBZoo\Utils\Cli;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Process\Process;
 
 /**
  * Class Helper
@@ -34,18 +35,26 @@ class Helper extends PHPUnit
     /**
      * @param string $command
      * @param array  $args
-     * @param string $prefix
-     * @return string
+     * @param string $preAction
+     * @param string $postAction
+     * @return array
      */
     public static function executeReal(
         string $command,
         array $args = [],
-        string $prefix = ''
-    ): string {
-        $rootPath = __DIR__ . '/fake-app';
+        string $preAction = '',
+        string $postAction = ''
+    ): array {
+        $cwd = __DIR__ . '/fake-app';
         $args['no-ansi'] = null;
 
-        return Cli::exec("{$prefix} php {$rootPath}/cli-wrapper.php {$command}", $args, $rootPath);
+        $realCommand = $preAction . 'php ' . Cli::build("{$cwd}/cli-wrapper.php {$command}", $args) . '' . $postAction;
+        $realCommand = trim($realCommand);
+
+        $process = Process::fromShellCommandline($realCommand, $cwd, null, null, 3600);
+        $process->run();
+
+        return [$process->getExitCode(), trim($process->getOutput()), trim($process->getErrorOutput())];
     }
 
     /**

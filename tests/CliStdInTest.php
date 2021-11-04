@@ -27,15 +27,15 @@ class CliStdInTest extends PHPUnit
 {
     public function testStdInEmpty()
     {
-        isSame('', Helper::executeReal('test:cli-stdin'));
+        isSame('', Helper::executeReal('test:cli-stdin')[1]);
     }
 
     public function testStdInNotEmpty()
     {
         $ramdom = Str::random();
         isSame(
-            "string(11) \"{$ramdom}\n\"\n",
-            Helper::executeReal('test:cli-stdin', ['var-dump' => null], "echo \"{$ramdom}\" | ")
+            "string(11) \"{$ramdom}\n\"",
+            Helper::executeReal('test:cli-stdin', ['var-dump' => null], "echo \"{$ramdom}\" | ")[1]
         );
     }
 
@@ -43,16 +43,16 @@ class CliStdInTest extends PHPUnit
     {
         $file = __FILE__;
         isSame(
-            file_get_contents($file),
-            Helper::executeReal('test:cli-stdin', [], "cat \"{$file}\" | ")
+            trim(file_get_contents($file)),
+            Helper::executeReal('test:cli-stdin', [], "cat \"{$file}\" | ")[1]
         );
     }
 
     public function testStdInSpaces()
     {
         isSame(
-            "string(2) \" \n\"\n",
-            Helper::executeReal('test:cli-stdin', ['var-dump' => null], 'echo " " | ')
+            "string(2) \" \n\"",
+            Helper::executeReal('test:cli-stdin', ['var-dump' => null], 'echo " " | ')[1]
         );
     }
 }

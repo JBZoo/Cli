@@ -17,12 +17,12 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
+use DateTimeInterface;
 use JBZoo\Utils\Arr;
-use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\bool;
@@ -36,6 +36,12 @@ use function JBZoo\Utils\int;
 abstract class CliCommand extends Command
 {
     /**
+     * @var CliHelper
+     * @psalm-suppress PropertyNotSetInConstructor
+     */
+    private $helper;
+
+    /**
      * @var InputInterface
      * @psalm-suppress PropertyNotSetInConstructor
      */
@@ -48,16 +54,38 @@ abstract class CliCommand extends Command
     protected $output;
 
     /**
-     * @var float
+     * @var OutputInterface
      */
-    private $startTime = 0.0;
+    private $errOutput;
+
+    /**
+     * @var bool
+     */
+    private $outputHasErrors = false;
+
 
     /**
      * @inheritDoc
      */
     protected function configure(): void
     {
-        $this->addOption('profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information');
+        $this
+            ->addOption(
+                'mute-errors',
+                null,
+                InputOption::VALUE_NONE,
+                "Mute any sort of errors. So exit code will be always \"0\" (if it's possible).\n" .
+                "It has major priority then <info>--strict</info>. It's on your own risk!"
+            )
+            ->addOption(
+                'stdout-only',
+                null,
+                InputOption::VALUE_NONE,
+                "For any errors messages application will use StdOut instead of ErrOut. It's on your own risk!"
+            )
+            ->addOption('strict', null, InputOption::VALUE_NONE, 'None-zero exit code on any StdErr messages')
+            ->addOption('timestamp', null, InputOption::VALUE_NONE, 'Show timestamp at the beginning of each message')
+            ->addOption('profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information');
 
         parent::configure();
     }
@@ -67,33 +95,44 @@ abstract class CliCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->startTime = microtime(true);
-        $this->input = $input;
-        $this->output = $output;
+        $this->helper = new CliHelper($input, $output);
+        $this->input = $this->helper->getInput();
+        $this->output = $this->helper->getOutput();
 
-        $this->trigger('exec.before', [$this, $input, $output]);
-
-        $formatter = $this->output->getFormatter();
-        $colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
-        foreach ($colors as $color) {
-            $formatter->setStyle($color, new OutputFormatterStyle($color));
-            $formatter->setStyle("{$color}-blink", new OutputFormatterStyle($color, null, ['blink']));
-            $formatter->setStyle("{$color}-bold", new OutputFormatterStyle($color, null, ['bold']));
-            $formatter->setStyle("{$color}-under", new OutputFormatterStyle($color, null, ['underscore']));
-            $formatter->setStyle("bg-{$color}", new OutputFormatterStyle(null, $color));
+        if ($this->getOptBool('stdout-only')) {
+            $this->errOutput = $this->helper->getOutput();
+            if ($this->output instanceof ConsoleOutput) {
+                $this->output->setErrorOutput($this->output);
+            }
+        } else {
+            $this->errOutput = $this->helper->getErrOutput();
         }
 
+        $exitCode = 0;
         try {
+            $this->trigger('exec.before', [$this, $this->helper]);
             $exitCode = $this->executeAction();
         } catch (\Exception $exception) {
-            $this->trigger('exception', [$this, $input, $output, $exception]);
+            $this->trigger('exception', [$this, $this->helper, $exception]);
 
-            $this->showProfiler();
-            throw $exception;
+            if ($this->getOptBool('mute-errors')) {
+                $this->_($exception->getMessage(), 'exception');
+            } else {
+                $this->showProfiler();
+                throw $exception;
+            }
         }
 
-        $this->trigger('exec.after', [$this, $input, $output, $exitCode]);
+        if ($this->outputHasErrors && $this->getOptBool('strict')) {
+            $exitCode = 1;
+        }
+
+        $this->trigger('exec.after', [$this, $this->helper, &$exitCode]);
         $this->showProfiler();
+
+        if ($this->getOptBool('mute-errors')) {
+            $exitCode = 0;
+        }
 
         return $exitCode;
     }
@@ -210,32 +249,49 @@ abstract class CliCommand extends Command
         }
 
         $profilePrefix = '';
+
+        if ($this->getOptBool('timestamp')) {
+            $timestamp = (new \DateTimeImmutable())->format(DateTimeInterface::RFC3339);
+            $profilePrefix .= "<green>[</green>{$timestamp}<green>]</green> ";
+        }
+
         if ($this->isProfile()) {
-            $totalTime = number_format(microtime(true) - $this->startTime, 3);
-            $curMemory = Sys::getMemory(false);
-            $profilePrefix = "<green>[</green>{$curMemory}<green>/</green>{$totalTime}s<green>]</green> ";
+            [$totalTime, $curMemory] = $this->helper->getProfileDate();
+            $profilePrefix .= "<green>[</green>{$curMemory}<green>/</green>{$totalTime}s<green>]</green> ";
         }
 
         if ($verboseLevel === '') {
             $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_NORMAL);
-        } elseif ($verboseLevel === 'vvv') {
-            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_DEBUG);
-        } elseif ($verboseLevel === 'vv') {
-            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_VERY_VERBOSE);
         } elseif ($verboseLevel === 'v') {
             $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_VERBOSE);
-        } elseif ($verboseLevel === 'q') {
+        } elseif ($verboseLevel === 'vv') {
+            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_VERY_VERBOSE);
+        } elseif ($verboseLevel === 'vvv') {
+            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_DEBUG);
+        } elseif ($verboseLevel === 'q') { // Show ALWAYS!
             $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_QUIET);
         } elseif ($verboseLevel === 'debug') {
-            $this->_('<bg-magenta>Debug:</bg-magenta> ' . $messages, 'vvv', $newline);
-        } elseif ($verboseLevel === 'warn') {
-            $this->_('<bg-yellow>Warn:</bg-yellow> ' . $messages, 'vv', $newline);
+            $this->_('<magenta>Debug:</magenta> ' . $messages, 'vvv', $newline);
+        } elseif ($verboseLevel === 'warning') {
+            $this->_('<yellow>Warning:</yellow> ' . $messages, 'vv', $newline);
         } elseif ($verboseLevel === 'info') {
-            $this->_('<bg-blue>Info:</bg-blue> ' . $messages, 'v', $newline);
+            $this->_('<blue>Info:</blue> ' . $messages, 'v', $newline);
         } elseif ($verboseLevel === 'error') {
-            $this->_('<bg-red>Error:</bg-red> ' . $messages, 'q', $newline);
+            $this->outputHasErrors = true;
+            $this->errOutput->write(
+                $profilePrefix . '<bg-red>Error:</bg-red> ' . $messages,
+                $newline,
+                OutputInterface::VERBOSITY_NORMAL
+            );
+        } elseif ($verboseLevel === 'exception') {
+            $this->outputHasErrors = true;
+            $this->errOutput->write(
+                $profilePrefix . '<bg-red>Exception:</bg-red> ' . $messages,
+                $newline,
+                OutputInterface::VERBOSITY_NORMAL
+            );
         } else {
-            throw new Exception("Undefined mode: {$verboseLevel}");
+            throw new Exception("Undefined mode: \"{$verboseLevel}\"");
         }
     }
 
@@ -261,14 +317,11 @@ abstract class CliCommand extends Command
             return;
         }
 
-        $totalTime = number_format(microtime(true) - $this->startTime, 3);
-        $curMemory = Sys::getMemory(false);
-        $maxMemory = Sys::getMemory(true);
+        [$totalTime, $curMemory, $maxMemory] = $this->helper->getProfileDate();
 
         $this->_(implode('; ', [
-            "Memory Usage: <green>{$curMemory}</green>",
-            "Memory Peak: <green>{$maxMemory}</green>",
-            "Total Time: <green>{$totalTime} sec</green>"
+            "Memory Usage/Peak: <green>{$curMemory}</green>/<green>{$maxMemory}</green>",
+            "Execution Time: <green>{$totalTime} sec</green>"
         ]));
     }
 
