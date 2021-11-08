@@ -33,16 +33,18 @@ class CliProgressTest extends PHPUnit
 
     public function testMinimal()
     {
-        skip('Fix me');
-        $item = Helper::executeVirtaul('test:progress', [
-            'test-case'   => 'minimal',
-            'stdout-only' => null
-        ]);
+        $output = Helper::executeReal('test:progress', ['test-case' => 'minimal']);
+        isSame(0, $output[0]);
+        isContain('Progress of minimal', $output[2]);
 
+        $output = Helper::executeReal('test:progress', ['test-case' => 'minimal', 'stdout-only' => null]);
+        isSame(0, $output[0]);
+        isContain('Progress of minimal', $output[1]);
+    }
 
-
-        isSame(0, $exitCode);
-        isSame('no-items. Number of items is 0 or less', $stdOut);
-        isSame('', $errOut);
+    public function testMinimalVirtual()
+    {
+        $output = Helper::executeVirtaul('test:progress', ['test-case' => 'minimal']);
+        isContain('Progress of minimal', $output);
     }
 }

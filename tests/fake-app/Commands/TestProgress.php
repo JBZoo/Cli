@@ -51,6 +51,12 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'minimal') {
+            CliProgressBar::run(1, function () {
+                sleep(1);
+            }, $testCase);
+        }
+
+        if ($testCase === 'memory-leak') {
             $array = [];
             CliProgressBar::run(3, function () use (&$array) {
                 for ($i = 0; $i < 100000; $i++) {
