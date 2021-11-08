@@ -50,7 +50,7 @@ class CliMultiProcessTest extends PHPUnit
             "Started: 5\n{$expectecContent}\nFinished: 5",
         ], $outputAsArray);
 
-        isTrue($time < 5);
+        isTrue($time < 5, "Total time: {$time}");
     }
 
     public function testAsVirtalExecution()
