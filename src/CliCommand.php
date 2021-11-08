@@ -17,7 +17,6 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
-use DateTimeInterface;
 use JBZoo\Utils\Arr;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -48,7 +47,7 @@ abstract class CliCommand extends Command
     protected $input;
 
     /**
-     * @var OutputInterface
+     * @var OutputInterface|ConsoleOutput
      * @psalm-suppress PropertyNotSetInConstructor
      */
     protected $output;
@@ -56,13 +55,7 @@ abstract class CliCommand extends Command
     /**
      * @var OutputInterface
      */
-    private $errOutput;
-
-    /**
-     * @var bool
-     */
-    private $outputHasErrors = false;
-
+    protected $errOutput;
 
     /**
      * @inheritDoc
@@ -70,6 +63,7 @@ abstract class CliCommand extends Command
     protected function configure(): void
     {
         $this
+            ->addOption('no-progress', 'p', InputOption::VALUE_NONE, "Disable progress bar rendering")
             ->addOption(
                 'mute-errors',
                 null,
@@ -98,15 +92,7 @@ abstract class CliCommand extends Command
         $this->helper = new CliHelper($input, $output);
         $this->input = $this->helper->getInput();
         $this->output = $this->helper->getOutput();
-
-        if ($this->getOptBool('stdout-only')) {
-            $this->errOutput = $this->helper->getOutput();
-            if ($this->output instanceof ConsoleOutput) {
-                $this->output->setErrorOutput($this->output);
-            }
-        } else {
-            $this->errOutput = $this->helper->getErrOutput();
-        }
+        $this->errOutput = $this->helper->getErrOutput();
 
         $exitCode = 0;
         try {
@@ -123,7 +109,7 @@ abstract class CliCommand extends Command
             }
         }
 
-        if ($this->outputHasErrors && $this->getOptBool('strict')) {
+        if ($this->helper->isOutputHasErrors() && $this->getOptBool('strict')) {
             $exitCode = 1;
         }
 
@@ -133,6 +119,8 @@ abstract class CliCommand extends Command
         if ($this->getOptBool('mute-errors')) {
             $exitCode = 0;
         }
+
+        $this->_("Exit Code is \"{$exitCode}\"", 'debug');
 
         return $exitCode;
     }
@@ -232,67 +220,13 @@ abstract class CliCommand extends Command
      *
      * @param string|array $messages
      * @param string       $verboseLevel
-     * @param bool         $newline
      * @return void
      *
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
-    protected function _($messages, string $verboseLevel = '', bool $newline = true): void
+    protected function _($messages, string $verboseLevel = ''): void
     {
-        $verboseLevel = \strtolower(\trim($verboseLevel));
-
-        if (is_array($messages)) {
-            foreach ($messages as $message) {
-                $this->_($message, $verboseLevel, $newline);
-            }
-            return;
-        }
-
-        $profilePrefix = '';
-
-        if ($this->getOptBool('timestamp')) {
-            $timestamp = (new \DateTimeImmutable())->format(DateTimeInterface::RFC3339);
-            $profilePrefix .= "<green>[</green>{$timestamp}<green>]</green> ";
-        }
-
-        if ($this->isProfile()) {
-            [$totalTime, $curMemory] = $this->helper->getProfileDate();
-            $profilePrefix .= "<green>[</green>{$curMemory}<green>/</green>{$totalTime}s<green>]</green> ";
-        }
-
-        if ($verboseLevel === '') {
-            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_NORMAL);
-        } elseif ($verboseLevel === 'v') {
-            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_VERBOSE);
-        } elseif ($verboseLevel === 'vv') {
-            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_VERY_VERBOSE);
-        } elseif ($verboseLevel === 'vvv') {
-            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_DEBUG);
-        } elseif ($verboseLevel === 'q') { // Show ALWAYS!
-            $this->output->write($profilePrefix . $messages, $newline, OutputInterface::VERBOSITY_QUIET);
-        } elseif ($verboseLevel === 'debug') {
-            $this->_('<magenta>Debug:</magenta> ' . $messages, 'vvv', $newline);
-        } elseif ($verboseLevel === 'warning') {
-            $this->_('<yellow>Warning:</yellow> ' . $messages, 'vv', $newline);
-        } elseif ($verboseLevel === 'info') {
-            $this->_('<blue>Info:</blue> ' . $messages, 'v', $newline);
-        } elseif ($verboseLevel === 'error') {
-            $this->outputHasErrors = true;
-            $this->errOutput->write(
-                $profilePrefix . '<bg-red>Error:</bg-red> ' . $messages,
-                $newline,
-                OutputInterface::VERBOSITY_NORMAL
-            );
-        } elseif ($verboseLevel === 'exception') {
-            $this->outputHasErrors = true;
-            $this->errOutput->write(
-                $profilePrefix . '<bg-red>Exception:</bg-red> ' . $messages,
-                $newline,
-                OutputInterface::VERBOSITY_NORMAL
-            );
-        } else {
-            throw new Exception("Undefined mode: \"{$verboseLevel}\"");
-        }
+        $this->helper->_($messages, $verboseLevel);
     }
 
     /**

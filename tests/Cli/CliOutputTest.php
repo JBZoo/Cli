@@ -97,6 +97,7 @@ class CliOutputTest extends PHPUnit
             'Debug: Message #2 -vvv',
 
             'Quiet -q',
+            'Debug: Exit Code is "0"',
         ]), $stdOut);
     }
 
@@ -121,6 +122,7 @@ class CliOutputTest extends PHPUnit
     {
         // Redirect common message
         [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['stdout-only' => null]);
+
         isSame('', $errOut);
         isSame(0, $exitCode);
 

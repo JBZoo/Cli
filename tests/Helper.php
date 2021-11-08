@@ -20,6 +20,7 @@ namespace JBZoo\PHPUnit;
 use JBZoo\Cli\CliApplication;
 use JBZoo\TestApp\Commands\TestCliOptions;
 use JBZoo\TestApp\Commands\TestCliStdIn;
+use JBZoo\TestApp\Commands\TestProgress;
 use JBZoo\TestApp\Commands\TestSleep;
 use JBZoo\TestApp\Commands\TestSleepMulti;
 use JBZoo\Utils\Cli;
@@ -81,6 +82,7 @@ class Helper extends PHPUnit
         $application->add(new TestCliStdIn());
         $application->add(new TestSleep());
         $application->add(new TestSleepMulti());
+        $application->add(new TestProgress());
         $command = $application->find($command);
 
         $buffer = new BufferedOutput();

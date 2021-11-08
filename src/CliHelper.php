@@ -18,9 +18,10 @@ declare(strict_types=1);
 namespace JBZoo\Cli;
 
 use JBZoo\Utils\Env;
-use JBZoo\Utils\Sys;
+use JBZoo\Utils\FS;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -56,6 +57,11 @@ class CliHelper
     private $startTimer;
 
     /**
+     * @var bool
+     */
+    private $outputHasErrors = false;
+
+    /**
      * @param InputInterface  $input
      * @param OutputInterface $output
      */
@@ -66,7 +72,16 @@ class CliHelper
         $this->output = self::addOutputStyles($output);
 
         $errOutput = $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
-        $this->errOutput = self::addOutputStyles($errOutput);
+        $errOutput = self::addOutputStyles($errOutput);
+
+        if ($this->input->getOption('stdout-only')) {
+            $this->errOutput = $this->output;
+            if ($this->output instanceof ConsoleOutput) {
+                $this->output->setErrorOutput($this->output);
+            }
+        } else {
+            $this->errOutput = $errOutput;
+        }
 
         self::$instance = $this;
     }
@@ -157,8 +172,116 @@ class CliHelper
     {
         return [
             number_format(microtime(true) - $this->startTimer, 3),
-            Sys::getMemory(false),
-            Sys::getMemory(true)
+            FS::format(memory_get_usage(false)),
+            FS::format(memory_get_peak_usage(false)),
         ];
+    }
+
+    /**
+     * Alias to write new line in std output
+     *
+     * @param string|array $messages
+     * @param string       $verboseLevel
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+     */
+    public function _($messages, string $verboseLevel = ''): void
+    {
+        $verboseLevel = \strtolower(\trim($verboseLevel));
+
+        if (is_array($messages)) {
+            foreach ($messages as $message) {
+                $this->_($message, $verboseLevel);
+            }
+            return;
+        }
+
+        $profilePrefix = '';
+
+        if ($this->input->getOption('timestamp')) {
+            $timestamp = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $profilePrefix .= "<green>[</green>{$timestamp}<green>]</green> ";
+        }
+
+        if ($this->input->getOption('profile')) {
+            [$totalTime, $curMemory] = $this->getProfileDate();
+            $profilePrefix .= "<green>[</green>{$curMemory}<green>/</green>{$totalTime}s<green>]</green> ";
+        }
+
+        $vNormal = OutputInterface::VERBOSITY_NORMAL;
+
+        if ($verboseLevel === '') {
+            $this->output->writeln($profilePrefix . $messages, $vNormal);
+        } elseif ($verboseLevel === 'v') {
+            $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_VERBOSE);
+        } elseif ($verboseLevel === 'vv') {
+            $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_VERY_VERBOSE);
+        } elseif ($verboseLevel === 'vvv') {
+            $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_DEBUG);
+        } elseif ($verboseLevel === 'q') {
+            $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_QUIET); // Show ALWAYS!
+        } elseif ($verboseLevel === 'debug') {
+            $this->_('<magenta>Debug:</magenta> ' . $messages, 'vvv');
+        } elseif ($verboseLevel === 'warning') {
+            $this->_('<yellow>Warning:</yellow> ' . $messages, 'vv');
+        } elseif ($verboseLevel === 'info') {
+            $this->_('<blue>Info:</blue> ' . $messages, 'v');
+        } elseif ($verboseLevel === 'error') {
+            $this->outputHasErrors = true;
+            $this->errOutput->writeln($profilePrefix . '<bg-red>Error:</bg-red> ' . $messages, $vNormal);
+        } elseif ($verboseLevel === 'exception') {
+            $this->outputHasErrors = true;
+            $this->errOutput->writeln($profilePrefix . '<bg-red>Exception:</bg-red> ' . $messages, $vNormal);
+        } else {
+            throw new Exception("Undefined verbose level: \"{$verboseLevel}\"");
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOutputHasErrors(): bool
+    {
+        return $this->outputHasErrors;
+    }
+
+    /**
+     * @param array $items
+     * @return int
+     */
+    public static function findMaxLength(array $items): int
+    {
+        $result = 0;
+        foreach ($items as $item) {
+            $tmpMax = strlen($item);
+            if ($result < $tmpMax) {
+                $result = $tmpMax;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $metrics
+     * @return string
+     */
+    public static function renderList(array $metrics): string
+    {
+        $maxLength = self::findMaxLength(array_keys($metrics));
+        $lines = [];
+
+        foreach ($metrics as $metricKey => $metricTmpl) {
+            $currentLength = strlen($metricKey);
+            $lines[] = implode('', [
+                $metricKey,
+                str_repeat(' ', $maxLength - $currentLength),
+                ': ',
+                implode('; ', (array)$metricTmpl)
+            ]);
+        }
+
+        return implode("\n", array_filter($lines)) . "\n";
     }
 }
