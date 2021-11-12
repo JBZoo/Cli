@@ -65,7 +65,7 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'minimal') {
-            ProgressBar::run(3, function () {
+            ProgressBar::run(2, function () {
                 sleep(1);
             }, $testCase);
         }

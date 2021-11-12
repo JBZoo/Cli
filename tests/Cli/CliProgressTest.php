@@ -26,19 +26,22 @@ class CliProgressTest extends PHPUnit
     public function testMinimal()
     {
         $output = Helper::executeReal('test:progress', ['case' => 'minimal']);
-        isContain('Progress of minimal', $output[2]);
-        isContain(' 0% (0 / 3) [>__________________________________]', $output[2]);
-        isContain('100% (3 / 3) [••••••••••••••••••••••••••••••••••]', $output[2]);
-        isSame('', $output[1]);
         isSame(0, $output[0]);
+        isSame('', $output[1]);
+        isContain('Progress of minimal', $output[2]);
+        isContain('0% (0 / 2) [>', $output[2]);
+        isContain('50% (1 / 2) [•', $output[2]);
+        isContain('100% (2 / 2) [•', $output[2]);
+        isContain('Last Step Message: n/a', $output[2]);
 
 
         $output = Helper::executeReal('test:progress', ['case' => 'minimal', 'stdout-only' => null]);
         isSame(0, $output[0]);
         isSame('', $output[2]);
-        isContain('Progress of minimal', $output[1]);
-        isContain(' 0% (0 / 3) [>__________________________________]', $output[1]);
-        isContain('100% (3 / 3) [••••••••••••••••••••••••••••••••••]', $output[1]);
+        isContain('0% (0 / 2) [>', $output[1]);
+        isContain('50% (1 / 2) [•', $output[1]);
+        isContain('100% (2 / 2) [•', $output[1]);
+        isContain('Last Step Message: n/a', $output[1]);
     }
 
     public function testMinimalVirtual()
