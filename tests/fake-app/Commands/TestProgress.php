@@ -68,7 +68,7 @@ class TestProgress extends CliCommand
         if ($testCase === 'minimal') {
             ProgressBar::run(2, function () {
                 sleep($this->getOptInt('sleep'));
-            }, $testCase);
+            });
         }
 
         if ($testCase === 'no-messages') {
@@ -87,6 +87,13 @@ class TestProgress extends CliCommand
         if ($testCase === 'simple-message-all') {
             ProgressBar::run(3, function ($stepValue, $stepIndex, $currentStep) {
                 return "{$stepValue}, {$stepIndex}, {$currentStep}";
+            }, $testCase);
+        }
+
+        if ($testCase === 'output-as-array') {
+            $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
+            ProgressBar::run($list, function ($stepValue, $stepIndex, $currentStep) {
+                return [$stepValue, $stepIndex, $currentStep];
             }, $testCase);
         }
 

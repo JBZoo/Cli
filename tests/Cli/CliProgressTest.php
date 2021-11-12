@@ -28,7 +28,7 @@ class CliProgressTest extends PHPUnit
         $output = Helper::executeReal('test:progress', ['case' => 'minimal', 'sleep' => 1]);
         isSame(0, $output[0]);
         isSame('', $output[1]);
-        isContain('Progress of minimal', $output[2]);
+        isNotContain('Progress of minimal', $output[2]);
         isContain('0% (0 / 2) [>', $output[2]);
         isContain('50% (1 / 2) [•', $output[2]);
         isContain('100% (2 / 2) [•', $output[2]);
@@ -46,8 +46,13 @@ class CliProgressTest extends PHPUnit
 
     public function testMinimalVirtual()
     {
-        $output = Helper::executeVirtaul('test:progress', ['case' => 'minimal']);
-        isContain('Progress of minimal', $output);
+        $output = Helper::executeVirtaul('test:progress', ['case' => 'one-message']);
+        isContain('Progress of one-message', $output);
+        isContain('Last Step Message: 1, 1, 1', $output);
+
+        $output = Helper::executeVirtaul('test:progress', ['case' => 'array-assoc']);
+        isContain('Progress of array-assoc', $output);
+        isContain('Last Step Message: value_2, key_2, 1', $output);
     }
 
     public function testNoItems()
@@ -151,6 +156,16 @@ class CliProgressTest extends PHPUnit
             'Working on "break". Number of steps: 3.',
             ' * (0): 0',
             ' * (1): Progress stopped',
+        ]), $stdOut);
+
+
+        [$exitCode, $stdOut, $errOut] = $this->exec('output-as-array');
+        isSame('', $errOut);
+        isSame(0, $exitCode);
+        isSame(implode("\n", [
+            'Working on "output-as-array". Number of steps: 2.',
+            ' * (key_1/0): value_1; key_1; 0',
+            ' * (key_2/1): value_2; key_2; 1',
         ]), $stdOut);
     }
 
@@ -267,20 +282,5 @@ class CliProgressTest extends PHPUnit
         $options = array_merge($options, $addOptions);
 
         return Helper::executeReal('test:progress', $options);
-    }
-
-    /**
-     * @param string $testCase
-     * @param array  $addOptions
-     * @param bool   $noProgress
-     * @return string
-     */
-    private function execVirtual(string $testCase, array $addOptions = [], bool $noProgress = true): string
-    {
-        $options['no-progress'] = null;
-        $options['case'] = $testCase;
-        $options = array_merge($options, $addOptions);
-
-        return Helper::executeVirtaul('test:progress', $options);
     }
 }
