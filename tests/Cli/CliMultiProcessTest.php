@@ -49,6 +49,7 @@ class CliMultiProcessTest extends PHPUnit
             "Started: 4\n{$expectecContent}\nFinished: 4",
             "Started: 5\n{$expectecContent}\nFinished: 5",
         ], $outputAsArray);
+        isSame('', $result[2]);
 
         isTrue($time < 5, "Total time: {$time}");
     }
@@ -77,6 +78,35 @@ class CliMultiProcessTest extends PHPUnit
             "Started: 5\n{$expectecContent}\nFinished: 5",
         ], $outputAsArray);
 
-        isTrue($time < 5);
+        isTrue($time < 5, "Total time: {$time}");
+    }
+
+    public function testException()
+    {
+        $start = microtime(true);
+        $result = Helper::executeReal('test:sleep-multi 123 456 789', ['sleep' => 2]);
+        $time = microtime(true) - $start;
+
+        $outputAsArray = json($result[1])->getArrayCopy();
+
+        $expectecContent = implode("\n", [
+            'Sleep : 2',
+            'Arg #1: 123',
+            'Arg #2: 456',
+            'Arg #3: 789',
+            'Env Var: ',
+        ]);
+
+        isSame([
+            "Started: 1\n{$expectecContent}\nFinished: 1",
+            "",
+            "Started: 3\n{$expectecContent}\nFinished: 3",
+            "Started: 4\n{$expectecContent}\nFinished: 4",
+            "Started: 5\n{$expectecContent}\nFinished: 5",
+        ], $outputAsArray);
+        isContain('Exception messsage', $result[2]);
+
+
+        isTrue($time < 5, "Total time: {$time}");
     }
 }

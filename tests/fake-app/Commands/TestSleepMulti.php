@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace JBZoo\TestApp\Commands;
 
 use JBZoo\Cli\CliCommandMultiProc;
+use JBZoo\Cli\Exception;
 use JBZoo\Utils\Env;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -50,6 +51,11 @@ class TestSleepMulti extends CliCommandMultiProc
      */
     protected function executeOneProcessAction(string $pmThreadId): int
     {
+        $sleep = $this->getOptString('sleep');
+        if ($sleep === '2' && $pmThreadId === '2') {
+            throw new Exception('Exception messsage');
+        }
+
         $this->_([
             "Started: {$pmThreadId}",
             'Sleep : ' . $this->getOptString('sleep'),

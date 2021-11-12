@@ -46,7 +46,7 @@ class CliProgressTest extends PHPUnit
 
     public function testMinimalVirtual()
     {
-        $output = Helper::executeVirtaul('test:progress', ['case' => 'one-message']);
+        $output = Helper::executeVirtaul('test:progress', ['case' => 'one-message', 'ansi' => null]);
         isContain('Progress of one-message', $output);
         isContain('Last Step Message: 1, 1, 1', $output);
 
