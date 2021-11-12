@@ -243,11 +243,11 @@ abstract class CliCommandMultiProc extends CliCommand
         $process = Process::fromShellCommandline(
             Cli::build(implode(' ', [
                 Sys::getBinary(),
-                CliHelper::getBinPath(),
+                Helper::getBinPath(),
                 $this->getName(),
                 implode(" ", $argumentsList)
             ]), $options),
-            CliHelper::getRootPath(),
+            Helper::getRootPath(),
             null,
             null,
             $this->getMaxTimeout()

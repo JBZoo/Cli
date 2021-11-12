@@ -18,16 +18,19 @@ declare(strict_types=1);
 namespace JBZoo\Cli;
 
 /**
- * Class CliProgressBarIcons
+ * Class Icons
  * @package JBZoo\Cli
  */
-class CliProgressBarIcons
+class Icons
 {
+    public const GROUP_PROGRESS = 'progress';
+    public const GROUP_FINISH   = 'finish';
+
     /**
      * @var array
      */
     private static $icons = [
-        'progress' => [
+        self::GROUP_PROGRESS => [
             "\xF0\x9F\x8D\xBA", // :beer:
             "\xF0\x9F\x8D\xB7", // :wine:
             "\xF0\x9F\x8D\xB5", // :tea:
@@ -83,7 +86,7 @@ class CliProgressBarIcons
             "\xF0\x9F\x98\x8C", // :relieved:
         ],
 
-        'finish' => [
+        self::GROUP_FINISH => [
             "\xF0\x9F\x8E\x89", // :tada:
             "\xF0\x9F\x8E\x96", // MILITARY MEDAL
             "\xF0\x9F\x8E\x97", // REMINDER RIBBON

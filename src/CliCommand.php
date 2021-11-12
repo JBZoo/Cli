@@ -35,7 +35,7 @@ use function JBZoo\Utils\int;
 abstract class CliCommand extends Command
 {
     /**
-     * @var CliHelper
+     * @var Helper
      * @psalm-suppress PropertyNotSetInConstructor
      */
     private $helper;
@@ -89,7 +89,7 @@ abstract class CliCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->helper = new CliHelper($input, $output);
+        $this->helper = new Helper($input, $output);
         $this->input = $this->helper->getInput();
         $this->output = $this->helper->getOutput();
         $this->errOutput = $this->helper->getErrOutput();

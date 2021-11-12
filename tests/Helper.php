@@ -59,6 +59,7 @@ class Helper extends PHPUnit
             $postAction
         ]));
 
+        // dump($realCommand);
         $process = Process::fromShellCommandline($realCommand, $cwd, null, null, 3600);
         $process->run();
 

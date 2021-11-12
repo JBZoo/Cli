@@ -24,15 +24,15 @@ use JBZoo\Utils\FS;
 use JBZoo\Utils\Stats;
 use JBZoo\Utils\Str;
 use JBZoo\Utils\Sys;
-use Symfony\Component\Console\Helper\Helper;
-use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Helper\Helper as SymfonyHelper;
+use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CliProgressBar
+ * Class ProgressBar
  * @package JBZoo\Cli
  */
-class CliProgressBar
+class ProgressBar
 {
     public const BREAK            = '<yellow>Progress stopped</yellow>';
     private const MAX_LINE_LENGTH = 80;
@@ -48,7 +48,7 @@ class CliProgressBar
     private $title = '';
 
     /**
-     * @var ProgressBar|null
+     * @var SymfonyProgressBar|null
      */
     private $progressBar;
 
@@ -58,7 +58,7 @@ class CliProgressBar
     private $list = [];
 
     /**
-     * @var CliHelper
+     * @var Helper
      */
     private $helper;
 
@@ -90,7 +90,7 @@ class CliProgressBar
     /**
      * @var string
      */
-    private $finishIcon = '';
+    private $finishIcon;
 
     /**
      * @var string
@@ -98,16 +98,16 @@ class CliProgressBar
     private $progressIcon;
 
     /**
-     * CliProgressBar constructor.
+     * ProgressBar constructor.
      * @param OutputInterface|null $output
      */
     public function __construct(?OutputInterface $output = null)
     {
-        $this->helper = CliHelper::getInstance();
+        $this->helper = Helper::getInstance();
         $this->output = $output ?: $this->helper->getOutput();
 
-        $this->progressIcon = CliProgressBarIcons::getRandomIcon('progress', $this->output->isDecorated());
-        $this->finishIcon = CliProgressBarIcons::getRandomIcon('finish', $this->output->isDecorated());
+        $this->progressIcon = Icons::getRandomIcon(Icons::GROUP_PROGRESS, $this->output->isDecorated());
+        $this->finishIcon = Icons::getRandomIcon(Icons::GROUP_FINISH, $this->output->isDecorated());
     }
 
     /**
@@ -169,9 +169,9 @@ class CliProgressBar
     }
 
     /**
-     * @return ProgressBar|null
+     * @return SymfonyProgressBar|null
      */
-    public function getProgressBar(): ?ProgressBar
+    public function getProgressBar(): ?SymfonyProgressBar
     {
         return $this->progressBar;
     }
@@ -180,18 +180,21 @@ class CliProgressBar
      * @param iterable|array|int   $listOrMax
      * @param \Closure             $callback
      * @param string               $title
+     * @param bool                 $throwBatchException
      * @param OutputInterface|null $output
-     * @return CliProgressBar
+     * @return ProgressBar
      */
     public static function run(
         $listOrMax,
         \Closure $callback,
         string $title = '',
+        bool $throwBatchException = true,
         ?OutputInterface $output = null
     ): self {
         $progress = (new self($output))
             ->setTitle($title)
-            ->setCallback($callback);
+            ->setCallback($callback)
+            ->setThrowBatchException($throwBatchException);
 
         if (is_iterable($listOrMax)) {
             $progress->setList($listOrMax);
@@ -235,10 +238,10 @@ class CliProgressBar
             $startMemory = memory_get_usage(false);
 
             [$stepResult, $exceptionMessage] = $this->handleOneStep($stepValue, $stepIndex, $currentIndex);
+
             $this->stepMemoryDiff[] = memory_get_usage(false) - $startMemory;
             $this->stepTimers[] = microtime(true) - $startTime;
 
-            /** @noinspection SlowArrayOperationsInLoopInspection */
             $exceptionMessages = array_merge($exceptionMessages, (array)$exceptionMessage);
 
             if ($this->progressBar) {
@@ -263,7 +266,7 @@ class CliProgressBar
             }
         }
 
-        $this->showListOfExceptions($exceptionMessages);
+        self::showListOfExceptions($exceptionMessages);
 
         return true;
     }
@@ -277,7 +280,6 @@ class CliProgressBar
         if ($this->progressBar) {
             $this->progressBar->setProgress($currentIndex);
             $this->progressBar->setMessage($stepIndex . ': ', 'jbzoo_current_index');
-            //$this->setCustomMetrics();
         }
     }
 
@@ -294,15 +296,20 @@ class CliProgressBar
         }
 
         $exceptionMessage = null;
+        $prefixMessage = $stepIndex === $currentIndex ? $currentIndex : "{$stepIndex}/{$currentIndex}";
+        $callbackResults = [];
 
         // Executing callback
-        $callbackResults = [];
         try {
             $callbackResults = (array)call_user_func($this->callback, $stepValue, $stepIndex, $currentIndex);
         } catch (\Exception $exception) {
-            $errorMessage = '<error>Error</error>: ' . $exception->getMessage();
-            $callbackResults[] = $errorMessage;
-            $exceptionMessage = " * ({$stepIndex}/{$currentIndex}): {$errorMessage}";
+            if ($this->throwBatchException) {
+                $errorMessage = '<error>Error.</error> ' . $exception->getMessage();
+                $callbackResults[] = $errorMessage;
+                $exceptionMessage = " * ({$prefixMessage}): {$errorMessage}";
+            } else {
+                throw $exception;
+            }
         }
 
         // Handle status messages
@@ -319,19 +326,19 @@ class CliProgressBar
                     $this->progressBar->setMessage($stepResult);
                 }
             } else {
-                $this->helper->_(" * ({$stepIndex}/{$currentIndex}): {$stepResult}");
+                $this->helper->_(" * ({$prefixMessage}): {$stepResult}");
             }
         } elseif (!$this->progressBar) {
-            $this->helper->_(" * ({$stepIndex}/{$currentIndex}): n/a");
+            $this->helper->_(" * ({$prefixMessage}): n/a");
         }
 
         return [$stepResult, $exceptionMessage];
     }
 
     /**
-     * @return ProgressBar|null
+     * @return SymfonyProgressBar|null
      */
-    private function createProgressBar(): ?ProgressBar
+    private function createProgressBar(): ?SymfonyProgressBar
     {
         if ($this->helper->getInput()->getOption('no-progress')) {
             return null;
@@ -339,7 +346,7 @@ class CliProgressBar
 
         $this->configureProgressBar();
 
-        $progressBar = new ProgressBar($this->output, $this->max);
+        $progressBar = new SymfonyProgressBar($this->output, $this->max);
 
         $progressBar->setBarCharacter('<green>•</green>');
         $progressBar->setEmptyBarCharacter('<yellow>_</yellow>');
@@ -365,16 +372,13 @@ class CliProgressBar
     {
         $progressBarLines = [];
         $footerLine = [];
-
-
-        // Header //////////////////////////////
-        if ($this->title) {
-            $progressBarLines[] = "Progress of <blue>{$this->title}</blue>";
-        }
-
         $bar = '[%bar%]';
         $percent = '%percent:2s%%';
         $steps = '(%current% / %max%)';
+
+        if ($this->title) {
+            $progressBarLines[] = "Progress of <blue>{$this->title}</blue>";
+        }
 
         if ($this->output->isVeryVerbose()) {
             $progressBarLines[] = implode(' ', [
@@ -425,7 +429,7 @@ class CliProgressBar
 
         $footerLine['Last Step Message'] = '%message%';
 
-        return implode("\n", $progressBarLines) . "\n" . CliHelper::renderList($footerLine) . "\n";
+        return implode("\n", $progressBarLines) . "\n" . Helper::renderList($footerLine) . "\n";
     }
 
     /**
@@ -443,18 +447,18 @@ class CliProgressBar
 
         // Memory
         self::setPlaceholder('jbzoo_memory_current', static function (): string {
-            return Helper::formatMemory(memory_get_usage(false));
+            return SymfonyHelper::formatMemory(memory_get_usage(false));
         });
 
         self::setPlaceholder('jbzoo_memory_peak', static function (): string {
-            return Helper::formatMemory(memory_get_peak_usage(false));
+            return SymfonyHelper::formatMemory(memory_get_peak_usage(false));
         });
 
         self::setPlaceholder('jbzoo_memory_limit', static function (): string {
             return Sys::iniGet('memory_limit');
         });
 
-        self::setPlaceholder('jbzoo_memory_step_avg', function (ProgressBar $bar): string {
+        self::setPlaceholder('jbzoo_memory_step_avg', function (SymfonyProgressBar $bar): string {
             if (!$bar->getMaxSteps() || !$bar->getProgress() || count($this->stepMemoryDiff) === 0) {
                 return 'n/a';
             }
@@ -462,7 +466,7 @@ class CliProgressBar
             return FS::format((int)Stats::mean($this->stepMemoryDiff));
         });
 
-        self::setPlaceholder('jbzoo_memory_step_last', function (ProgressBar $bar): string {
+        self::setPlaceholder('jbzoo_memory_step_last', function (SymfonyProgressBar $bar): string {
             if (!$bar->getMaxSteps() || !$bar->getProgress() || count($this->stepMemoryDiff) === 0) {
                 return 'n/a';
             }
@@ -471,11 +475,11 @@ class CliProgressBar
         });
 
         // Timers
-        self::setPlaceholder('jbzoo_time_elapsed', static function (ProgressBar $bar): string {
+        self::setPlaceholder('jbzoo_time_elapsed', static function (SymfonyProgressBar $bar): string {
             return Dates::formatTime(time() - $bar->getStartTime());
         });
 
-        self::setPlaceholder('jbzoo_time_remaining', static function (ProgressBar $bar): string {
+        self::setPlaceholder('jbzoo_time_remaining', static function (SymfonyProgressBar $bar): string {
             if (!$bar->getMaxSteps()) {
                 return 'n/a';
             }
@@ -491,7 +495,7 @@ class CliProgressBar
             return Dates::formatTime($remaining);
         });
 
-        self::setPlaceholder('jbzoo_time_estimated', static function (ProgressBar $bar): string {
+        self::setPlaceholder('jbzoo_time_estimated', static function (SymfonyProgressBar $bar): string {
             if (!$bar->getMaxSteps()) {
                 return 'n/a';
             }
@@ -505,7 +509,7 @@ class CliProgressBar
             return Dates::formatTime($estimated);
         });
 
-        self::setPlaceholder('jbzoo_time_step_avg', function (ProgressBar $bar): string {
+        self::setPlaceholder('jbzoo_time_step_avg', function (SymfonyProgressBar $bar): string {
             if (!$bar->getMaxSteps() || !$bar->getProgress() || count($this->stepTimers) === 0) {
                 return 'n/a';
             }
@@ -513,7 +517,7 @@ class CliProgressBar
             return str_replace('±', '<blue>±</blue>', Stats::renderAverage($this->stepTimers)) . ' sec';
         });
 
-        self::setPlaceholder('jbzoo_time_step_last', function (ProgressBar $bar): string {
+        self::setPlaceholder('jbzoo_time_step_last', function (SymfonyProgressBar $bar): string {
             if (!$bar->getMaxSteps() || !$bar->getProgress() || count($this->stepTimers) === 0) {
                 return 'n/a';
             }
@@ -528,22 +532,19 @@ class CliProgressBar
      */
     public static function setPlaceholder(string $name, callable $callable): void
     {
-        ProgressBar::setPlaceholderFormatterDefinition($name, $callable);
+        SymfonyProgressBar::setPlaceholderFormatterDefinition($name, $callable);
     }
 
     /**
      * @param array $exceptionMessages
      */
-    private function showListOfExceptions(array $exceptionMessages): void
+    private static function showListOfExceptions(array $exceptionMessages): void
     {
         if (count($exceptionMessages)) {
             $listOfErrors = implode("\n", $exceptionMessages) . "\n";
+            $listOfErrors = str_replace('<error>Error.</error> ', '', $listOfErrors);
 
-            if ($this->throwBatchException) {
-                throw new Exception(' Error list:' . "\n" . $listOfErrors);
-            }
-
-            $this->helper->_(' Error list (muted):' . "\n" . $listOfErrors);
+            throw new Exception("\n Error list:\n" . $listOfErrors);
         }
     }
 }

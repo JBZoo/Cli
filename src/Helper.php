@@ -26,10 +26,10 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CliHelper
+ * Class Helper
  * @package JBZoo\Cli
  */
-class CliHelper
+class Helper
 {
     /**
      * @var $this
