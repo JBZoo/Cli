@@ -18,8 +18,8 @@ declare(strict_types=1);
 namespace JBZoo\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
-use JBZoo\Cli\ProgressBar;
 use JBZoo\Cli\Exception;
+use JBZoo\Cli\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 
 use function JBZoo\Data\json;
@@ -36,8 +36,9 @@ class TestProgress extends CliCommand
     {
         $this
             ->setName('test:progress')
-            ->addOption('case', null, InputOption::VALUE_OPTIONAL)
-            ->addOption('batch-exception', 'b', InputOption::VALUE_NONE);
+            ->addOption('case', null, InputOption::VALUE_REQUIRED)
+            ->addOption('batch-exception', 'b', InputOption::VALUE_NONE)
+            ->addOption('sleep', 's', InputOption::VALUE_OPTIONAL);
 
         parent::configure();
     }
@@ -66,7 +67,7 @@ class TestProgress extends CliCommand
 
         if ($testCase === 'minimal') {
             ProgressBar::run(2, function () {
-                sleep(1);
+                sleep($this->getOptInt('sleep'));
             }, $testCase);
         }
 
@@ -153,12 +154,31 @@ class TestProgress extends CliCommand
                     $array[] = $i;
                 }
 
-                sleep(1);
+                sleep($this->getOptInt('sleep'));
             }, $testCase);
         }
 
+        if ($testCase === 'nested') {
+            $array = [];
+            $parentSection = $this->output->section();
+            $childSection = $this->output->section();
+
+            ProgressBar::run(3, function ($parentId) use ($testCase, $childSection) {
+                sleep($this->getOptInt('sleep'));
+
+                ProgressBar::run(4, function ($childId) use ($parentId) {
+                    sleep($this->getOptInt('sleep'));
+                    return "out_child_{$parentId}_{$childId}";
+                }, "{$testCase}_child_{$parentId}", false, $childSection);
+
+                $childSection->clear();
+
+                return "out_parent_{$parentId}";
+            }, "{$testCase}_parent", false, $parentSection);
+        }
+
         if (!$testCase) {
-            throw new Exception('undefined --test-case');
+            throw new Exception('undefined --case');
         }
 
         return 0;

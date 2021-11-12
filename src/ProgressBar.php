@@ -355,6 +355,7 @@ class ProgressBar
         $progressBar->setFormat($this->buildTemplate());
 
         $progressBar->setMessage('n/a');
+        $progressBar->setMessage('0', 'jbzoo_caught_exceptions');
         $progressBar->setProgress(0);
         $progressBar->setOverwrite(true);
 

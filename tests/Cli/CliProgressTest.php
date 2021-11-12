@@ -171,9 +171,6 @@ class CliProgressTest extends PHPUnit
         isSame('Working on "exception-list". Number of steps: 10.', $stdOut);
     }
 
-    /**
-     * @depends testException
-     */
     public function testBatchException()
     {
         [$exitCode, $stdOut, $errOut] = $this->exec('exception', ['batch-exception' => null]);
@@ -209,14 +206,49 @@ class CliProgressTest extends PHPUnit
             ' * (9): Error. Exception #9',
         ]), $stdOut);
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('exception-list', ['batch-exception' => null], false);
+
+        [$exitCode, $stdOut, $errOut] = $this->exec('exception-list', ['-b' => null, '-vvv' => null], false);
         isSame(1, $exitCode);
+        isContain('[JBZoo\Cli\Exception]', $errOut);
         isContain('Error list:', $errOut);
         isContain('* (0): Exception #0', $errOut);
         isContain('* (3): Exception #3', $errOut);
         isContain('* (6): Exception #6', $errOut);
         isContain('* (9): Exception #9', $errOut);
+        isContain('Caught exceptions                : 4', $errOut);
+        isContain('Last Step Message                : Error. Exception #9', $errOut);
+        isContain('Exception trace:', $errOut);
         isSame('', $stdOut);
+    }
+
+    public function testNested()
+    {
+        [$exitCode, $stdOut, $errOut] = $this->exec('nested', ['-b' => null, '-vvv' => null]);
+
+        isSame(0, $exitCode);
+        isSame('', $errOut);
+        isSame(implode("\n", [
+            'Working on "nested_parent". Number of steps: 3.',
+            'Working on "nested_child_0". Number of steps: 4.',
+            ' * (0): out_child_0_0',
+            ' * (1): out_child_0_1',
+            ' * (2): out_child_0_2',
+            ' * (3): out_child_0_3',
+            ' * (0): out_parent_0',
+            'Working on "nested_child_1". Number of steps: 4.',
+            ' * (0): out_child_1_0',
+            ' * (1): out_child_1_1',
+            ' * (2): out_child_1_2',
+            ' * (3): out_child_1_3',
+            ' * (1): out_parent_1',
+            'Working on "nested_child_2". Number of steps: 4.',
+            ' * (0): out_child_2_0',
+            ' * (1): out_child_2_1',
+            ' * (2): out_child_2_2',
+            ' * (3): out_child_2_3',
+            ' * (2): out_parent_2',
+            'Debug: Exit Code is "0"',
+        ]), $stdOut);
     }
 
     /**
