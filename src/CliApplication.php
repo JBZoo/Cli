@@ -46,7 +46,7 @@ class CliApplication extends Application
         string $gloabalNamespace,
         bool $strictMode = true
     ): bool {
-        if ($strictMode && !is_dir($commandsDir)) {
+        if ($strictMode && !\is_dir($commandsDir)) {
             throw new Exception('First argument is not directory!');
         }
 
@@ -57,16 +57,16 @@ class CliApplication extends Application
         }
 
         foreach ($files as $file) {
-            if (!file_exists($file)) {
+            if (!\file_exists($file)) {
                 continue;
             }
 
             require_once $file;
 
-            $taskNamespace = trim(str_replace('/', '\\', (string)strstr(\dirname($file), 'Commands')));
+            $taskNamespace = \trim(\str_replace('/', '\\', (string)\strstr(\dirname($file), 'Commands')));
             $commandClassName = "{$gloabalNamespace}\\{$taskNamespace}\\" . FS::filename($file);
 
-            if (class_exists($commandClassName)) {
+            if (\class_exists($commandClassName)) {
                 $reflection = new \ReflectionClass($commandClassName);
             } else {
                 throw new Exception("Command/Class \"{$commandClassName}\" can'be loaded from the file \"{$file}\"");

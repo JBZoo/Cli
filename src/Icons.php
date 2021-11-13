@@ -161,7 +161,7 @@ class Icons
         }
 
         $icons = self::$icons[$group];
-        shuffle($icons);
+        \shuffle($icons);
 
         return $icons[0];
     }

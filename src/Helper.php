@@ -67,7 +67,7 @@ class Helper
      */
     public function __construct(InputInterface $input, OutputInterface $output)
     {
-        $this->startTimer = microtime(true);
+        $this->startTimer = \microtime(true);
         $this->input = $input;
         $this->output = self::addOutputStyles($output);
 
@@ -123,7 +123,7 @@ class Helper
      */
     public static function getRootPath(): string
     {
-        $rootPath = defined('JBZOO_PATH_ROOT') ? (string)JBZOO_PATH_ROOT : null;
+        $rootPath = \defined('JBZOO_PATH_ROOT') ? (string)\JBZOO_PATH_ROOT : null;
         if (!$rootPath) {
             return Env::string('JBZOO_PATH_ROOT');
         }
@@ -136,7 +136,7 @@ class Helper
      */
     public static function getBinPath(): string
     {
-        $binPath = defined('JBZOO_PATH_BIN') ? (string)JBZOO_PATH_BIN : null;
+        $binPath = \defined('JBZOO_PATH_BIN') ? (string)\JBZOO_PATH_BIN : null;
         if (!$binPath) {
             return Env::string('JBZOO_PATH_BIN');
         }
@@ -171,9 +171,9 @@ class Helper
     public function getProfileDate(): array
     {
         return [
-            number_format(microtime(true) - $this->startTimer, 3),
-            FS::format(memory_get_usage(false)),
-            FS::format(memory_get_peak_usage(false)),
+            \number_format(\microtime(true) - $this->startTimer, 3),
+            FS::format(\memory_get_usage(false)),
+            FS::format(\memory_get_peak_usage(false)),
         ];
     }
 
@@ -190,7 +190,7 @@ class Helper
     {
         $verboseLevel = \strtolower(\trim($verboseLevel));
 
-        if (is_array($messages)) {
+        if (\is_array($messages)) {
             foreach ($messages as $message) {
                 $this->_($message, $verboseLevel);
             }
@@ -254,7 +254,7 @@ class Helper
     {
         $result = 0;
         foreach ($items as $item) {
-            $tmpMax = strlen($item);
+            $tmpMax = \strlen($item);
             if ($result < $tmpMax) {
                 $result = $tmpMax;
             }
@@ -269,19 +269,19 @@ class Helper
      */
     public static function renderList(array $metrics): string
     {
-        $maxLength = self::findMaxLength(array_keys($metrics));
+        $maxLength = self::findMaxLength(\array_keys($metrics));
         $lines = [];
 
         foreach ($metrics as $metricKey => $metricTmpl) {
-            $currentLength = strlen($metricKey);
-            $lines[] = implode('', [
+            $currentLength = \strlen((string)$metricKey);
+            $lines[] = \implode('', [
                 $metricKey,
-                str_repeat(' ', $maxLength - $currentLength),
+                \str_repeat(' ', $maxLength - $currentLength),
                 ': ',
-                implode('; ', (array)$metricTmpl)
+                \implode('; ', (array)$metricTmpl)
             ]);
         }
 
-        return implode("\n", array_filter($lines)) . "\n";
+        return \implode("\n", \array_filter($lines)) . "\n";
     }
 }

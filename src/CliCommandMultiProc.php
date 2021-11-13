@@ -148,13 +148,13 @@ abstract class CliCommandMultiProc extends CliCommand
         $this->afterFinishAllProcesses($this->procPool);
 
         $errorList = $this->getErrorList();
-        if (count($errorList) > 0) {
-            throw new Exception(implode("\n" . str_repeat('-', 60) . "\n", $errorList));
+        if (\count($errorList) > 0) {
+            throw new Exception(\implode("\n" . \str_repeat('-', 60) . "\n", $errorList));
         }
 
         $warningList = $this->getWarningList();
-        if (count($warningList) > 0) {
-            $this->_(implode("\n" . str_repeat('-', 60) . "\n", $warningList), 'warn');
+        if (\count($warningList) > 0) {
+            $this->_(\implode("\n" . \str_repeat('-', 60) . "\n", $warningList), 'warn');
         }
 
         return 0;
@@ -213,7 +213,7 @@ abstract class CliCommandMultiProc extends CliCommand
     private function createSubProcess(string $procId): Process
     {
         // Prepare option list from the parent process
-        $options = array_filter($this->input->getOptions(), static function ($optionValue): bool {
+        $options = \array_filter($this->input->getOptions(), static function ($optionValue): bool {
             return $optionValue !== false && $optionValue !== '';
         });
 
@@ -228,7 +228,7 @@ abstract class CliCommandMultiProc extends CliCommand
         $argumentsList = [];
 
         foreach ($arguments as $argKey => $argValue) {
-            if (is_array($argValue)) {
+            if (\is_array($argValue)) {
                 continue;
             }
 
@@ -241,11 +241,11 @@ abstract class CliCommandMultiProc extends CliCommand
 
         // Build full command line
         $process = Process::fromShellCommandline(
-            Cli::build(implode(' ', [
+            Cli::build(\implode(' ', [
                 Sys::getBinary(),
                 Helper::getBinPath(),
                 $this->getName(),
-                implode(" ", $argumentsList)
+                \implode(" ", $argumentsList)
             ]), $options),
             Helper::getRootPath(),
             null,
@@ -253,7 +253,7 @@ abstract class CliCommandMultiProc extends CliCommand
             $this->getMaxTimeout()
         );
 
-        $this->procPool[spl_object_id($process)] = [
+        $this->procPool[\spl_object_id($process)] = [
             'command'         => $process->getCommandLine(),
             'proc_id'         => $procId,
             'exit_code'       => null,
@@ -272,15 +272,15 @@ abstract class CliCommandMultiProc extends CliCommand
      */
     private function getErrorList(): array
     {
-        return array_reduce($this->procPool, function (array $acc, array $procInfo): array {
+        return \array_reduce($this->procPool, function (array $acc, array $procInfo): array {
             if ($procInfo['reached_timeout']) {
-                $acc[] = implode("\n", [
+                $acc[] = \implode("\n", [
                     "Command : {$procInfo['command']}",
                     "Error   : The process with ID \"{$procInfo['proc_id']}\""
                     . " exceeded the timeout of {$this->getMaxTimeout()} seconds.",
                 ]);
             } elseif ($procInfo['err_out'] && $procInfo['exit_code'] > 0) {
-                $acc[] = implode("\n", [
+                $acc[] = \implode("\n", [
                     "Command : {$procInfo['command']}",
                     "Code    : {$procInfo['exit_code']}",
                     "Error   : {$procInfo['err_out']}",
@@ -297,9 +297,9 @@ abstract class CliCommandMultiProc extends CliCommand
      */
     private function getWarningList(): array
     {
-        return array_reduce($this->procPool, static function (array $acc, array $procInfo): array {
+        return \array_reduce($this->procPool, static function (array $acc, array $procInfo): array {
             if ($procInfo['err_out'] && $procInfo['exit_code'] === 0) {
-                $acc[] = implode("\n", [
+                $acc[] = \implode("\n", [
                     "Command : {$procInfo['command']}",
                     "Warning : {$procInfo['err_out']}",
                     "StdOut  : {$procInfo['std_out']}",

@@ -139,7 +139,7 @@ abstract class CliCommand extends Command
     {
         $value = $this->input->getOption($optionName);
 
-        if ($canBeArray && is_array($value)) {
+        if ($canBeArray && \is_array($value)) {
             return Arr::last($value);
         }
 
@@ -207,8 +207,8 @@ abstract class CliCommand extends Command
 
         if (null === $result) {
             $result = '';
-            while (!feof(STDIN)) {
-                $result .= fread(STDIN, 1024);
+            while (!\feof(\STDIN)) {
+                $result .= \fread(\STDIN, 1024);
             }
         }
 
@@ -253,7 +253,7 @@ abstract class CliCommand extends Command
 
         [$totalTime, $curMemory, $maxMemory] = $this->helper->getProfileDate();
 
-        $this->_(implode('; ', [
+        $this->_(\implode('; ', [
             "Memory Usage/Peak: <green>{$curMemory}</green>/<green>{$maxMemory}</green>",
             "Execution Time: <green>{$totalTime} sec</green>"
         ]));

@@ -196,7 +196,7 @@ class ProgressBar
             ->setCallback($callback)
             ->setThrowBatchException($throwBatchException);
 
-        if (is_iterable($listOrMax)) {
+        if (\is_iterable($listOrMax)) {
             $progress->setList($listOrMax);
         } else {
             $progress->setMax($listOrMax);
@@ -234,23 +234,23 @@ class ProgressBar
         foreach ($this->list as $stepIndex => $stepValue) {
             $this->setStep($stepIndex, $currentIndex);
 
-            $startTime = microtime(true);
-            $startMemory = memory_get_usage(false);
+            $startTime = \microtime(true);
+            $startMemory = \memory_get_usage(false);
 
             [$stepResult, $exceptionMessage] = $this->handleOneStep($stepValue, $stepIndex, $currentIndex);
 
-            $this->stepMemoryDiff[] = memory_get_usage(false) - $startMemory;
-            $this->stepTimers[] = microtime(true) - $startTime;
+            $this->stepMemoryDiff[] = \memory_get_usage(false) - $startMemory;
+            $this->stepTimers[] = \microtime(true) - $startTime;
 
-            $exceptionMessages = array_merge($exceptionMessages, (array)$exceptionMessage);
+            $exceptionMessages = \array_merge($exceptionMessages, (array)$exceptionMessage);
 
             if ($this->progressBar) {
-                $errorNumbers = count($exceptionMessages);
+                $errorNumbers = \count($exceptionMessages);
                 $errMessage = $errorNumbers > 0 ? "<red-blink>{$errorNumbers}</red-blink>" : '0';
                 $this->progressBar->setMessage($errMessage, 'jbzoo_caught_exceptions');
             }
 
-            if (strpos($stepResult, self::BREAK) !== false) {
+            if (\strpos($stepResult, self::BREAK) !== false) {
                 $isSkipped = true;
                 break;
             }
@@ -301,7 +301,7 @@ class ProgressBar
 
         // Executing callback
         try {
-            $callbackResults = (array)call_user_func($this->callback, $stepValue, $stepIndex, $currentIndex);
+            $callbackResults = (array)\call_user_func($this->callback, $stepValue, $stepIndex, $currentIndex);
         } catch (\Exception $exception) {
             if ($this->throwBatchException) {
                 $errorMessage = '<error>Error.</error> ' . $exception->getMessage();
@@ -315,12 +315,12 @@ class ProgressBar
         // Handle status messages
         $stepResult = '';
         if (!empty($callbackResults)) {
-            $stepResult = str_replace(["\n", "\r", "\t"], ' ', implode('; ', $callbackResults));
+            $stepResult = \str_replace(["\n", "\r", "\t"], ' ', \implode('; ', $callbackResults));
 
             if ($this->progressBar) {
                 if ($stepResult) {
-                    if (strlen(strip_tags($stepResult)) > self::MAX_LINE_LENGTH) {
-                        $stepResult = Str::limitChars(strip_tags($stepResult), self::MAX_LINE_LENGTH);
+                    if (\strlen(\strip_tags($stepResult)) > self::MAX_LINE_LENGTH) {
+                        $stepResult = Str::limitChars(\strip_tags($stepResult), self::MAX_LINE_LENGTH);
                     }
 
                     $this->progressBar->setMessage($stepResult);
@@ -382,20 +382,20 @@ class ProgressBar
         }
 
         if ($this->output->isVeryVerbose()) {
-            $progressBarLines[] = implode(' ', [
+            $progressBarLines[] = \implode(' ', [
                 $percent,
                 $steps,
                 $bar,
                 $this->finishIcon,
             ]);
-            $footerLine['Time (pass/left/est/avg/last)'] = implode(' / ', [
+            $footerLine['Time (pass/left/est/avg/last)'] = \implode(' / ', [
                 '%jbzoo_time_elapsed:9s%',
                 '<info>%jbzoo_time_remaining:8s%</info>',
                 '<comment>%jbzoo_time_estimated:8s%</comment>',
                 '%jbzoo_time_step_avg%',
                 '%jbzoo_time_step_last%',
             ]);
-            $footerLine['Memory (cur/peak/limit/leak/last)'] = implode(' / ', [
+            $footerLine['Memory (cur/peak/limit/leak/last)'] = \implode(' / ', [
                 '%jbzoo_memory_current:8s%',
                 '<comment>%jbzoo_memory_peak%</comment>',
                 '%jbzoo_memory_limit%',
@@ -404,7 +404,7 @@ class ProgressBar
             ]);
             $footerLine['Caught exceptions'] = '%jbzoo_caught_exceptions%';
         } elseif ($this->output->isVerbose()) {
-            $progressBarLines[] = implode(' ', [
+            $progressBarLines[] = \implode(' ', [
                 $percent,
                 $steps,
                 $bar,
@@ -412,14 +412,14 @@ class ProgressBar
                 '%jbzoo_memory_current:8s%'
             ]);
 
-            $footerLine['Time (pass/left/est)'] = implode(' / ', [
+            $footerLine['Time (pass/left/est)'] = \implode(' / ', [
                 '%jbzoo_time_elapsed:8s%',
                 '<info>%jbzoo_time_remaining:8s%</info>',
                 '%jbzoo_time_estimated%'
             ]);
             $footerLine['Caught exceptions'] = '%jbzoo_caught_exceptions%';
         } else {
-            $progressBarLines[] = implode(' ', [
+            $progressBarLines[] = \implode(' ', [
                 $percent,
                 $steps,
                 $bar,
@@ -430,7 +430,7 @@ class ProgressBar
 
         $footerLine['Last Step Message'] = '%message%';
 
-        return implode("\n", $progressBarLines) . "\n" . Helper::renderList($footerLine) . "\n";
+        return \implode("\n", $progressBarLines) . "\n" . Helper::renderList($footerLine) . "\n";
     }
 
     /**
@@ -448,11 +448,11 @@ class ProgressBar
 
         // Memory
         self::setPlaceholder('jbzoo_memory_current', static function (): string {
-            return SymfonyHelper::formatMemory(memory_get_usage(false));
+            return SymfonyHelper::formatMemory(\memory_get_usage(false));
         });
 
         self::setPlaceholder('jbzoo_memory_peak', static function (): string {
-            return SymfonyHelper::formatMemory(memory_get_peak_usage(false));
+            return SymfonyHelper::formatMemory(\memory_get_peak_usage(false));
         });
 
         self::setPlaceholder('jbzoo_memory_limit', static function (): string {
@@ -460,7 +460,7 @@ class ProgressBar
         });
 
         self::setPlaceholder('jbzoo_memory_step_avg', function (SymfonyProgressBar $bar): string {
-            if (!$bar->getMaxSteps() || !$bar->getProgress() || count($this->stepMemoryDiff) === 0) {
+            if (!$bar->getMaxSteps() || !$bar->getProgress() || \count($this->stepMemoryDiff) === 0) {
                 return 'n/a';
             }
 
@@ -468,7 +468,7 @@ class ProgressBar
         });
 
         self::setPlaceholder('jbzoo_memory_step_last', function (SymfonyProgressBar $bar): string {
-            if (!$bar->getMaxSteps() || !$bar->getProgress() || count($this->stepMemoryDiff) === 0) {
+            if (!$bar->getMaxSteps() || !$bar->getProgress() || \count($this->stepMemoryDiff) === 0) {
                 return 'n/a';
             }
 
@@ -477,7 +477,7 @@ class ProgressBar
 
         // Timers
         self::setPlaceholder('jbzoo_time_elapsed', static function (SymfonyProgressBar $bar): string {
-            return Dates::formatTime(time() - $bar->getStartTime());
+            return Dates::formatTime(\time() - $bar->getStartTime());
         });
 
         self::setPlaceholder('jbzoo_time_remaining', static function (SymfonyProgressBar $bar): string {
@@ -488,8 +488,8 @@ class ProgressBar
             if (!$bar->getProgress()) {
                 $remaining = 0;
             } else {
-                $remaining = round(
-                    (time() - $bar->getStartTime()) / $bar->getProgress() * ($bar->getMaxSteps() - $bar->getProgress())
+                $remaining = \round(
+                    (\time() - $bar->getStartTime()) / $bar->getProgress() * ($bar->getMaxSteps() - $bar->getProgress())
                 );
             }
 
@@ -504,22 +504,22 @@ class ProgressBar
             if (!$bar->getProgress()) {
                 $estimated = 0;
             } else {
-                $estimated = round((time() - $bar->getStartTime()) / $bar->getProgress() * $bar->getMaxSteps());
+                $estimated = \round((\time() - $bar->getStartTime()) / $bar->getProgress() * $bar->getMaxSteps());
             }
 
             return Dates::formatTime($estimated);
         });
 
         self::setPlaceholder('jbzoo_time_step_avg', function (SymfonyProgressBar $bar): string {
-            if (!$bar->getMaxSteps() || !$bar->getProgress() || count($this->stepTimers) === 0) {
+            if (!$bar->getMaxSteps() || !$bar->getProgress() || \count($this->stepTimers) === 0) {
                 return 'n/a';
             }
 
-            return str_replace('±', '<blue>±</blue>', Stats::renderAverage($this->stepTimers)) . ' sec';
+            return \str_replace('±', '<blue>±</blue>', Stats::renderAverage($this->stepTimers)) . ' sec';
         });
 
         self::setPlaceholder('jbzoo_time_step_last', function (SymfonyProgressBar $bar): string {
-            if (!$bar->getMaxSteps() || !$bar->getProgress() || count($this->stepTimers) === 0) {
+            if (!$bar->getMaxSteps() || !$bar->getProgress() || \count($this->stepTimers) === 0) {
                 return 'n/a';
             }
 
@@ -541,9 +541,9 @@ class ProgressBar
      */
     private static function showListOfExceptions(array $exceptionMessages): void
     {
-        if (count($exceptionMessages)) {
-            $listOfErrors = implode("\n", $exceptionMessages) . "\n";
-            $listOfErrors = str_replace('<error>Error.</error> ', '', $listOfErrors);
+        if (\count($exceptionMessages)) {
+            $listOfErrors = \implode("\n", $exceptionMessages) . "\n";
+            $listOfErrors = \str_replace('<error>Error.</error> ', '', $listOfErrors);
 
             throw new Exception("\n Error list:\n" . $listOfErrors);
         }
