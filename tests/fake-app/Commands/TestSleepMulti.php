@@ -39,6 +39,7 @@ class TestSleepMulti extends CliCommandMultiProc
         $this
             ->setName('test:sleep-multi')
             ->addOption('sleep', null, InputOption::VALUE_REQUIRED, 'Timeout in seconds to sleep the PHP script', 5)
+            ->addOption('random-sleep', null, InputOption::VALUE_NONE, 'Random sleep timer (1-5)')
             ->addArgument('arg-1', InputArgument::OPTIONAL, 'Custom Agrument #1', 'QWERTY-1')
             ->addArgument('arg-2', InputArgument::OPTIONAL, 'Custom Agrument #2', 'QWERTY-2')
             ->addArgument('arg-3', InputArgument::OPTIONAL, 'Custom Agrument #3', 'QWERTY-3');
@@ -51,21 +52,25 @@ class TestSleepMulti extends CliCommandMultiProc
      */
     protected function executeOneProcessAction(string $pmThreadId): int
     {
-        $sleep = $this->getOptString('sleep');
-        if ($sleep === '2' && $pmThreadId === '2') {
+        $sleep = $this->getOptInt('sleep');
+        if ($this->getOptBool('random-sleep')) {
+            $sleep = random_int(1, 5);
+        }
+
+        if ($sleep === 2 && $pmThreadId === '2') {
             throw new Exception('Exception messsage');
         }
 
         $this->_([
             "Started: {$pmThreadId}",
-            'Sleep : ' . $this->getOptString('sleep'),
+            'Sleep : ' . $sleep,
             'Arg #1: ' . $this->input->getArgument('arg-1'),
             'Arg #2: ' . $this->input->getArgument('arg-2'),
             'Arg #3: ' . $this->input->getArgument('arg-3'),
             'Env Var: ' . Env::string('JBZOO_TEST_VAR'),
         ]);
 
-        sleep($this->getOptInt('sleep'));
+        sleep($sleep);
 
         $this->_("Finished: {$pmThreadId}");
 

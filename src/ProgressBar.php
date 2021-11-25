@@ -34,7 +34,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ProgressBar
 {
-    public const BREAK            = '<yellow>Progress stopped</yellow>';
+    public const BREAK = '<yellow>Progress stopped</yellow>';
+
     private const MAX_LINE_LENGTH = 80;
 
     /**
@@ -210,7 +211,7 @@ class ProgressBar
     /**
      * @return bool
      */
-    public function execute(): bool
+    public function init(): bool
     {
         if ($this->max <= 0) {
             $this->helper->_($this->title
@@ -225,6 +226,18 @@ class ProgressBar
             $this->helper->_($this->title
                 ? "Working on \"<blue>{$this->title}</blue>\". Number of steps: <blue>{$this->max}</blue>."
                 : "Number of steps: <blue>{$this->max}</blue>.");
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function execute(): bool
+    {
+        if (!$this->init()) {
+            return false;
         }
 
         $exceptionMessages = [];

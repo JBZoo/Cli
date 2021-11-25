@@ -28,7 +28,11 @@ class CliMultiProcessTest extends PHPUnit
     public function testAsRealExecution()
     {
         $start = microtime(true);
-        $result = Helper::executeReal('test:sleep-multi 123 " qwerty "', ['sleep' => 1], 'JBZOO_TEST_VAR=123456');
+        $result = Helper::executeReal(
+            'test:sleep-multi 123 " qwerty "',
+            ['sleep' => 1, 'pm-no-progress' => null],
+            'JBZOO_TEST_VAR=123456'
+        );
 
         $time = microtime(true) - $start;
 
@@ -57,7 +61,7 @@ class CliMultiProcessTest extends PHPUnit
     public function testAsVirtalExecution()
     {
         $start = microtime(true);
-        $result = Helper::executeVirtaul('test:sleep-multi', ['sleep' => 1]);
+        $result = Helper::executeVirtaul('test:sleep-multi', ['sleep' => 1, 'pm-no-progress' => null]);
         $time = microtime(true) - $start;
 
         $outputAsArray = json($result)->getArrayCopy();
@@ -84,7 +88,7 @@ class CliMultiProcessTest extends PHPUnit
     public function testException()
     {
         $start = microtime(true);
-        $result = Helper::executeReal('test:sleep-multi 123 456 789', ['sleep' => 2]);
+        $result = Helper::executeReal('test:sleep-multi 123 456 789', ['sleep' => 2, 'pm-no-progress' => null]);
         $time = microtime(true) - $start;
 
         $outputAsArray = json($result[1])->getArrayCopy();
@@ -105,7 +109,6 @@ class CliMultiProcessTest extends PHPUnit
             "Started: 5\n{$expectecContent}\nFinished: 5",
         ], $outputAsArray);
         isContain('Exception messsage', $result[2]);
-
 
         isTrue($time < 5, "Total time: {$time}");
     }

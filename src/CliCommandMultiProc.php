@@ -20,6 +20,7 @@ namespace JBZoo\Cli;
 use BluePsyduck\SymfonyProcessManager\ProcessManager;
 use JBZoo\Utils\Cli;
 use JBZoo\Utils\Sys;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Process;
 
@@ -38,6 +39,11 @@ abstract class CliCommandMultiProc extends CliCommand
      * @var array
      */
     private $procPool = [];
+
+    /**
+     * @var ProgressBar|null
+     */
+    private $progressBar;
 
     /**
      * @inheritDoc
@@ -79,6 +85,12 @@ abstract class CliCommandMultiProc extends CliCommand
                 InputOption::VALUE_REQUIRED,
                 'Process Manager. Unique ID of process to execute one child proccess.',
                 ''
+            )
+            ->addOption(
+                'pm-no-progress',
+                null,
+                InputOption::VALUE_NONE,
+                'Process Manager. Show progress bar to additinal information.'
             );
 
         parent::configure();
@@ -138,6 +150,12 @@ abstract class CliCommandMultiProc extends CliCommand
         );
 
         $procListIds = $this->getListOfChildIds();
+
+        if (!$this->getOptBool('pm-no-progress')) {
+            $this->progressBar = new ProgressBar($this->output, count($procListIds));
+            $this->progressBar->start();
+        }
+
         foreach ($procListIds as $procListId) {
             $childProcess = $this->createSubProcess($procListId);
             $procManager->addProcess($childProcess);
@@ -145,6 +163,11 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $this->beforeStartAllProcesses();
         $procManager->waitForAllProcesses();
+        if ($this->progressBar) {
+            $this->progressBar->finish();
+            $this->_('');
+        }
+
         $this->afterFinishAllProcesses($this->procPool);
 
         $errorList = $this->getErrorList();
@@ -187,6 +210,10 @@ abstract class CliCommandMultiProc extends CliCommand
             } elseif ($errorOutput) {
                 $this->procPool[$virtProcId]['err_out'] = $errorOutput;
             }
+
+            if ($this->progressBar) {
+                $this->progressBar->advance();
+            }
         };
 
         return (new ProcessManager())
@@ -217,11 +244,16 @@ abstract class CliCommandMultiProc extends CliCommand
             return $optionValue !== false && $optionValue !== '';
         });
 
-        unset($options['ansi']);
+        foreach (array_keys($options) as $optionKey) {
+            if (!$this->getDefinition()->getOption((string)$optionKey)->acceptValue()) {
+                $options[$optionKey] = null;
+            }
+        }
 
-        $options['pm-proc-id'] = $procId;
+        unset($options['ansi']);
         $options['no-ansi'] = null;
         $options['no-interaction'] = null;
+        $options['pm-proc-id'] = $procId;
 
         // Prepare $argument list from the parent process
         $arguments = $this->input->getArguments();
