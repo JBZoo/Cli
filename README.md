@@ -12,15 +12,16 @@ composer require jbzoo/cli
 ```
 
 
-### Usage
+### See also
 
-```php
-use JBZoo\SkeletonPhp\Cli;
-
-// Just use it!
-$object = new Cli();
-$object->doSomeStreetMagic(':)');
-```
+ * https://github.com/kevinlebrun/colors.php
+ * https://packagist.org/packages/php-school/cli-menu
+ * https://github.com/nunomaduro/collision
+ * https://packagist.org/packages/splitbrain/php-cli
+ * https://github.com/php-school/terminal
+ * https://github.com/hoaproject/Console
+ * https://github.com/thephpleague/climate
+ * https://tldp.org/LDP/abs/html/exitcodes.html
 
 
 ## Unit tests and check code style
