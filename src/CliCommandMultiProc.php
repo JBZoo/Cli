@@ -152,7 +152,7 @@ abstract class CliCommandMultiProc extends CliCommand
         $procListIds = $this->getListOfChildIds();
 
         if (!$this->getOptBool('pm-no-progress')) {
-            $this->progressBar = new ProgressBar($this->output, count($procListIds));
+            $this->progressBar = new ProgressBar($this->output, \count($procListIds));
             $this->progressBar->start();
         }
 
@@ -244,7 +244,7 @@ abstract class CliCommandMultiProc extends CliCommand
             return $optionValue !== false && $optionValue !== '';
         });
 
-        foreach (array_keys($options) as $optionKey) {
+        foreach (\array_keys($options) as $optionKey) {
             if (!$this->getDefinition()->getOption((string)$optionKey)->acceptValue()) {
                 $options[$optionKey] = null;
             }
