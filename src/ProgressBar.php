@@ -331,7 +331,7 @@ class ProgressBar
             $stepResult = \str_replace(["\n", "\r", "\t"], ' ', \implode('; ', $callbackResults));
 
             if ($this->progressBar) {
-                if ($stepResult) {
+                if ('' !== $stepResult) {
                     if (\strlen(\strip_tags($stepResult)) > self::MAX_LINE_LENGTH) {
                         $stepResult = Str::limitChars(\strip_tags($stepResult), self::MAX_LINE_LENGTH);
                     }

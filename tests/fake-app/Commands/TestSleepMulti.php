@@ -50,7 +50,7 @@ class TestSleepMulti extends CliCommandMultiProc
     /**
      * @inheritDoc
      */
-    protected function executeOneProcessAction(string $pmThreadId): int
+    protected function executeOneProcess(string $pmThreadId): int
     {
         $sleep = $this->getOptInt('sleep');
         if ($this->getOptBool('random-sleep')) {

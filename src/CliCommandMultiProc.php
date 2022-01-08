@@ -100,7 +100,7 @@ abstract class CliCommandMultiProc extends CliCommand
      * @param string $pmThreadId
      * @return int
      */
-    abstract protected function executeOneProcessAction(string $pmThreadId): int;
+    abstract protected function executeOneProcess(string $pmThreadId): int;
 
     /**
      * @return string[]
@@ -132,7 +132,7 @@ abstract class CliCommandMultiProc extends CliCommand
     protected function executeAction(): int
     {
         if ($pmProcId = $this->getOptString('pm-proc-id')) {
-            return $this->executeOneProcessAction($pmProcId);
+            return $this->executeOneProcess($pmProcId);
         }
 
         return $this->executeMultiProcessAction();
