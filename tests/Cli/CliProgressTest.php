@@ -224,7 +224,7 @@ class CliProgressTest extends PHPUnit
 
         [$exitCode, $stdOut, $errOut] = $this->exec('exception-list', ['-b' => null, '-vvv' => null], false);
         isSame(1, $exitCode);
-        isContain('[JBZoo\Cli\Exception]', $errOut);
+        isContain('[JBZoo\Cli\ProgressBars\Exception]', $errOut);
         isContain('Error list:', $errOut);
         isContain('* (0): Exception #0', $errOut);
         isContain('* (3): Exception #3', $errOut);

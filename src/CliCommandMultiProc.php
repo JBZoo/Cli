@@ -18,9 +18,9 @@ declare(strict_types=1);
 namespace JBZoo\Cli;
 
 use BluePsyduck\SymfonyProcessManager\ProcessManager;
+use JBZoo\Cli\ProgressBars\ProgressBarProcessManager;
 use JBZoo\Utils\Cli;
 use JBZoo\Utils\Sys;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Process;
 
@@ -41,7 +41,7 @@ abstract class CliCommandMultiProc extends CliCommand
     private $procPool = [];
 
     /**
-     * @var ProgressBar|null
+     * @var ProgressBarProcessManager|null
      */
     private $progressBar;
 
@@ -90,7 +90,7 @@ abstract class CliCommandMultiProc extends CliCommand
                 'pm-no-progress',
                 null,
                 InputOption::VALUE_NONE,
-                'Process Manager. Show progress bar to additinal information.'
+                'Process Manager. Show progress bar to additional information.'
             );
 
         parent::configure();
@@ -152,7 +152,7 @@ abstract class CliCommandMultiProc extends CliCommand
         $procListIds = $this->getListOfChildIds();
 
         if (!$this->getOptBool('pm-no-progress')) {
-            $this->progressBar = new ProgressBar($this->output, \count($procListIds));
+            $this->progressBar = new ProgressBarProcessManager($this->output, \count($procListIds));
             $this->progressBar->start();
         }
 

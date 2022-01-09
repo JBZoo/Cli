@@ -19,7 +19,7 @@ namespace JBZoo\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\Exception;
-use JBZoo\Cli\ProgressBar;
+use JBZoo\Cli\ProgressBars\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 
 use function JBZoo\Data\json;
