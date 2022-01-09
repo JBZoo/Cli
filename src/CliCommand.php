@@ -77,7 +77,7 @@ abstract class CliCommand extends Command
                 InputOption::VALUE_NONE,
                 "For any errors messages application will use StdOut instead of ErrOut. It's on your own risk!"
             )
-            ->addOption('strict', null, InputOption::VALUE_NONE, 'None-zero exit code on any StdErr messages')
+            ->addOption('strict', null, InputOption::VALUE_NONE, 'None-zero exit code on any StdErr message')
             ->addOption('timestamp', null, InputOption::VALUE_NONE, 'Show timestamp at the beginning of each message')
             ->addOption('profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information');
 
@@ -102,7 +102,7 @@ abstract class CliCommand extends Command
             $this->trigger('exception', [$this, $this->helper, $exception]);
 
             if ($this->getOptBool('mute-errors')) {
-                $this->_($exception->getMessage(), 'exception');
+                $this->_($exception->getMessage(), Helper::VERB_EXCEPTION);
             } else {
                 $this->showProfiler();
                 throw $exception;
@@ -120,7 +120,7 @@ abstract class CliCommand extends Command
             $exitCode = 0;
         }
 
-        $this->_("Exit Code is \"{$exitCode}\"", 'debug');
+        $this->_("Exit Code is \"{$exitCode}\"", Helper::VERB_DEBUG);
 
         return $exitCode;
     }

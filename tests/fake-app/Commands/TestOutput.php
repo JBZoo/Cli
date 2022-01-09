@@ -19,6 +19,7 @@ namespace JBZoo\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\Exception;
+use JBZoo\Cli\Helper;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -44,21 +45,21 @@ class TestOutput extends CliCommand
     protected function executeAction(): int
     {
         $this->_(['Normal 1', 'Normal 2']);
-        $this->_('Message', 'error');
+        $this->_('Message', Helper::VERB_ERROR);
 
-        $this->_('Info1 -v', 'v');
-        $this->_('Info2 -v', 'info');
+        $this->_('Info1 -v', Helper::VERB_V);
+        $this->_('Info2 -v', Helper::VERB_INFO);
 
-        $this->_('Verbose1 -vv', 'vv');
-        $this->_('Verbose2 -vv', 'warning');
+        $this->_('Verbose1 -vv', Helper::VERB_VV);
+        $this->_('Verbose2 -vv', Helper::VERB_WARNING);
 
-        $this->_('Debug1 -vvv', 'vvv');
+        $this->_('Debug1 -vvv', Helper::VERB_VVV);
         $this->_([
             'Message #1 -vvv',
             'Message #2 -vvv'
-        ], 'debug');
+        ], Helper::VERB_DEBUG);
 
-        $this->_('Quiet -q', 'q');
+        $this->_('Quiet -q', Helper::VERB_QUIET);
 
         if ($exception = $this->getOptString('exception')) {
             throw new Exception($exception);

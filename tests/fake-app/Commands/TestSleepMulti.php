@@ -19,6 +19,7 @@ namespace JBZoo\TestApp\Commands;
 
 use JBZoo\Cli\CliCommandMultiProc;
 use JBZoo\Cli\Exception;
+use JBZoo\Cli\Helper;
 use JBZoo\Utils\Env;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -72,7 +73,7 @@ class TestSleepMulti extends CliCommandMultiProc
 
         sleep($sleep);
 
-        $this->_("Finished: {$pmThreadId}");
+        $this->_("Finished: {$pmThreadId}", Helper::VERB_QUIET);
 
         return 0;
     }

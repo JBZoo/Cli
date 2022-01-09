@@ -31,6 +31,19 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Helper
 {
+    public const VERB_QUIET = 'q';
+
+    public const VERB_DEFAULT = '';
+    public const VERB_V       = 'v';
+    public const VERB_VV      = 'vv';
+    public const VERB_VVV     = 'vvv';
+
+    public const VERB_DEBUG     = 'debug';
+    public const VERB_INFO      = 'info';
+    public const VERB_WARNING   = 'warning';
+    public const VERB_ERROR     = 'error';
+    public const VERB_EXCEPTION = 'exception';
+
     /**
      * @var $this
      */
@@ -186,7 +199,7 @@ class Helper
      *
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
-    public function _($messages, string $verboseLevel = ''): void
+    public function _($messages, string $verboseLevel = self::VERB_DEFAULT): void
     {
         $verboseLevel = \strtolower(\trim($verboseLevel));
 
@@ -211,26 +224,26 @@ class Helper
 
         $vNormal = OutputInterface::VERBOSITY_NORMAL;
 
-        if ($verboseLevel === '') {
+        if ($verboseLevel === self::VERB_DEFAULT) {
             $this->output->writeln($profilePrefix . $messages, $vNormal);
-        } elseif ($verboseLevel === 'v') {
+        } elseif ($verboseLevel === self::VERB_V) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_VERBOSE);
-        } elseif ($verboseLevel === 'vv') {
+        } elseif ($verboseLevel === self::VERB_VV) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_VERY_VERBOSE);
-        } elseif ($verboseLevel === 'vvv') {
+        } elseif ($verboseLevel === self::VERB_VVV) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_DEBUG);
-        } elseif ($verboseLevel === 'q') {
+        } elseif ($verboseLevel === self::VERB_QUIET) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_QUIET); // Show ALWAYS!
-        } elseif ($verboseLevel === 'debug') {
-            $this->_('<magenta>Debug:</magenta> ' . $messages, 'vvv');
-        } elseif ($verboseLevel === 'warning') {
-            $this->_('<yellow>Warning:</yellow> ' . $messages, 'vv');
-        } elseif ($verboseLevel === 'info') {
-            $this->_('<blue>Info:</blue> ' . $messages, 'v');
-        } elseif ($verboseLevel === 'error') {
+        } elseif ($verboseLevel === self::VERB_DEBUG) {
+            $this->_('<magenta>Debug:</magenta> ' . $messages, self::VERB_VVV);
+        } elseif ($verboseLevel === self::VERB_WARNING) {
+            $this->_('<yellow>Warning:</yellow> ' . $messages, self::VERB_VV);
+        } elseif ($verboseLevel === self::VERB_INFO) {
+            $this->_('<blue>Info:</blue> ' . $messages, self::VERB_V);
+        } elseif ($verboseLevel === self::VERB_ERROR) {
             $this->outputHasErrors = true;
             $this->errOutput->writeln($profilePrefix . '<bg-red>Error:</bg-red> ' . $messages, $vNormal);
-        } elseif ($verboseLevel === 'exception') {
+        } elseif ($verboseLevel === self::VERB_EXCEPTION) {
             $this->outputHasErrors = true;
             $this->errOutput->writeln($profilePrefix . '<bg-red>Exception:</bg-red> ' . $messages, $vNormal);
         } else {

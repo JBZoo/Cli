@@ -33,7 +33,7 @@ abstract class CliCommandMultiProc extends CliCommand
     private const PM_DEFAULT_MAX_PROCESSES = 20;
     private const PM_DEFAULT_INTERVAL      = 100;
     private const PM_DEFAULT_START_DELAY   = 1;
-    private const PM_DEFAULT_TIMEOUT       = 3600;
+    private const PM_DEFAULT_TIMEOUT       = 7200;
 
     /**
      * @var array
@@ -85,12 +85,6 @@ abstract class CliCommandMultiProc extends CliCommand
                 InputOption::VALUE_REQUIRED,
                 'Process Manager. Unique ID of process to execute one child proccess.',
                 ''
-            )
-            ->addOption(
-                'pm-no-progress',
-                null,
-                InputOption::VALUE_NONE,
-                'Process Manager. Show progress bar to additional information.'
             );
 
         parent::configure();
@@ -151,7 +145,7 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $procListIds = $this->getListOfChildIds();
 
-        if (!$this->getOptBool('pm-no-progress')) {
+        if (!$this->getOptBool('no-progress')) {
             $this->progressBar = new ProgressBarProcessManager($this->output, \count($procListIds));
             $this->progressBar->start();
         }
@@ -177,7 +171,7 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $warningList = $this->getWarningList();
         if (\count($warningList) > 0) {
-            $this->_(\implode("\n" . \str_repeat('-', 60) . "\n", $warningList), 'warn');
+            $this->_(\implode("\n" . \str_repeat('-', 60) . "\n", $warningList), Helper::VERB_WARNING);
         }
 
         return 0;
