@@ -22,14 +22,14 @@ use JBZoo\Cli\Codes;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class ExampleAgruments
+ * Class ExamplesAgruments
  */
-class ExampleAgruments extends CliCommand
+class ExamplesAgruments extends CliCommand
 {
     protected function configure(): void
     {
         $this
-            ->setName('example:agruments')
+            ->setName('examples:agruments')
             ->setDescription('Show description of command.')
             ->setHelp(
                 "Full description and usage of command.\n" .
@@ -99,102 +99,105 @@ class ExampleAgruments extends CliCommand
     protected function executeAction(): int
     {
         ////////////////////////////////////////// Just a boolean flag
-        // ./my-app example:agruments
+        // ./my-app examples:agruments
         $this->getOpt('opt'); // false
 
-        // ./my-app example:agruments --opt
+        // ./my-app examples:agruments --opt
         $this->getOpt('opt'); // true
 
-        // ./my-app example:agruments -o
+        // ./my-app examples:agruments -o
         $this->getOpt('opt'); // true
 
 
         ////////////////////////////////////////// The option requires a value
-        // ./my-app example:agruments --opt-req
+        // ./my-app examples:agruments --opt-req
         $this->getOpt('opt-req'); // Exception: The "--opt-req" option requires a value.
 
-        // ./my-app example:agruments --opt-req=123.6
+        // ./my-app examples:agruments --opt-req=123.6
         $this->getOpt('opt-req'); // "123.6"
 
-        // ./my-app example:agruments --opt-req=123.6
+        // ./my-app examples:agruments --opt-req=123.6
         $this->getOptBool('opt-req'); // true
 
-        // ./my-app example:agruments --opt-req=123.6
+        // ./my-app examples:agruments --opt-req=123.6
         $this->getOptInt('opt-req'); // 123
 
-        // ./my-app example:agruments --opt-req=123.6
+        // ./my-app examples:agruments --opt-req=123.6
         $this->getOptFloat('opt-req'); // 123.6
 
-        // ./my-app example:agruments --opt-req="    123.6   "
+        // ./my-app examples:agruments --opt-req="    123.6   "
         $this->getOptString('opt-req'); // "123.6"
 
-        // ./my-app example:agruments --opt-req=123.6
+        // ./my-app examples:agruments --opt-req=123.6
         $this->getOptArray('opt-req'); // ["123.6"]
 
-        // ./my-app example:agruments --opt-req="15 July 2021 13:48:00"
+        // ./my-app examples:agruments --opt-req="15 July 2021 13:48:00"
         $this->getOptDatetime('opt-req'); // \DateTimeImmutable {date: 2021-07-15 13:48:00. UTC (+00:00) }
 
         ////////////////////////////////////////// The option requires a value with default value
-        // ./my-app example:agruments
+        // ./my-app examples:agruments
         $this->getOpt('opt-req-default'); // 42
 
-        // ./my-app example:agruments --opt-req-default
+        // ./my-app examples:agruments --opt-req-default
         $this->getOpt('opt-req-default'); // Exception: The "--opt-req-default" option requires a value.
 
-        // ./my-app example:agruments --opt-req-default=123.6
+        // ./my-app examples:agruments --opt-req-default=123.6
         $this->getOpt('opt-req-default'); // "123.6"
 
 
         ////////////////////////////////////////// Multiple values are allowed. Value is required with defaut value
-        // ./my-app example:agruments
+        // ./my-app examples:agruments
         $this->getOpt('opt-array-req-default'); // "bar"
 
-        // ./my-app example:agruments
+        // ./my-app examples:agruments
         $this->getOptArray('opt-array-req-default'); // [42, 'foo', 'bar']
 
-        // ./my-app example:agruments --opt-array-req-default=123 --opt-array-req-default=asdasd
+        // ./my-app examples:agruments --opt-array-req-default=123 --opt-array-req-default=asdasd
         $this->getOptArray('opt-array-req-default'); // ['123', 'Qwerty']
 
-        // ./my-app example:agruments -a123 -aQwerty
+        // ./my-app examples:agruments -a123 -aQwerty
         $this->getOptArray('opt-array-req-default'); // ['123', 'Qwerty']
 
-        // ./my-app example:agruments -a123 -aQwerty
+        // ./my-app examples:agruments -a123 -aQwerty
         $this->getOpt('opt-array-req-default'); // 'Qwerty'
 
-        // ./my-app example:agruments -aQwerty -aAsd
+        // ./my-app examples:agruments -aQwerty -aAsd
         $this->getOpt('opt-array-req-default'); // 'Asd'
 
 
         ////////////////////////////////////////// Arguments
-        // ./my-app example:agruments
+        // ./my-app examples:agruments
         $this->input->getArgument('arg-req'); // null
 
-        // ./my-app example:agruments Qwerty
+        // ./my-app examples:agruments Qwerty
         $this->input->getArgument('arg-req'); // "Qwerty"
 
-        // ./my-app example:agruments Qwerty
+        // ./my-app examples:agruments Qwerty
         $this->input->getArgument('arg-default'); // 42
 
-        // ./my-app example:agruments Qwerty Some text
+        // ./my-app examples:agruments Qwerty Some text
         $this->input->getArgument('arg-default'); // "Some"
 
-        // ./my-app example:agruments Qwerty "Some text"
+        // ./my-app examples:agruments Qwerty "Some text"
         $this->input->getArgument('arg-default'); // "Some text"
 
-        // ./my-app example:agruments Qwerty "Some text"
+        // ./my-app examples:agruments Qwerty "Some text"
         $this->input->getArgument('arg-optional'); // []
 
-        // ./my-app example:agruments Qwerty "Some text" 123
+        // ./my-app examples:agruments Qwerty "Some text" 123
         $this->input->getArgument('arg-optional'); // ["123"]
 
-        // ./my-app example:agruments Qwerty "Some text" 123 456 "789 098"
+        // ./my-app examples:agruments Qwerty "Some text" 123 456 "789 098"
         $this->input->getArgument('arg-optional'); // ["123", "456", "789 098"]
 
 
         ////////////////////////////////////////// Standard input
-        // echo " Qwerty 123 " | php ./my-app example:agruments
+        // echo " Qwerty 123 " | php ./my-app examples:agruments
         self::getStdIn(); // " Qwerty 123 \n"
 
+
+        // Default success exist code is "0". Max value is 255.
+        // See JBZoo\Cli\Codes class for more info
         return Codes::OK;
     }
 }

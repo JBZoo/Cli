@@ -23,14 +23,14 @@ use JBZoo\Cli\Helper;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class ExampleOutput
+ * Class ExamplesOutput
  */
-class ExampleOutput extends CliCommand
+class ExamplesOutput extends CliCommand
 {
     protected function configure(): void
     {
         $this
-            ->setName('example:output')
+            ->setName('examples:output')
             ->addOption('exception', 'e', InputOption::VALUE_NONE, 'Throw exception');
 
         parent::configure();
@@ -46,7 +46,7 @@ class ExampleOutput extends CliCommand
         echo 'Legacy method. Message #1';
 
 
-        // ./my-app example:output
+        // ./my-app examples:output
         $this->_('Regular message');
         $this->_([
             ' * Several',
@@ -88,7 +88,7 @@ class ExampleOutput extends CliCommand
         $this->_();
 
         // Info output
-        // ./my-app example:output -v
+        // ./my-app examples:output -v
         $this->_('Verbose message #1 (-v)', Helper::VERB_V);                                  // No label
         $this->_('Verbose message #2 (-v)', Helper::VERB_INFO);                               // With Label
         $this->_(['Verbose message #3 (-v)', 'Verbose message #3 (-v)'], Helper::VERB_INFO);  // With Label, multi lines
@@ -98,7 +98,7 @@ class ExampleOutput extends CliCommand
 
 
         // Warning output
-        // ./my-app example:output -vv
+        // ./my-app examples:output -vv
         $this->_('Very verbose or not critical warning messages #1 (-vv)', Helper::VERB_VV);      // No label
         $this->_('Very verbose or not critical warning messages #2 (-vv)', Helper::VERB_WARNING); // With Label
         if ($this->isWarningLevel()) {
@@ -107,7 +107,7 @@ class ExampleOutput extends CliCommand
 
 
         // Debug output
-        // ./my-app example:output -vvv
+        // ./my-app examples:output -vvv
         $this->_('Super low-level message for developers #1 (-vvv)', Helper::VERB_VVV);     // No label
         $this->_('Super low-level message for developers #2 (-vvv)', Helper::VERB_DEBUG);   // With Label
         if ($this->isDebugLevel()) {
@@ -116,23 +116,23 @@ class ExampleOutput extends CliCommand
 
 
         // If output is hidden, we can use this method to show the message. It's like "always"
-        // ./my-app example:output -q
+        // ./my-app examples:output -q
         $this->_('Show always (-q)', Helper::VERB_QUIET);
         $this->_();
 
 
         // Error output (StdErr)
-        // ./my-app example:output -vvv > /dev/null
+        // ./my-app examples:output -vvv > /dev/null
         $this->_('Your error message in runtime (non-stop)', Helper::VERB_ERROR);
         $this->_('Your exception message in runtime (non-stop)', Helper::VERB_EXCEPTION);
         $this->_();
 
 
         // If we want to throw an exception, we can use this way
-        // ./my-app example:output -e                   # Show all messages and shot exceton info
-        // ./my-app example:output -e -vvv              # Show all messages and full exceptio info
-        // ./my-app example:output -e > /dev/null       # Show only error messages (StdErr)
-        // ./my-app example:output -e --mute-errors     # Don't send error code on exceptions (on your own risk!)
+        // ./my-app examples:output -e                   # Show all messages and shot exceton info
+        // ./my-app examples:output -e -vvv              # Show all messages and full exceptio info
+        // ./my-app examples:output -e > /dev/null       # Show only error messages (StdErr)
+        // ./my-app examples:output -e --mute-errors     # Don't send error code on exceptions (on your own risk!)
         if ($this->getOptBool('exception')) {
             throw new Exception('Exception like managable fatal error');
         }
