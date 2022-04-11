@@ -65,9 +65,9 @@ class TestSleepMulti extends CliCommandMultiProc
         $this->_([
             "Started: {$pmThreadId}",
             'Sleep : ' . $sleep,
-            'Arg #1: ' . $this->input->getArgument('arg-1'),
-            'Arg #2: ' . $this->input->getArgument('arg-2'),
-            'Arg #3: ' . $this->input->getArgument('arg-3'),
+            'Arg #1: ' . $this->helper->getInput()->getArgument('arg-1'),
+            'Arg #2: ' . $this->helper->getInput()->getArgument('arg-2'),
+            'Arg #3: ' . $this->helper->getInput()->getArgument('arg-3'),
             'Env Var: ' . Env::string('JBZOO_TEST_VAR'),
         ]);
 

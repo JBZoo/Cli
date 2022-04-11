@@ -22,7 +22,6 @@ use JBZoo\Utils\Vars;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\bool;
@@ -39,24 +38,7 @@ abstract class CliCommand extends Command
      * @var Helper
      * @psalm-suppress PropertyNotSetInConstructor
      */
-    private $helper;
-
-    /**
-     * @var InputInterface
-     * @psalm-suppress PropertyNotSetInConstructor
-     */
-    protected $input;
-
-    /**
-     * @var OutputInterface|ConsoleOutput
-     * @psalm-suppress PropertyNotSetInConstructor
-     */
-    protected $output;
-
-    /**
-     * @var OutputInterface
-     */
-    protected $errOutput;
+    protected $helper;
 
     /**
      * @inheritDoc
@@ -91,9 +73,6 @@ abstract class CliCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->helper = new Helper($input, $output);
-        $this->input = $this->helper->getInput();
-        $this->output = $this->helper->getOutput();
-        $this->errOutput = $this->helper->getErrOutput();
 
         $exitCode = 0;
         try {
@@ -148,7 +127,7 @@ abstract class CliCommand extends Command
      */
     protected function getOpt(string $optionName, bool $canBeArray = true)
     {
-        $value = $this->input->getOption($optionName);
+        $value = $this->helper->getInput()->getOption($optionName);
 
         if ($canBeArray && \is_array($value)) {
             return Arr::last($value);
@@ -259,7 +238,7 @@ abstract class CliCommand extends Command
      */
     protected function isInfoLevel(): bool
     {
-        return $this->output->isVerbose();
+        return $this->helper->getOutput()->isVerbose();
     }
 
     /**
@@ -267,7 +246,7 @@ abstract class CliCommand extends Command
      */
     protected function isWarningLevel(): bool
     {
-        return $this->output->isVeryVerbose();
+        return $this->helper->getOutput()->isVeryVerbose();
     }
 
     /**
@@ -275,7 +254,7 @@ abstract class CliCommand extends Command
      */
     protected function isDebugLevel(): bool
     {
-        return $this->output->isDebug();
+        return $this->helper->getOutput()->isDebug();
     }
 
     /**

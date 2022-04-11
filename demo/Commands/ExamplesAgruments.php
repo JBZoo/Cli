@@ -164,31 +164,31 @@ class ExamplesAgruments extends CliCommand
         // ./my-app examples:agruments -aQwerty -aAsd
         $this->getOpt('opt-array-req-default'); // 'Asd'
 
-
+        $input = $this->helper->getInput();
         ////////////////////////////////////////// Arguments
         // ./my-app examples:agruments
-        $this->input->getArgument('arg-req'); // null
+        $input->getArgument('arg-req'); // null
 
         // ./my-app examples:agruments Qwerty
-        $this->input->getArgument('arg-req'); // "Qwerty"
+        $input->getArgument('arg-req'); // "Qwerty"
 
         // ./my-app examples:agruments Qwerty
-        $this->input->getArgument('arg-default'); // 42
+        $input->getArgument('arg-default'); // 42
 
         // ./my-app examples:agruments Qwerty Some text
-        $this->input->getArgument('arg-default'); // "Some"
+        $input->getArgument('arg-default'); // "Some"
 
         // ./my-app examples:agruments Qwerty "Some text"
-        $this->input->getArgument('arg-default'); // "Some text"
+        $input->getArgument('arg-default'); // "Some text"
 
         // ./my-app examples:agruments Qwerty "Some text"
-        $this->input->getArgument('arg-optional'); // []
+        $input->getArgument('arg-optional'); // []
 
         // ./my-app examples:agruments Qwerty "Some text" 123
-        $this->input->getArgument('arg-optional'); // ["123"]
+        $input->getArgument('arg-optional'); // ["123"]
 
         // ./my-app examples:agruments Qwerty "Some text" 123 456 "789 098"
-        $this->input->getArgument('arg-optional'); // ["123", "456", "789 098"]
+        $input->getArgument('arg-optional'); // ["123", "456", "789 098"]
 
 
         ////////////////////////////////////////// Standard input

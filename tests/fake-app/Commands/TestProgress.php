@@ -167,8 +167,8 @@ class TestProgress extends CliCommand
 
         if ($testCase === 'nested') {
             $array = [];
-            $parentSection = $this->output->section();
-            $childSection = $this->output->section();
+            $parentSection = $this->helper->getOutput()->section();
+            $childSection = $this->helper->getOutput()->section();
 
             ProgressBar::run(3, function ($parentId) use ($testCase, $childSection) {
                 sleep($this->getOptInt('sleep'));

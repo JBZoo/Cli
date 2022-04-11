@@ -146,7 +146,7 @@ abstract class CliCommandMultiProc extends CliCommand
         $procListIds = $this->getListOfChildIds();
 
         if (!$this->getOptBool('no-progress')) {
-            $this->progressBar = new ProgressBarProcessManager($this->output, \count($procListIds));
+            $this->progressBar = new ProgressBarProcessManager($this->helper->getOutput(), \count($procListIds));
             $this->progressBar->start();
         }
 
@@ -234,7 +234,7 @@ abstract class CliCommandMultiProc extends CliCommand
     private function createSubProcess(string $procId): Process
     {
         // Prepare option list from the parent process
-        $options = \array_filter($this->input->getOptions(), static function ($optionValue): bool {
+        $options = \array_filter($this->helper->getInput()->getOptions(), static function ($optionValue): bool {
             return $optionValue !== false && $optionValue !== '';
         });
 
@@ -250,7 +250,7 @@ abstract class CliCommandMultiProc extends CliCommand
         $options['pm-proc-id'] = $procId;
 
         // Prepare $argument list from the parent process
-        $arguments = $this->input->getArguments();
+        $arguments = $this->helper->getInput()->getArguments();
         $argumentsList = [];
 
         foreach ($arguments as $argKey => $argValue) {
