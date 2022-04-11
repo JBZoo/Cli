@@ -183,8 +183,9 @@ abstract class CliCommand extends Command
      */
     protected function getOptString(string $optionName): string
     {
-        $value = (string)$this->getOpt($optionName);
-        return \trim($value) ?: '';
+        $value = trim((string)$this->getOpt($optionName));
+        $length = \strlen($value);
+        return $length > 0 ? $value : '';
     }
 
     /**

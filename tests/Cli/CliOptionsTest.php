@@ -112,7 +112,7 @@ class CliOptionsTest extends PHPUnit
             "Bool"    => false,
             "Int"     => 0,
             "Float"   => 0,
-            "String"  => "0",
+            "String"  => '0',
             "Array"   => ['0']
         ], $output[$option]);
 
