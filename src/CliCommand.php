@@ -183,8 +183,8 @@ abstract class CliCommand extends Command
      */
     protected function getOptString(string $optionName): string
     {
-        $value = $this->getOpt($optionName) ?? '';
-        return (string)$value;
+        $value = (string)$this->getOpt($optionName);
+        return \trim($value) ?: '';
     }
 
     /**
@@ -195,6 +195,19 @@ abstract class CliCommand extends Command
     {
         $list = $this->getOpt($optionName, false) ?? [];
         return (array)$list;
+    }
+
+    /**
+     * @param string $optionName
+     * @param string $defaultDatetime
+     * @return \DateTimeImmutable
+     */
+    protected function getOptDatetime(
+        string $optionName,
+        string $defaultDatetime = '1970-01-01 00:00:00'
+    ): \DateTimeImmutable {
+        $dateAsString = $this->getOptString($optionName) ?: $defaultDatetime;
+        return new \DateTimeImmutable($dateAsString);
     }
 
     /**
@@ -251,7 +264,7 @@ abstract class CliCommand extends Command
             return;
         }
 
-        [$totalTime, $curMemory, $maxMemory] = $this->helper->getProfileDate();
+        [$totalTime, $curMemory, $maxMemory] = $this->helper->getProfileInfo();
 
         $this->_(\implode('; ', [
             "Memory Usage/Peak: <green>{$curMemory}</green>/<green>{$maxMemory}</green>",

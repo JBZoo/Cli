@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 /**
@@ -15,17 +16,14 @@
 
 declare(strict_types=1);
 
-namespace JBZoo\PHPUnit;
+namespace ExampleApp;
 
-/**
- * Class CliReadmeTest
- *
- * @package JBZoo\PHPUnit
- */
-class CliReadmeTest extends AbstractReadmeTest
-{
-    /**
-     * @var string
-     */
-    protected $packageName = 'Cli';
-}
+use JBZoo\Cli\CliApplication;
+
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+
+$application = new CliApplication('Example CLI Application', 'v1.0.0');
+$application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);
+// $application->setDefaultCommand('simple');
+
+$application->run();

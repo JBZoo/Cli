@@ -10,6 +10,37 @@
 composer require jbzoo/cli
 ```
 
+### Usage example
+
+The minimak reference example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use JBZoo\Cli\CliCommand;
+
+class MyCommand extends CliCommand
+{
+    protected function configure(): void
+    {
+        $this->setName('namespace:command-name');
+        parent::configure();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function executeAction(): int
+    {
+        $this->_('Hello world!');
+        return 0;
+    }
+}
+```
+
+
 
 ### See also
 

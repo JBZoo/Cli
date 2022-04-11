@@ -15,17 +15,28 @@
 
 declare(strict_types=1);
 
-namespace JBZoo\PHPUnit;
+namespace ExampleApp\Commands;
+
+use JBZoo\Cli\CliCommand;
 
 /**
- * Class CliReadmeTest
- *
- * @package JBZoo\PHPUnit
+ * Class Simple
  */
-class CliReadmeTest extends AbstractReadmeTest
+class Simple extends CliCommand
 {
+    protected function configure(): void
+    {
+        $this->setName('simple');
+        parent::configure();
+    }
+
     /**
-     * @var string
+     * @inheritDoc
      */
-    protected $packageName = 'Cli';
+    protected function executeAction(): int
+    {
+        $this->_('Hello world!');
+
+        return 0;
+    }
 }

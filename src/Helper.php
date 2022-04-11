@@ -44,6 +44,8 @@ class Helper
     public const VERB_ERROR     = 'error';
     public const VERB_EXCEPTION = 'exception';
 
+    public const TIMESTAMP_FORMAT = 'Y-m-d H:i:s.v P';
+
     /**
      * @var $this
      */
@@ -181,7 +183,7 @@ class Helper
     /**
      * @return array
      */
-    public function getProfileDate(): array
+    public function getProfileInfo(): array
     {
         return [
             \number_format(\microtime(true) - $this->startTimer, 3),
@@ -213,12 +215,12 @@ class Helper
         $profilePrefix = '';
 
         if ($this->input->getOption('timestamp')) {
-            $timestamp = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
+            $timestamp = (new \DateTimeImmutable())->format(self::TIMESTAMP_FORMAT);
             $profilePrefix .= "<green>[</green>{$timestamp}<green>]</green> ";
         }
 
         if ($this->input->getOption('profile')) {
-            [$totalTime, $curMemory] = $this->getProfileDate();
+            [$totalTime, $curMemory] = $this->getProfileInfo();
             $profilePrefix .= "<green>[</green>{$curMemory}<green>/</green>{$totalTime}s<green>]</green> ";
         }
 
