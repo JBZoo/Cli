@@ -37,6 +37,7 @@ class Helper
     public const VERB_V       = 'v';
     public const VERB_VV      = 'vv';
     public const VERB_VVV     = 'vvv';
+    public const VERB_E       = 'e';
 
     public const VERB_DEBUG     = 'debug';
     public const VERB_INFO      = 'info';
@@ -242,12 +243,15 @@ class Helper
             $this->_('<yellow>Warning:</yellow> ' . $messages, self::VERB_VV);
         } elseif ($verboseLevel === self::VERB_INFO) {
             $this->_('<blue>Info:</blue> ' . $messages, self::VERB_V);
+        } elseif ($verboseLevel === self::VERB_E) {
+            $this->outputHasErrors = true;
+            $this->errOutput->writeln($profilePrefix . $messages, $vNormal);
         } elseif ($verboseLevel === self::VERB_ERROR) {
             $this->outputHasErrors = true;
             $this->errOutput->writeln($profilePrefix . '<red-bg>Error:</red-bg> ' . $messages, $vNormal);
         } elseif ($verboseLevel === self::VERB_EXCEPTION) {
             $this->outputHasErrors = true;
-            $this->errOutput->writeln($profilePrefix . '<red-bg>Exception:</red-bg> ' . $messages, $vNormal);
+            $this->errOutput->writeln($profilePrefix . '<red-bg>Muted Exception:</red-bg> ' . $messages, $vNormal);
         } else {
             throw new Exception("Undefined verbose level: \"{$verboseLevel}\"");
         }

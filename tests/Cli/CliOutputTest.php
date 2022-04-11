@@ -26,20 +26,31 @@ class CliOutputTest extends PHPUnit
     public function testNormal()
     {
         [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output');
-        isSame('Error: Message', $errOut);
+        isSame(implode(PHP_EOL, [
+            'Error: Message',
+            'Error (e)',
+            'Error: Error (error)',
+            'Muted Exception: Error (exception)',
+        ]), $errOut);
         isSame(0, $exitCode);
 
         isSame(implode("\n", [
             'Normal 1',
             'Normal 2',
             'Quiet -q',
+            'Legacy Output: Legacy message',
         ]), $stdOut);
     }
 
     public function testInfo()
     {
         [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['v' => null]);
-        isSame('Error: Message', $errOut);
+        isSame(implode(PHP_EOL, [
+            'Error: Message',
+            'Error (e)',
+            'Error: Error (error)',
+            'Muted Exception: Error (exception)',
+        ]), $errOut);
         isSame(0, $exitCode);
 
         isSame(implode("\n", [
@@ -48,6 +59,7 @@ class CliOutputTest extends PHPUnit
             'Info1 -v',
             'Info: Info2 -v',
             'Quiet -q',
+            'Legacy Output: Legacy message',
         ]), $stdOut);
 
         isSame(
@@ -59,7 +71,12 @@ class CliOutputTest extends PHPUnit
     public function testVerbose()
     {
         [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['-vv' => null]);
-        isSame('Error: Message', $errOut);
+        isSame(implode(PHP_EOL, [
+            'Error: Message',
+            'Error (e)',
+            'Error: Error (error)',
+            'Muted Exception: Error (exception)',
+        ]), $errOut);
         isSame(0, $exitCode);
 
         isSame(implode("\n", [
@@ -73,13 +90,19 @@ class CliOutputTest extends PHPUnit
             'Warning: Verbose2 -vv',
 
             'Quiet -q',
+            'Legacy Output: Legacy message',
         ]), $stdOut);
     }
 
     public function testDebug()
     {
         [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['-vvv' => null]);
-        isSame('Error: Message', $errOut);
+        isSame(implode(PHP_EOL, [
+            'Error: Message',
+            'Error (e)',
+            'Error: Error (error)',
+            'Muted Exception: Error (exception)',
+        ]), $errOut);
         isSame(0, $exitCode);
 
         isSame(implode("\n", [
@@ -97,6 +120,7 @@ class CliOutputTest extends PHPUnit
             'Debug: Message #2 -vvv',
 
             'Quiet -q',
+            'Legacy Output: Legacy message',
             'Debug: Exit Code is "0"',
         ]), $stdOut);
     }
@@ -130,7 +154,11 @@ class CliOutputTest extends PHPUnit
             'Normal 1',
             'Normal 2',
             'Error: Message',
+            'Error (e)',
+            'Error: Error (error)',
+            'Muted Exception: Error (exception)',
             'Quiet -q',
+            'Legacy Output: Legacy message'
         ]), $stdOut);
 
         // Redirect exception messsage
@@ -145,7 +173,11 @@ class CliOutputTest extends PHPUnit
             'Normal 1',
             'Normal 2',
             'Error: Message',
+            'Error (e)',
+            'Error: Error (error)',
+            'Muted Exception: Error (exception)',
             'Quiet -q',
+            'Legacy Output: Legacy message',
         ]), $stdOut);
 
         // No redirect exception messsage
@@ -160,6 +192,7 @@ class CliOutputTest extends PHPUnit
             'Normal 1',
             'Normal 2',
             'Quiet -q',
+            'Legacy Output: Legacy message',
         ]), $stdOut);
     }
 
@@ -167,13 +200,19 @@ class CliOutputTest extends PHPUnit
     {
         // Redirect common message
         [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['strict' => null]);
-        isSame('Error: Message', $errOut);
+        isSame(implode(PHP_EOL, [
+            'Error: Message',
+            'Error (e)',
+            'Error: Error (error)',
+            'Muted Exception: Error (exception)',
+        ]), $errOut);
         isSame(1, $exitCode);
 
         isSame(implode("\n", [
             'Normal 1',
             'Normal 2',
             'Quiet -q',
+            'Legacy Output: Legacy message',
         ]), $stdOut);
     }
 

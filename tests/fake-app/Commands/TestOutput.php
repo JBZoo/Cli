@@ -44,6 +44,8 @@ class TestOutput extends CliCommand
      */
     protected function executeAction(): int
     {
+        echo "Legacy message";
+        
         $this->_(['Normal 1', 'Normal 2']);
         $this->_('Message', Helper::VERB_ERROR);
 
@@ -58,6 +60,10 @@ class TestOutput extends CliCommand
             'Message #1 -vvv',
             'Message #2 -vvv'
         ], Helper::VERB_DEBUG);
+
+        $this->_('Error (e)', Helper::VERB_E);
+        $this->_('Error (error)', Helper::VERB_ERROR);
+        $this->_('Error (exception)', Helper::VERB_EXCEPTION);
 
         $this->_('Quiet -q', Helper::VERB_QUIET);
 
