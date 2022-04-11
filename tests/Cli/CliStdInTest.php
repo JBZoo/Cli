@@ -34,7 +34,7 @@ class CliStdInTest extends PHPUnit
     {
         $ramdom = Str::random();
         isSame(
-            "string(11) \"{$ramdom}\n\"",
+            "Legacy Output: string(11) \"{$ramdom}\n\"",
             Helper::executeReal('test:cli-stdin', ['var-dump' => null], "echo \"{$ramdom}\" | ")[1]
         );
     }
@@ -43,7 +43,7 @@ class CliStdInTest extends PHPUnit
     {
         $file = __FILE__;
         isSame(
-            trim(file_get_contents($file)),
+            "Legacy Output: ". trim(file_get_contents($file)),
             Helper::executeReal('test:cli-stdin', [], "cat \"{$file}\" | ")[1]
         );
     }
@@ -51,7 +51,7 @@ class CliStdInTest extends PHPUnit
     public function testStdInSpaces()
     {
         isSame(
-            "string(2) \" \n\"",
+            "Legacy Output: string(2) \" \n\"",
             Helper::executeReal('test:cli-stdin', ['var-dump' => null], 'echo " " | ')[1]
         );
     }
