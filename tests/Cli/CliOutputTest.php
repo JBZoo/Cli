@@ -199,7 +199,7 @@ class CliOutputTest extends PHPUnit
     public function testStrict()
     {
         // Redirect common message
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['strict' => null]);
+        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['non-zero-on-error' => null]);
         isSame(implode(PHP_EOL, [
             'Error: Message',
             'Error (e)',
@@ -238,7 +238,7 @@ class CliOutputTest extends PHPUnit
 
         [$exitCode] = Helper::executeReal(
             'test:output',
-            ['exception' => 'Some message', 'mute-errors' => null, 'strict' => null]
+            ['exception' => 'Some message', 'mute-errors' => null, 'non-zero-on-error' => null]
         );
         isSame(0, $exitCode);
     }
