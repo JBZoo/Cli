@@ -39,7 +39,7 @@
     },
 
     "autoload-dev" : {
-        "psr-4"    : {"ExampleApp\\" : "tests/ExampleApp"},
+        "psr-4"    : {"DemoApp\\" : "demo"},
         "classmap" : ["tests"]
     },
 

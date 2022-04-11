@@ -174,7 +174,7 @@ class Helper
             $formatter->setStyle("{$color}-blink", new OutputFormatterStyle($color, null, ['blink']));
             $formatter->setStyle("{$color}-bold", new OutputFormatterStyle($color, null, ['bold']));
             $formatter->setStyle("{$color}-under", new OutputFormatterStyle($color, null, ['underscore']));
-            $formatter->setStyle("bg-{$color}", new OutputFormatterStyle(null, $color));
+            $formatter->setStyle("{$color}-bg", new OutputFormatterStyle(null, $color));
         }
 
         return $output;
@@ -244,10 +244,10 @@ class Helper
             $this->_('<blue>Info:</blue> ' . $messages, self::VERB_V);
         } elseif ($verboseLevel === self::VERB_ERROR) {
             $this->outputHasErrors = true;
-            $this->errOutput->writeln($profilePrefix . '<bg-red>Error:</bg-red> ' . $messages, $vNormal);
+            $this->errOutput->writeln($profilePrefix . '<red-bg>Error:</red-bg> ' . $messages, $vNormal);
         } elseif ($verboseLevel === self::VERB_EXCEPTION) {
             $this->outputHasErrors = true;
-            $this->errOutput->writeln($profilePrefix . '<bg-red>Exception:</bg-red> ' . $messages, $vNormal);
+            $this->errOutput->writeln($profilePrefix . '<red-bg>Exception:</red-bg> ' . $messages, $vNormal);
         } else {
             throw new Exception("Undefined verbose level: \"{$verboseLevel}\"");
         }
@@ -279,10 +279,11 @@ class Helper
     }
 
     /**
-     * @param array $metrics
+     * @param array       $metrics
+     * @param string|null $addDot
      * @return string
      */
-    public static function renderList(array $metrics): string
+    public static function renderList(array $metrics, ?string $addDot = null): string
     {
         $maxLength = self::findMaxLength(\array_keys($metrics));
         $lines = [];
@@ -290,6 +291,7 @@ class Helper
         foreach ($metrics as $metricKey => $metricTmpl) {
             $currentLength = \strlen((string)$metricKey);
             $lines[] = \implode('', [
+                $addDot ? " {$addDot} " : '',
                 $metricKey,
                 \str_repeat(' ', $maxLength - $currentLength),
                 ': ',

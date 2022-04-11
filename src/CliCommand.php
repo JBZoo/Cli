@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace JBZoo\Cli;
 
 use JBZoo\Utils\Arr;
+use JBZoo\Utils\Vars;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -97,8 +98,16 @@ abstract class CliCommand extends Command
         $exitCode = 0;
         try {
             $this->trigger('exec.before', [$this, $this->helper]);
+            \ob_start();
             $exitCode = $this->executeAction();
+            if ($echoContent = \ob_get_clean()) {
+                $this->_("<yellow>Legacy Output:</yellow> " . $echoContent);
+            }
         } catch (\Exception $exception) {
+            if ($echoContent = \ob_get_clean()) {
+                $this->_("<yellow>Legacy Output:</yellow> " . $echoContent);
+            }
+
             $this->trigger('exception', [$this, $this->helper, $exception]);
 
             if ($this->getOptBool('mute-errors')) {
@@ -108,6 +117,8 @@ abstract class CliCommand extends Command
                 throw $exception;
             }
         }
+
+        $exitCode = Vars::range($exitCode, 0, 255);
 
         if ($this->helper->isOutputHasErrors() && $this->getOptBool('strict')) {
             $exitCode = 1;
@@ -238,7 +249,7 @@ abstract class CliCommand extends Command
      *
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
-    protected function _($messages, string $verboseLevel = ''): void
+    protected function _($messages = '', string $verboseLevel = ''): void
     {
         $this->helper->_($messages, $verboseLevel);
     }
@@ -246,9 +257,25 @@ abstract class CliCommand extends Command
     /**
      * @return bool
      */
-    protected function isDebug(): bool
+    protected function isInfoLevel(): bool
     {
-        return $this->output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG;
+        return $this->output->isVerbose();
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isWarningLevel(): bool
+    {
+        return $this->output->isVeryVerbose();
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isDebugLevel(): bool
+    {
+        return $this->output->isDebug();
     }
 
     /**

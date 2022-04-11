@@ -16,11 +16,11 @@
 
 declare(strict_types=1);
 
-namespace ExampleApp;
+namespace DemoApp;
 
 use JBZoo\Cli\CliApplication;
 
-require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 $application = new CliApplication('Example CLI Application', 'v1.0.0');
 $application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);

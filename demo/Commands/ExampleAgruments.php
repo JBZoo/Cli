@@ -15,9 +15,10 @@
 
 declare(strict_types=1);
 
-namespace ExampleApp\Commands;
+namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
+use JBZoo\Cli\Codes;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -40,14 +41,28 @@ class ExampleAgruments extends CliCommand
 
             // Required
             ->addOption('opt-req', null, InputOption::VALUE_REQUIRED, 'The option with required value')
-            ->addOption('opt-req-default', null, InputOption::VALUE_REQUIRED,
-                'The option is requred but it has default value', 42)
+            ->addOption(
+                'opt-req-default',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The option is requred but it has default value',
+                42
+            )
 
             // Optional
-            ->addOption('opt-optional', null, InputOption::VALUE_OPTIONAL,
-                'Option is not required and can be undefined')
-            ->addOption('opt-optional-default', null, InputOption::VALUE_OPTIONAL,
-                'Option is not required with default value', 42)
+            ->addOption(
+                'opt-optional',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Option is not required and can be undefined'
+            )
+            ->addOption(
+                'opt-optional-default',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Option is not required with default value',
+                42
+            )
 
             // Array
             ->addOption(
@@ -180,6 +195,6 @@ class ExampleAgruments extends CliCommand
         // echo " Qwerty 123 " | php ./my-app example:agruments
         self::getStdIn(); // " Qwerty 123 \n"
 
-        return 0;
+        return Codes::OK;
     }
 }

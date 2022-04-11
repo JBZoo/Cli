@@ -15,9 +15,10 @@
 
 declare(strict_types=1);
 
-namespace ExampleApp\Commands;
+namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
+use JBZoo\Cli\Codes;
 
 /**
  * Class Simple
@@ -36,7 +37,6 @@ class Simple extends CliCommand
     protected function executeAction(): int
     {
         $this->_('Hello world!');
-
-        return 0;
+        return Codes::OK;
     }
 }
