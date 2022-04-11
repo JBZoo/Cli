@@ -46,7 +46,7 @@ abstract class CliCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('no-progress', 'P', InputOption::VALUE_NONE, "Disable progress bar rendering")
+            ->addOption('no-progress', null, InputOption::VALUE_NONE, "Disable progress bar rendering")
             ->addOption(
                 'mute-errors',
                 null,
