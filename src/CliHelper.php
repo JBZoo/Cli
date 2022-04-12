@@ -219,9 +219,9 @@ class CliHelper
             return;
         }
 
-        if (is_null($messages)) {
+        if (\is_null($messages)) {
             $messages = 'null';
-        } elseif (is_bool($messages)) {
+        } elseif (\is_bool($messages)) {
             $messages = $messages ? 'true' : 'false';
         }
 

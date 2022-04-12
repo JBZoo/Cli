@@ -313,7 +313,7 @@ abstract class CliCommand extends Command
         $echoContent = $echoContent ?: '';
 
         $lines = \explode("\n", $echoContent);
-        $lines = array_map(static function ($line) {
+        $lines = \array_map(static function ($line) {
             return \rtrim($line);
         }, $lines);
 
