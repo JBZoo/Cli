@@ -110,7 +110,8 @@ class CliOutputTest extends PHPUnit
         ]), $errOut);
         isSame(0, $exitCode);
 
-        isSame(implode("\n", [
+        isContain('Debug: Working Directory is ', $stdOut);
+        isContain(implode("\n", [
             'Normal 1',
             'Normal 2',
 
@@ -262,7 +263,8 @@ class CliOutputTest extends PHPUnit
         isSame(1, $exitCode);
         isContain($exceptionMessage, $errOut);
 
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['exception' => $exceptionMessage, 'mute-errors' => null]);
+        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output',
+            ['exception' => $exceptionMessage, 'mute-errors' => null]);
         isSame(0, $exitCode);
         isContain($exceptionMessage, $errOut);
 

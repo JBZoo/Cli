@@ -19,7 +19,7 @@ namespace JBZoo\Cli;
 
 use BluePsyduck\SymfonyProcessManager\ProcessManager;
 use JBZoo\Cli\ProgressBars\ProgressBarProcessManager;
-use JBZoo\Utils\Cli;
+use JBZoo\Utils\Cli as CliUtils;
 use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Process;
@@ -267,7 +267,7 @@ abstract class CliCommandMultiProc extends CliCommand
 
         // Build full command line
         $process = Process::fromShellCommandline(
-            Cli::build(\implode(' ', [
+            CliUtils::build(\implode(' ', [
                 Sys::getBinary(),
                 Cli::getBinPath(),
                 $this->getName(),

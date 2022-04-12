@@ -29,4 +29,23 @@ class CliCopyrightTest extends AbstractCopyrightTest
      */
     protected $packageName     = 'Cli';
     protected $isPhpStrictType = true;
+    
+    /**
+     * @var string[]
+     */
+    protected $validHeaderSH = [
+        '#!/bin/bash',
+        '',
+        '#',
+        '# _VENDOR_ - _PACKAGE_',
+        '#',
+        '# _DESCRIPTION_SH_',
+        '#',
+        '# @package    _PACKAGE_',
+        '# @license    _LICENSE_',
+        '# @copyright  _COPYRIGHTS_',
+        '# @link       _LINK_',
+        '#',
+        '',
+    ];
 }

@@ -1,5 +1,18 @@
 #!/bin/bash
 
+#
+# JBZoo Toolbox - Cli
+#
+# This file is part of the JBZoo Toolbox project.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+#
+# @package    Cli
+# @license    MIT
+# @copyright  Copyright (C) JBZoo.com, All rights reserved.
+# @link       https://github.com/JBZoo/Cli
+#
+
 . demo-magic.sh
 
 cd ..
@@ -79,8 +92,8 @@ pei "clear"
 
 
 pei "# In rare cases we can use the flag '--non-zero-on-error' to return ExitCode=1 if any stderr happend."
-pei "# Look at the last line."
 pei "./my-app examples:output --non-zero-on-error -vvv"
+pei "# Look at the last lines."
 wait
 pei "clear"
 

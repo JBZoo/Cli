@@ -222,7 +222,7 @@ class CliProgressTest extends PHPUnit
         ]), $stdOut);
 
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('exception-list', ['-b' => null, '-vvv' => null], false);
+        [$exitCode, $stdOut, $errOut] = $this->exec('exception-list', ['-b' => null, '-vv' => null], false);
         isSame(1, $exitCode);
         isContain('[JBZoo\Cli\ProgressBars\Exception]', $errOut);
         isContain('Error list:', $errOut);
@@ -238,7 +238,7 @@ class CliProgressTest extends PHPUnit
 
     public function testNested()
     {
-        [$exitCode, $stdOut, $errOut] = $this->exec('nested', ['-b' => null, '-vvv' => null]);
+        [$exitCode, $stdOut, $errOut] = $this->exec('nested', ['-b' => null, '-vv' => null]);
 
         isSame(0, $exitCode);
         isSame('', $errOut);
@@ -262,7 +262,6 @@ class CliProgressTest extends PHPUnit
             ' * (2): out_child_2_2',
             ' * (3): out_child_2_3',
             ' * (2): out_parent_2',
-            'Debug: Exit Code is "0"',
         ]), $stdOut);
     }
 

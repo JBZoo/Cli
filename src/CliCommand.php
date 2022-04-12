@@ -74,7 +74,7 @@ abstract class CliCommand extends Command
     {
         $this->helper = new Cli($input, $output);
 
-        $this->_('Working Directory is <i>' . getcwd() . '</i>', Cli::DEBUG);
+        $this->_('Working Directory is <i>' . \getcwd() . '</i>', Cli::DEBUG);
 
         $exitCode = 0;
         try {
