@@ -18,7 +18,7 @@ The library greatly extends the functionality of [Symfony/Console](https://symfo
 
 ## Live Demo
 
-[![asciicast](https://asciinema.org/a/486654.svg)](https://asciinema.org/a/486654)
+[![asciicast](https://asciinema.org/a/486674.svg)](https://asciinema.org/a/486674)
 
 
 ## Installing

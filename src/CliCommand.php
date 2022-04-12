@@ -74,7 +74,7 @@ abstract class CliCommand extends Command
     {
         $this->helper = new Cli($input, $output);
 
-        $this->_('Working Directory is <i>' . \getcwd() . '</i>', Cli::DEBUG);
+        $this->_('Working Directory is <i>' . \getcwd() . '</i>', OutLvl::DEBUG);
 
         $exitCode = 0;
         try {
@@ -92,7 +92,7 @@ abstract class CliCommand extends Command
             $this->trigger('exception', [$this, $this->helper, $exception]);
 
             if ($this->getOptBool('mute-errors')) {
-                $this->_($exception->getMessage(), Cli::EXCEPTION);
+                $this->_($exception->getMessage(), OutLvl::EXCEPTION);
             } else {
                 $this->showProfiler();
                 throw $exception;
@@ -112,7 +112,7 @@ abstract class CliCommand extends Command
             $exitCode = 0;
         }
 
-        $this->_("Exit Code is \"{$exitCode}\"", Cli::DEBUG);
+        $this->_("Exit Code is \"{$exitCode}\"", OutLvl::DEBUG);
 
         return $exitCode;
     }
@@ -324,9 +324,9 @@ abstract class CliCommand extends Command
         });
 
         if (\count($lines) > 1) {
-            $this->_($lines, Cli::LEGACY);
+            $this->_($lines, OutLvl::LEGACY);
         } else {
-            $this->_($echoContent, Cli::LEGACY);
+            $this->_($echoContent, OutLvl::LEGACY);
         }
     }
 }

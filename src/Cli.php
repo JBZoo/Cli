@@ -31,20 +31,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Cli
 {
-    public const Q       = 'q';
-    public const DEFAULT = '';
-    public const V       = 'v';
-    public const VV      = 'vv';
-    public const VVV     = 'vvv';
-    public const E       = 'e';
-
-    public const DEBUG     = 'debug';
-    public const INFO      = 'info';
-    public const WARNING   = 'warning';
-    public const ERROR     = 'error';
-    public const EXCEPTION = 'exception';
-    public const LEGACY    = 'legacy';
-
     public const TIMESTAMP_FORMAT = 'Y-m-d H:i:s.v';
 
     /**
@@ -211,7 +197,7 @@ class Cli
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function _($messages = '', string $verboseLevel = self::DEFAULT): void
+    public function _($messages = '', string $verboseLevel = OutLvl::DEFAULT): void
     {
         $verboseLevel = \strtolower(\trim($verboseLevel));
 
@@ -253,31 +239,31 @@ class Cli
 
         $vNormal = OutputInterface::VERBOSITY_NORMAL;
 
-        if ($verboseLevel === self::DEFAULT) {
+        if ($verboseLevel === OutLvl::DEFAULT) {
             $this->output->writeln($profilePrefix . $messages, $vNormal);
-        } elseif ($verboseLevel === self::V) {
+        } elseif ($verboseLevel === OutLvl::V) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_VERBOSE);
-        } elseif ($verboseLevel === self::VV) {
+        } elseif ($verboseLevel === OutLvl::VV) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_VERY_VERBOSE);
-        } elseif ($verboseLevel === self::VVV) {
+        } elseif ($verboseLevel === OutLvl::VVV) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_DEBUG);
-        } elseif ($verboseLevel === self::Q) {
+        } elseif ($verboseLevel === OutLvl::Q) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_QUIET); // Show ALWAYS!
-        } elseif ($verboseLevel === self::LEGACY) {
-            $this->_('<yellow>Legacy Output:</yellow> ' . $messages, self::DEFAULT);
-        } elseif ($verboseLevel === self::DEBUG) {
-            $this->_('<magenta>Debug:</magenta> ' . $messages, self::VVV);
-        } elseif ($verboseLevel === self::WARNING) {
-            $this->_('<yellow>Warning:</yellow> ' . $messages, self::VV);
-        } elseif ($verboseLevel === self::INFO) {
-            $this->_('<blue>Info:</blue> ' . $messages, self::V);
-        } elseif ($verboseLevel === self::E) {
+        } elseif ($verboseLevel === OutLvl::LEGACY) {
+            $this->_('<yellow>Legacy Output:</yellow> ' . $messages, OutLvl::DEFAULT);
+        } elseif ($verboseLevel === OutLvl::DEBUG) {
+            $this->_('<magenta>Debug:</magenta> ' . $messages, OutLvl::VVV);
+        } elseif ($verboseLevel === OutLvl::WARNING) {
+            $this->_('<yellow>Warning:</yellow> ' . $messages, OutLvl::VV);
+        } elseif ($verboseLevel === OutLvl::INFO) {
+            $this->_('<blue>Info:</blue> ' . $messages, OutLvl::V);
+        } elseif ($verboseLevel === OutLvl::E) {
             $this->outputHasErrors = true;
             $this->errOutput->writeln($profilePrefix . $messages, $vNormal);
-        } elseif ($verboseLevel === self::ERROR) {
+        } elseif ($verboseLevel === OutLvl::ERROR) {
             $this->outputHasErrors = true;
             $this->errOutput->writeln($profilePrefix . '<red-bg>Error:</red-bg> ' . $messages, $vNormal);
-        } elseif ($verboseLevel === self::EXCEPTION) {
+        } elseif ($verboseLevel === OutLvl::EXCEPTION) {
             $this->outputHasErrors = true;
             $this->errOutput->writeln($profilePrefix . '<red-bg>Muted Exception:</red-bg> ' . $messages, $vNormal);
         } else {

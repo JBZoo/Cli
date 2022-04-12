@@ -171,7 +171,7 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $warningList = $this->getWarningList();
         if (\count($warningList) > 0) {
-            $this->_(\implode("\n" . \str_repeat('-', 60) . "\n", $warningList), Cli::WARNING);
+            $this->_(\implode("\n" . \str_repeat('-', 60) . "\n", $warningList), OutLvl::WARNING);
         }
 
         return 0;

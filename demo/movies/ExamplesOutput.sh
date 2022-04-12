@@ -48,6 +48,12 @@ wait
 pei "clear"
 
 
+pei "# And pay attentin on old school style output."
+pei "./my-app examples:output --stdout-only | grep 'Legacy Output'"
+wait
+pei "clear"
+
+
 pei "# Let's increase the output level. Just add the flag '-v'. Look at 'Info:'"
 pei "./my-app examples:output -v"
 wait

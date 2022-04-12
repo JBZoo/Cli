@@ -17,9 +17,9 @@ declare(strict_types=1);
 
 namespace DemoApp\Commands;
 
+use JBZoo\Cli\Cli;
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\Codes;
-use JBZoo\Cli\Cli;
 
 /**
  * Class ExamplesStyles
