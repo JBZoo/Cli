@@ -45,8 +45,8 @@ class ExamplesOutput extends CliCommand
     protected function executeAction(): int
     {
         // Legacy way
-        echo "Any message that is output in the classic way (<comment>echo, print, print_r, ect</comment>).\n";
-        echo "Will be caught and output at the end of the script run.\n";
+        echo "Any message that is output in the classic way (<comment>echo, print, print_r, ...</comment>).\n";
+        echo "The output will be caught and print at the end of the script run with legacy mark.";
 
 
         $t1 = "<black-bold>`";
@@ -68,29 +68,29 @@ class ExamplesOutput extends CliCommand
 
         // Info output
         // ./my-app examples:output -v
-        cli("Verbose message #1 {$t1}CliHelper::V{$t2} (-v)", CliHelper::V);
+        cli("Verbose message #1       {$t1}CliHelper::V{$t2}    (-v)", CliHelper::V);
         cli("Verbose message #2 {$t1}CliHelper::INFO{$t2} (-v)", CliHelper::INFO);
-        $this->isInfoLevel() && $this->_();
+        $this->isInfoLevel() && cli();
 
 
         // Warning output
         // ./my-app examples:output -vv
-        cli("Very verbose or warning message #1 {$t1}CliHelper::VV{$t2} (-vv)", CliHelper::VV);
+        cli("Very verbose or warning message #1         {$t1}CliHelper::VV{$t2}       (-vv)", CliHelper::VV);
         cli("Very verbose or warning message #2 {$t1}CliHelper::WARNING{$t2} (-vv)", CliHelper::WARNING);
         $this->isWarningLevel() && cli();
 
 
         // Debug output
         // ./my-app examples:output -vvv
-        cli("Low-level message for devs #1 {$t1}CliHelper::VVV{$t2} (-vvv)", CliHelper::VVV);
-        cli("Low-level message for devs #2 {$t1}CliHelper::DEBUG{$t2}  (-vvv)", CliHelper::DEBUG);
+        cli("Low-level message for devs #1        {$t1}CliHelper::VVV{$t2}   (-vvv)", CliHelper::VVV);
+        cli("Low-level message for devs #2 {$t1}CliHelper::DEBUG{$t2} (-vvv)", CliHelper::DEBUG);
         $this->isDebugLevel() && cli();
 
 
         // Error output (StdErr)
         // ./my-app examples:output -vvv > /dev/null
-        cli("Not critical error message in runtime to <r>StdErr</r>. {$t1}CliHelper::E{$t2}", CliHelper::E);
-        cli("Not critical error message in runtime to <bg>StdErr</bg>. {$t1}CliHelper::ERROR{$t2}", CliHelper::ERROR);
+        cli("Not critical error message in runtime to <u>StdErr</u>.        {$t1}CliHelper::E{$t2}", CliHelper::E);
+        cli("Not critical error message in runtime to <u>StdErr</u>. {$t1}CliHelper::ERROR{$t2}", CliHelper::ERROR);
         cli();
 
 
@@ -100,7 +100,7 @@ class ExamplesOutput extends CliCommand
         // ./my-app examples:output -e > /dev/null       # Show only error messages (StdErr)
         // ./my-app examples:output -e --mute-errors     # Don't send error code on exceptions (on your own risk!)
         if ($this->getOptBool('show-custom-exception')) {
-            throw new Exception("You can iggnored exception message `--mute-errors`. On your own risk!");
+            throw new Exception("You can ignore exception message via `--mute-errors`. On your own risk!");
         }
 
 

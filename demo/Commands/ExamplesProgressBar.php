@@ -31,6 +31,7 @@ class ExamplesProgressBar extends CliCommand
     {
         $this
             ->setName('examples:progress-bar')
+            ->setDescription('Examples of progress bar')
             ->addOption('exception', null, InputOption::VALUE_NONE, 'Throw exception')
             ->addOption('exception-list', null, InputOption::VALUE_NONE, 'Throw list of exceptions');
 
