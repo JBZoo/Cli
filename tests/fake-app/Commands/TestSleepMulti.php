@@ -73,7 +73,7 @@ class TestSleepMulti extends CliCommandMultiProc
 
         sleep($sleep);
 
-        $this->_("Finished: {$pmThreadId}", CliHelper::VERB_QUIET);
+        $this->_("Finished: {$pmThreadId}", CliHelper::QUIET);
 
         return 0;
     }

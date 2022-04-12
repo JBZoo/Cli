@@ -66,25 +66,25 @@ class TestOutput extends CliCommand
         echo "\t";
         
         $this->_(['Normal 1', 'Normal 2']);
-        $this->_('Message', CliHelper::VERB_ERROR);
+        $this->_('Message', CliHelper::ERROR);
 
-        $this->_('Info1 -v', CliHelper::VERB_V);
-        $this->_('Info2 -v', CliHelper::VERB_INFO);
+        $this->_('Info1 -v', CliHelper::V);
+        $this->_('Info2 -v', CliHelper::INFO);
 
-        $this->_('Verbose1 -vv', CliHelper::VERB_VV);
-        $this->_('Verbose2 -vv', CliHelper::VERB_WARNING);
+        $this->_('Verbose1 -vv', CliHelper::VV);
+        $this->_('Verbose2 -vv', CliHelper::WARNING);
 
-        $this->_('Debug1 -vvv', CliHelper::VERB_VVV);
+        $this->_('Debug1 -vvv', CliHelper::VVV);
         $this->_([
             'Message #1 -vvv',
             'Message #2 -vvv'
-        ], CliHelper::VERB_DEBUG);
+        ], CliHelper::DEBUG);
 
-        $this->_('Error (e)', CliHelper::VERB_E);
-        $this->_('Error (error)', CliHelper::VERB_ERROR);
-        $this->_('Error (exception)', CliHelper::VERB_EXCEPTION);
+        $this->_('Error (e)', CliHelper::E);
+        $this->_('Error (error)', CliHelper::ERROR);
+        $this->_('Error (exception)', CliHelper::EXCEPTION);
 
-        $this->_('Quiet -q', CliHelper::VERB_QUIET);
+        $this->_('Quiet -q', CliHelper::QUIET);
 
         if ($exception = $this->getOptString('exception')) {
             throw new Exception($exception);

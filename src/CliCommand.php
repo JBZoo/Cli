@@ -90,7 +90,7 @@ abstract class CliCommand extends Command
             $this->trigger('exception', [$this, $this->helper, $exception]);
 
             if ($this->getOptBool('mute-errors')) {
-                $this->_($exception->getMessage(), CliHelper::VERB_EXCEPTION);
+                $this->_($exception->getMessage(), CliHelper::EXCEPTION);
             } else {
                 $this->showProfiler();
                 throw $exception;
@@ -110,7 +110,7 @@ abstract class CliCommand extends Command
             $exitCode = 0;
         }
 
-        $this->_("Exit Code is \"{$exitCode}\"", CliHelper::VERB_DEBUG);
+        $this->_("Exit Code is \"{$exitCode}\"", CliHelper::DEBUG);
 
         return $exitCode;
     }
@@ -322,9 +322,9 @@ abstract class CliCommand extends Command
         });
 
         if (\count($lines) > 1) {
-            $this->_($lines, CliHelper::VERB_LEGACY);
+            $this->_($lines, CliHelper::LEGACY);
         } else {
-            $this->_($echoContent, CliHelper::VERB_LEGACY);
+            $this->_($echoContent, CliHelper::LEGACY);
         }
     }
 }
