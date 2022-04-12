@@ -168,8 +168,9 @@ class CliHelper
     public static function addOutputStyles(OutputInterface $output): OutputInterface
     {
         $formatter = $output->getFormatter();
+        $defaultColor = 'default';
 
-        $colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
+        $colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', $defaultColor];
 
         foreach ($colors as $color) {
             $formatter->setStyle($color, new OutputFormatterStyle($color));
@@ -178,6 +179,13 @@ class CliHelper
             $formatter->setStyle("{$color}-under", new OutputFormatterStyle($color, null, ['underscore']));
             $formatter->setStyle("{$color}-bg", new OutputFormatterStyle(null, $color));
         }
+
+        $formatter->setStyle("bl", new OutputFormatterStyle($defaultColor, null, ['blink']));
+        $formatter->setStyle("b", new OutputFormatterStyle($defaultColor, null, ['bold']));
+        $formatter->setStyle("u", new OutputFormatterStyle($defaultColor, null, ['underscore']));
+        $formatter->setStyle("r", new OutputFormatterStyle(null, null, ['reverse']));
+        $formatter->setStyle("bg", new OutputFormatterStyle('black', 'white'));
+        $formatter->setStyle("i", new OutputFormatterStyle('green')); // Alias for <info>
 
         return $output;
     }

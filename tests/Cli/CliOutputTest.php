@@ -230,12 +230,12 @@ class CliOutputTest extends PHPUnit
     {
         // Redirect common message
         [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['timestamp' => null]);
-        isContain(':00] Error: Message', $errOut);
+        isContain('] Error: Message', $errOut);
         isSame(0, $exitCode);
 
-        isContain(':00] Normal 1', $stdOut);
-        isContain(':00] Normal 2', $stdOut);
-        isContain(':00] Quiet -q', $stdOut);
+        isContain('] Normal 1', $stdOut);
+        isContain('] Normal 2', $stdOut);
+        isContain('] Quiet -q', $stdOut);
     }
 
     public function testTypeOfVars()

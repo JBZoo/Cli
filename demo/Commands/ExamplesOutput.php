@@ -22,6 +22,8 @@ use JBZoo\Cli\CliHelper;
 use JBZoo\Cli\Codes;
 use Symfony\Component\Console\Input\InputOption;
 
+use function JBZoo\Cli\cli;
+
 /**
  * Class ExamplesOutput
  */
@@ -53,46 +55,43 @@ class ExamplesOutput extends CliCommand
 
         // If output is hidden, we can use this method to show the message. It's like "always"
         // ./my-app examples:output -q
-        $this->_("You can see this line even if {$t1}--quie{$t2} or {$t1}-q{$t2} is used.", CliHelper::QUIET);
+        $this->_("You can see this line even if {$t1}--quiet{$t2} or {$t1}-q{$t2} is used.", CliHelper::QUIET);
         $this->_();
 
 
         // ./my-app examples:output
         $this->_('Regular message');
-        $this->_([
-            'Several',
-            '    lines',
-            '        message.'
-        ]);
+        //$this->_(['Several', '    lines', '        message.']);
         $this->_(); // Break the line
 
-        
+        // `cli($text)` is global alias for `$this->_();`
+
         // Info output
         // ./my-app examples:output -v
-        $this->_("Verbose message #1 {$t1}CliHelper::V{$t2} (-v)", CliHelper::V);
-        $this->_("Verbose message #2 {$t1}CliHelper::INFO{$t2} (-v)", CliHelper::INFO);
+        cli("Verbose message #1 {$t1}CliHelper::V{$t2} (-v)", CliHelper::V);
+        cli("Verbose message #2 {$t1}CliHelper::INFO{$t2} (-v)", CliHelper::INFO);
         $this->isInfoLevel() && $this->_();
 
 
         // Warning output
         // ./my-app examples:output -vv
-        $this->_("Very verbose or warning message #1 {$t1}CliHelper::VV{$t2} (-vv)", CliHelper::VV);
-        $this->_("Very verbose or warning message #2 {$t1}CliHelper::WARNING{$t2} (-vv)", CliHelper::WARNING);
-        $this->isWarningLevel() && $this->_();
+        cli("Very verbose or warning message #1 {$t1}CliHelper::VV{$t2} (-vv)", CliHelper::VV);
+        cli("Very verbose or warning message #2 {$t1}CliHelper::WARNING{$t2} (-vv)", CliHelper::WARNING);
+        $this->isWarningLevel() && cli();
 
 
         // Debug output
         // ./my-app examples:output -vvv
-        $this->_("Low-level message for devs #1 {$t1}CliHelper::VVV{$t2} (-vvv)", CliHelper::VVV);
-        $this->_("Low-level message for devs #2 {$t1}CliHelper::DEBUG{$t2}  (-vvv)", CliHelper::DEBUG);
-        $this->isDebugLevel() && $this->_();
+        cli("Low-level message for devs #1 {$t1}CliHelper::VVV{$t2} (-vvv)", CliHelper::VVV);
+        cli("Low-level message for devs #2 {$t1}CliHelper::DEBUG{$t2}  (-vvv)", CliHelper::DEBUG);
+        $this->isDebugLevel() && cli();
 
 
         // Error output (StdErr)
         // ./my-app examples:output -vvv > /dev/null
-        $this->_("Not critical error message in runtime to StdErr. {$t1}CliHelper::E{$t2}", CliHelper::E);
-        $this->_("Not critical error message in runtime to StdErr. {$t1}CliHelper::ERROR{$t2}", CliHelper::ERROR);
-        $this->_();
+        cli("Not critical error message in runtime to <r>StdErr</r>. {$t1}CliHelper::E{$t2}", CliHelper::E);
+        cli("Not critical error message in runtime to <bg>StdErr</bg>. {$t1}CliHelper::ERROR{$t2}", CliHelper::ERROR);
+        cli();
 
 
         // If we want to throw an exception, we can use this way

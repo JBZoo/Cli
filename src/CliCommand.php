@@ -52,7 +52,7 @@ abstract class CliCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 "Mute any sort of errors. So exit code will be always \"0\" (if it's possible).\n" .
-                "It has major priority then <info>--strict</info>. It's on your own risk!"
+                "It has major priority then <info>--non-zero-on-error</info>. It's on your own risk!"
             )
             ->addOption(
                 'stdout-only',
