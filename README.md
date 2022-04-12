@@ -16,6 +16,10 @@ The library greatly extends the functionality of [Symfony/Console](https://symfo
  * For any errors messages application will use StdOut instead of StdErr `--stdout-only` option (It's on your own risk!).
  * Disable progress bar animation for logs with `--no-progress` option.
 
+## Live Demo
+
+[![asciicast](https://asciinema.org/a/486654.svg)](https://asciinema.org/a/486654)
+
 
 ## Installing
 

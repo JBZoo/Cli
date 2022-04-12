@@ -18,7 +18,7 @@ declare(strict_types=1);
 namespace JBZoo\Cli\ProgressBars;
 
 use Countable;
-use JBZoo\Cli\CliHelper;
+use JBZoo\Cli\Cli;
 use JBZoo\Cli\Icons;
 use JBZoo\Utils\Str;
 use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
@@ -51,7 +51,7 @@ class ProgressBar extends AbstractProgressBar
     private $list = [];
 
     /**
-     * @var CliHelper
+     * @var Cli
      */
     private $helper;
 
@@ -86,7 +86,7 @@ class ProgressBar extends AbstractProgressBar
      */
     public function __construct(?OutputInterface $output = null)
     {
-        $this->helper = CliHelper::getInstance();
+        $this->helper = Cli::getInstance();
         $this->output = $output ?: $this->helper->getOutput();
 
         $this->progressIcon = Icons::getRandomIcon(Icons::GROUP_PROGRESS, $this->output->isDecorated());
@@ -425,7 +425,7 @@ class ProgressBar extends AbstractProgressBar
 
         $footerLine['Last Step Message'] = '%message%';
 
-        return \implode("\n", $progressBarLines) . "\n" . CliHelper::renderList($footerLine) . "\n";
+        return \implode("\n", $progressBarLines) . "\n" . Cli::renderList($footerLine) . "\n";
     }
 
     /**

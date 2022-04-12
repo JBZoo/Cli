@@ -171,7 +171,7 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $warningList = $this->getWarningList();
         if (\count($warningList) > 0) {
-            $this->_(\implode("\n" . \str_repeat('-', 60) . "\n", $warningList), CliHelper::WARNING);
+            $this->_(\implode("\n" . \str_repeat('-', 60) . "\n", $warningList), Cli::WARNING);
         }
 
         return 0;
@@ -269,11 +269,11 @@ abstract class CliCommandMultiProc extends CliCommand
         $process = Process::fromShellCommandline(
             Cli::build(\implode(' ', [
                 Sys::getBinary(),
-                CliHelper::getBinPath(),
+                Cli::getBinPath(),
                 $this->getName(),
                 \implode(" ", $argumentsList)
             ]), $options),
-            CliHelper::getRootPath(),
+            Cli::getRootPath(),
             null,
             null,
             $this->getMaxTimeout()

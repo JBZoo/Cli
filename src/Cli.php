@@ -29,10 +29,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class CliHelper
  * @package JBZoo\Cli
  */
-class CliHelper
+class Cli
 {
-    public const QUIET   = 'q';
-
+    public const Q       = 'q';
     public const DEFAULT = '';
     public const V       = 'v';
     public const VV      = 'vv';
@@ -262,7 +261,7 @@ class CliHelper
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_VERY_VERBOSE);
         } elseif ($verboseLevel === self::VVV) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_DEBUG);
-        } elseif ($verboseLevel === self::QUIET) {
+        } elseif ($verboseLevel === self::Q) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_QUIET); // Show ALWAYS!
         } elseif ($verboseLevel === self::LEGACY) {
             $this->_('<yellow>Legacy Output:</yellow> ' . $messages, self::DEFAULT);

@@ -19,7 +19,7 @@ namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\Codes;
-use JBZoo\Cli\CliHelper;
+use JBZoo\Cli\Cli;
 
 /**
  * Class ExamplesStyles
@@ -42,7 +42,7 @@ class ExamplesStyles extends CliCommand
     {
         // Render list of values
         $this->_('Render list of values');
-        $this->_(CliHelper::renderList([
+        $this->_(Cli::renderList([
             ' Key'    => 'Value',
             ' Key #2' => 123
         ], '-'));
@@ -68,7 +68,7 @@ class ExamplesStyles extends CliCommand
                 "<{$color}-blink>Blink</{$color}-blink>",
             ]);
         }
-        $this->_(CliHelper::renderList($listOfExamples, '*'));
+        $this->_(Cli::renderList($listOfExamples, '*'));
         $this->_();
 
         // Default success exist code is "0". Max value is 255.

@@ -35,7 +35,7 @@ use function JBZoo\Utils\int;
 abstract class CliCommand extends Command
 {
     /**
-     * @var CliHelper
+     * @var Cli
      * @psalm-suppress PropertyNotSetInConstructor
      */
     protected $helper;
@@ -72,7 +72,9 @@ abstract class CliCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->helper = new CliHelper($input, $output);
+        $this->helper = new Cli($input, $output);
+
+        $this->_('Working Directory is <i>' . getcwd() . '</i>', Cli::DEBUG);
 
         $exitCode = 0;
         try {
@@ -90,7 +92,7 @@ abstract class CliCommand extends Command
             $this->trigger('exception', [$this, $this->helper, $exception]);
 
             if ($this->getOptBool('mute-errors')) {
-                $this->_($exception->getMessage(), CliHelper::EXCEPTION);
+                $this->_($exception->getMessage(), Cli::EXCEPTION);
             } else {
                 $this->showProfiler();
                 throw $exception;
@@ -110,7 +112,7 @@ abstract class CliCommand extends Command
             $exitCode = 0;
         }
 
-        $this->_("Exit Code is \"{$exitCode}\"", CliHelper::DEBUG);
+        $this->_("Exit Code is \"{$exitCode}\"", Cli::DEBUG);
 
         return $exitCode;
     }
@@ -322,9 +324,9 @@ abstract class CliCommand extends Command
         });
 
         if (\count($lines) > 1) {
-            $this->_($lines, CliHelper::LEGACY);
+            $this->_($lines, Cli::LEGACY);
         } else {
-            $this->_($echoContent, CliHelper::LEGACY);
+            $this->_($echoContent, Cli::LEGACY);
         }
     }
 }

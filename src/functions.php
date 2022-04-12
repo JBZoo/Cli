@@ -23,7 +23,7 @@ namespace JBZoo\Cli;
  * @param string      $verboseLevel
  * @return void
  */
-function cli($messages = '', string $verboseLevel = CliHelper::DEFAULT): void
+function cli($messages = '', string $verboseLevel = Cli::DEFAULT): void
 {
-    CliHelper::getInstance()->_($messages, $verboseLevel);
+    Cli::getInstance()->_($messages, $verboseLevel);
 }

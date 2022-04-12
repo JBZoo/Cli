@@ -18,7 +18,7 @@ declare(strict_types=1);
 namespace JBZoo\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
-use JBZoo\Cli\CliHelper;
+use JBZoo\Cli\Cli;
 use JBZoo\Cli\Exception;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -66,25 +66,25 @@ class TestOutput extends CliCommand
         echo "\t";
         
         $this->_(['Normal 1', 'Normal 2']);
-        $this->_('Message', CliHelper::ERROR);
+        $this->_('Message', Cli::ERROR);
 
-        $this->_('Info1 -v', CliHelper::V);
-        $this->_('Info2 -v', CliHelper::INFO);
+        $this->_('Info1 -v', Cli::V);
+        $this->_('Info2 -v', Cli::INFO);
 
-        $this->_('Verbose1 -vv', CliHelper::VV);
-        $this->_('Verbose2 -vv', CliHelper::WARNING);
+        $this->_('Verbose1 -vv', Cli::VV);
+        $this->_('Verbose2 -vv', Cli::WARNING);
 
-        $this->_('Debug1 -vvv', CliHelper::VVV);
+        $this->_('Debug1 -vvv', Cli::VVV);
         $this->_([
             'Message #1 -vvv',
             'Message #2 -vvv'
-        ], CliHelper::DEBUG);
+        ], Cli::DEBUG);
 
-        $this->_('Error (e)', CliHelper::E);
-        $this->_('Error (error)', CliHelper::ERROR);
-        $this->_('Error (exception)', CliHelper::EXCEPTION);
+        $this->_('Error (e)', Cli::E);
+        $this->_('Error (error)', Cli::ERROR);
+        $this->_('Error (exception)', Cli::EXCEPTION);
 
-        $this->_('Quiet -q', CliHelper::QUIET);
+        $this->_('Quiet -q', Cli::Q);
 
         if ($exception = $this->getOptString('exception')) {
             throw new Exception($exception);
