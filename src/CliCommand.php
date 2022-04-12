@@ -46,7 +46,7 @@ abstract class CliCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('no-progress', null, InputOption::VALUE_NONE, "Disable progress bar rendering")
+            ->addOption('no-progress', null, InputOption::VALUE_NONE, "Disable progress bar animation for logs")
             ->addOption(
                 'mute-errors',
                 null,
@@ -58,7 +58,7 @@ abstract class CliCommand extends Command
                 'stdout-only',
                 null,
                 InputOption::VALUE_NONE,
-                "For any errors messages application will use StdOut instead of ErrOut. It's on your own risk!"
+                "For any errors messages application will use StdOut instead of StdErr. It's on your own risk!"
             )
             ->addOption('non-zero-on-error', null, InputOption::VALUE_NONE, 'None-zero exit code on any StdErr message')
             ->addOption('timestamp', null, InputOption::VALUE_NONE, 'Show timestamp at the beginning of each message')

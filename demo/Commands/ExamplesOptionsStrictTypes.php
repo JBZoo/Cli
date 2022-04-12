@@ -22,14 +22,14 @@ use JBZoo\Cli\Codes;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class ExamplesAgruments
+ * Class ExamplesOptionsStrictTypes
  */
-class ExamplesAgruments extends CliCommand
+class ExamplesOptionsStrictTypes extends CliCommand
 {
     protected function configure(): void
     {
         $this
-            ->setName('examples:agruments')
+            ->setName('examples:options-strict-types')
             ->setDescription('Show description of command.')
             ->setHelp(
                 "Full description and usage of command.\n" .
