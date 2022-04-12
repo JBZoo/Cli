@@ -1,0 +1,22 @@
+{
+    "name"        : "vendor/cli-application",
+    "type"        : "project",
+    "description" : "Example of CLI App based on JBZoo/CLI",
+    "license"     : "MIT",
+    "keywords"    : ["cli", "application", "example"],
+
+    "require"     : {
+        "php"       : ">=7.2",
+        "jbzoo/cli" : "1.x-dev"
+    },
+
+    "require-dev" : {
+        "roave/security-advisories" : "dev-latest"
+    },
+
+    "autoload"    : {
+        "psr-4" : {"DemoApp\\" : ""}
+    },
+
+    "bin"         : ["my-app"]
+}

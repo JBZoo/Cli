@@ -27,6 +27,8 @@ class Simple extends CliCommand
 {
     protected function configure(): void
     {
+        // Action name. It will be used in command line.
+        // Example: `./my-app simple`
         $this->setName('simple');
         parent::configure();
     }
@@ -36,7 +38,10 @@ class Simple extends CliCommand
      */
     protected function executeAction(): int
     {
+        // Your code here
         $this->_('Hello world!');
+
+        // Exit code. 0 - success, 1 - error.
         return Codes::OK;
     }
 }

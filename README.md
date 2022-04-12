@@ -13,15 +13,50 @@ https://symfony.com/doc/current/components/console.html
 
 ## Usage example
 
-### The minimal reference example
+The simplest CLI application has the following file structure. See the [Demo App](demo) for more details.
 
-Binary file:
+```
+/path/to/app/
+    my-app                      # Binrary file (See below)
+    composer.json               # Composer file
+    /Commands/                  # Commands directory
+        Simple.php              # One of the commands (See below)
+    /vendor/
+        autoload.php            # Composer autoload
+```
+
+[./composer.json`](demo/composer.json)
+
+```json
+{
+    "name"        : "vendor/cli-application",
+    "type"        : "project",
+    "description" : "Example of CLI App based on JBZoo/CLI",
+    "license"     : "MIT",
+    "keywords"    : ["cli", "application", "example"],
+
+    "require"     : {
+        "php"       : ">=7.2",
+        "jbzoo/cli" : "^1.0.0"
+    },
+
+    "require-dev" : {
+        "roave/security-advisories" : "dev-latest"
+    },
+
+    "autoload"    : {
+        "psr-4" : {"DemoApp\\" : ""}
+    },
+
+    "bin"         : ["my-app"]
+}
+```
+
+Binary file: [demo/my-app](demo/my-app)
 
 ```php
 #!/usr/bin/env php
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace ExampleApp;
 
@@ -29,34 +64,48 @@ use JBZoo\Cli\CliApplication;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+// Set your application name and version.
 $application = new CliApplication('Your Application Name', 'v1.0.0');
-$application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__); // Sran directory to filen commands
+
+// Scan directory to find commands.
+//  * It doesn't work recursively!
+//  * They must be inherited from the class \JBZoo\Cli\CliCommand
+$application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);
+
+// Execute it.
 $application->run();
 
 ```
 
-The simplest CLI action
+The simplest CLI action: [./Commands/Simple.php](demo/Commands/Simple.php)
+
 ```php
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
-
-namespace ExampleApp/Commands;
+namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
+use JBZoo\Cli\Codes;
 
-class MyCommand extends CliCommand
+class Simple extends CliCommand
 {
     protected function configure(): void
     {
-        $this->setName('my-action');
+        // Action name. It will be used in command line.
+        // Example: `./my-app simple`
+        $this->setName('simple');
+
+        // Defined inhereted CLI options. See ./src/CliCommand.php for details.
         parent::configure();
     }
 
     protected function executeAction(): int
     {
+        // Your code here
         $this->_('Hello world!');
-        return 0;
+
+        // Exit code. 0 - success, 1 - error.
+        return Codes::OK;
     }
 }
 ```

@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
+use Item8\Helpers\I8Helper;
 use JBZoo\Event\EventManager;
 use JBZoo\Utils\FS;
 use Symfony\Component\Console\Application;
@@ -33,19 +34,24 @@ class CliApplication extends Application
     private $eventManager;
 
     /**
+     * @var string|null
+     */
+    private $logo;
+
+    /**
      * Register commands by directory path
      *
      * @param string $commandsDir
      * @param string $gloabalNamespace
      * @param bool   $strictMode
-     * @return bool
+     * @return \JBZoo\Cli\CliApplication
      * @throws \ReflectionException
      */
     public function registerCommandsByPath(
         string $commandsDir,
         string $gloabalNamespace,
         bool $strictMode = true
-    ): bool {
+    ): self {
         if ($strictMode && !\is_dir($commandsDir)) {
             throw new Exception('First argument is not directory!');
         }
@@ -53,7 +59,7 @@ class CliApplication extends Application
         $files = FS::ls($commandsDir);
 
         if (empty($files)) {
-            return false;
+            return $this;
         }
 
         foreach ($files as $file) {
@@ -79,7 +85,7 @@ class CliApplication extends Application
             }
         }
 
-        return true;
+        return $this;
     }
 
     /**
@@ -98,5 +104,29 @@ class CliApplication extends Application
     public function getEventManager(): ?EventManager
     {
         return $this->eventManager;
+    }
+
+    /**
+     * @param string|null $logo
+     * @return $this
+     */
+    public function setLogo(?string $logo = null): self
+    {
+        $this->logo = $logo;
+        return $this;
+    }
+
+    /**
+     * Returns the long version of the application.
+     *
+     * @return string The long application version
+     */
+    public function getLongVersion(): string
+    {
+        if ($this->logo) {
+            return "<info>{$this->logo}</info>\n<comment>{$this->getVersion()}</comment>";
+        }
+
+        return parent::getLongVersion();
     }
 }
