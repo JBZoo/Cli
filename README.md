@@ -7,7 +7,7 @@ The library greatly extends the functionality of [Symfony/Console](https://symfo
 
  * Improved progress bar with a new template and additional information. See [ExamplesProgressBar.php](demo/Commands/ExamplesProgressBar.php).
  * Convert option values to a strict variable type. See [ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
- * New built-in styles and colors for text output. See [ExamplesOutput.php](demo/Commands/ExamplesOutput.php).
+ * New built-in styles and colors for text output. See [ExamplesStyles.php](demo/Commands/ExamplesStyles.php).
  * A powerful alias `$this->_($messages, $level)` instead of `output->wrileln()`. See [ExamplesOutput.php](demo/Commands/ExamplesOutput.php).
  * Display timing and memory usage information with `--profile` option.
  * Show timestamp at the beginning of each message with `--timestamp` option.

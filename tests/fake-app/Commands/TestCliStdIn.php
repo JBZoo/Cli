@@ -42,9 +42,11 @@ class TestCliStdIn extends CliCommand
     protected function executeAction(): int
     {
         if ($this->getOptBool('var-dump')) {
-            var_dump(self::getStdIn());
+            \ob_start();
+            \var_dump(self::getStdIn());
+            $this->_(\ob_get_clean());
         } else {
-            echo self::getStdIn();
+            $this->_(self::getStdIn());
         }
 
         return 0;

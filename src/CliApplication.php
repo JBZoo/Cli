@@ -17,7 +17,6 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
-use Item8\Helpers\I8Helper;
 use JBZoo\Event\EventManager;
 use JBZoo\Utils\FS;
 use Symfony\Component\Console\Application;

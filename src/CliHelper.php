@@ -26,10 +26,10 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class Helper
+ * Class CliHelper
  * @package JBZoo\Cli
  */
-class Helper
+class CliHelper
 {
     public const VERB_QUIET = 'q';
 
@@ -44,6 +44,7 @@ class Helper
     public const VERB_WARNING   = 'warning';
     public const VERB_ERROR     = 'error';
     public const VERB_EXCEPTION = 'exception';
+    public const VERB_LEGACY    = 'legacy';
 
     public const TIMESTAMP_FORMAT = 'Y-m-d H:i:s.v P';
 
@@ -196,20 +197,38 @@ class Helper
     /**
      * Alias to write new line in std output
      *
-     * @param string|array $messages
-     * @param string       $verboseLevel
+     * @param array|string|int|float|bool|null $messages
+     * @param string                           $verboseLevel
      * @return void
      *
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public function _($messages, string $verboseLevel = self::VERB_DEFAULT): void
+    public function _($messages = '', string $verboseLevel = self::VERB_DEFAULT): void
     {
         $verboseLevel = \strtolower(\trim($verboseLevel));
 
         if (\is_array($messages)) {
+            if (\count($messages) === 0) {
+                return;
+            }
+
             foreach ($messages as $message) {
                 $this->_($message, $verboseLevel);
             }
+            return;
+        }
+
+        if (is_null($messages)) {
+            $messages = 'null';
+        } elseif (is_bool($messages)) {
+            $messages = $messages ? 'true' : 'false';
+        }
+
+        $messages = (string)$messages;
+
+        if (\strpos($messages, "\n") !== false) {
+            $this->_(\explode("\n", $messages), $verboseLevel);
             return;
         }
 
@@ -237,6 +256,8 @@ class Helper
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_DEBUG);
         } elseif ($verboseLevel === self::VERB_QUIET) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_QUIET); // Show ALWAYS!
+        } elseif ($verboseLevel === self::VERB_LEGACY) {
+            $this->_('<yellow>Legacy Output:</yellow> ' . $messages);
         } elseif ($verboseLevel === self::VERB_DEBUG) {
             $this->_('<magenta>Debug:</magenta> ' . $messages, self::VERB_VVV);
         } elseif ($verboseLevel === self::VERB_WARNING) {

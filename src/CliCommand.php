@@ -35,7 +35,7 @@ use function JBZoo\Utils\int;
 abstract class CliCommand extends Command
 {
     /**
-     * @var Helper
+     * @var CliHelper
      * @psalm-suppress PropertyNotSetInConstructor
      */
     protected $helper;
@@ -72,7 +72,7 @@ abstract class CliCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->helper = new Helper($input, $output);
+        $this->helper = new CliHelper($input, $output);
 
         $exitCode = 0;
         try {
@@ -80,17 +80,17 @@ abstract class CliCommand extends Command
             \ob_start();
             $exitCode = $this->executeAction();
             if ($echoContent = \ob_get_clean()) {
-                $this->_("<yellow>Legacy Output:</yellow> " . $echoContent);
+                $this->showLegacyOutput($echoContent);
             }
         } catch (\Exception $exception) {
             if ($echoContent = \ob_get_clean()) {
-                $this->_("<yellow>Legacy Output:</yellow> " . $echoContent);
+                $this->showLegacyOutput($echoContent);
             }
 
             $this->trigger('exception', [$this, $this->helper, $exception]);
 
             if ($this->getOptBool('mute-errors')) {
-                $this->_($exception->getMessage(), Helper::VERB_EXCEPTION);
+                $this->_($exception->getMessage(), CliHelper::VERB_EXCEPTION);
             } else {
                 $this->showProfiler();
                 throw $exception;
@@ -110,7 +110,7 @@ abstract class CliCommand extends Command
             $exitCode = 0;
         }
 
-        $this->_("Exit Code is \"{$exitCode}\"", Helper::VERB_DEBUG);
+        $this->_("Exit Code is \"{$exitCode}\"", CliHelper::VERB_DEBUG);
 
         return $exitCode;
     }
@@ -302,5 +302,29 @@ abstract class CliCommand extends Command
         }
 
         return 0;
+    }
+
+    /**
+     * @param string|null $echoContent
+     * @return void
+     */
+    private function showLegacyOutput(?string $echoContent): void
+    {
+        $echoContent = $echoContent ?: '';
+
+        $lines = \explode("\n", $echoContent);
+        $lines = array_map(static function ($line) {
+            return \rtrim($line);
+        }, $lines);
+
+        $lines = \array_filter($lines, static function ($line): bool {
+            return '' !== $line;
+        });
+
+        if (\count($lines) > 1) {
+            $this->_($lines, CliHelper::VERB_LEGACY);
+        } else {
+            $this->_($echoContent, CliHelper::VERB_LEGACY);
+        }
     }
 }

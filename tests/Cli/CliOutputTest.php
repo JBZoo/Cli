@@ -17,6 +17,8 @@ declare(strict_types=1);
 
 namespace JBZoo\PHPUnit;
 
+use JBZoo\Utils\Str;
+
 /**
  * Class CliOutputTest
  * @package JBZoo\PHPUnit
@@ -30,7 +32,7 @@ class CliOutputTest extends PHPUnit
             'Error: Message',
             'Error (e)',
             'Error: Error (error)',
-            'Muted Exception: Error (exception)',
+            'Muted Exception: Error (exception)'
         ]), $errOut);
         isSame(0, $exitCode);
 
@@ -38,7 +40,8 @@ class CliOutputTest extends PHPUnit
             'Normal 1',
             'Normal 2',
             'Quiet -q',
-            'Legacy Output: Legacy message',
+            'Legacy Output: Legacy',
+            'Legacy Output:    Message'
         ]), $stdOut);
     }
 
@@ -59,7 +62,8 @@ class CliOutputTest extends PHPUnit
             'Info1 -v',
             'Info: Info2 -v',
             'Quiet -q',
-            'Legacy Output: Legacy message',
+            'Legacy Output: Legacy',
+            'Legacy Output:    Message'
         ]), $stdOut);
 
         isSame(
@@ -90,7 +94,8 @@ class CliOutputTest extends PHPUnit
             'Warning: Verbose2 -vv',
 
             'Quiet -q',
-            'Legacy Output: Legacy message',
+            'Legacy Output: Legacy',
+            'Legacy Output:    Message'
         ]), $stdOut);
     }
 
@@ -120,7 +125,8 @@ class CliOutputTest extends PHPUnit
             'Debug: Message #2 -vvv',
 
             'Quiet -q',
-            'Legacy Output: Legacy message',
+            'Legacy Output: Legacy',
+            'Legacy Output:    Message',
             'Debug: Exit Code is "0"',
         ]), $stdOut);
     }
@@ -158,7 +164,8 @@ class CliOutputTest extends PHPUnit
             'Error: Error (error)',
             'Muted Exception: Error (exception)',
             'Quiet -q',
-            'Legacy Output: Legacy message'
+            'Legacy Output: Legacy',
+            'Legacy Output:    Message'
         ]), $stdOut);
 
         // Redirect exception messsage
@@ -177,7 +184,8 @@ class CliOutputTest extends PHPUnit
             'Error: Error (error)',
             'Muted Exception: Error (exception)',
             'Quiet -q',
-            'Legacy Output: Legacy message',
+            'Legacy Output: Legacy',
+            'Legacy Output:    Message'
         ]), $stdOut);
 
         // No redirect exception messsage
@@ -192,7 +200,8 @@ class CliOutputTest extends PHPUnit
             'Normal 1',
             'Normal 2',
             'Quiet -q',
-            'Legacy Output: Legacy message',
+            'Legacy Output: Legacy',
+            'Legacy Output:    Message'
         ]), $stdOut);
     }
 
@@ -212,7 +221,8 @@ class CliOutputTest extends PHPUnit
             'Normal 1',
             'Normal 2',
             'Quiet -q',
-            'Legacy Output: Legacy message',
+            'Legacy Output: Legacy',
+            'Legacy Output:    Message'
         ]), $stdOut);
     }
 
@@ -228,18 +238,39 @@ class CliOutputTest extends PHPUnit
         isContain(':00] Quiet -q', $stdOut);
     }
 
+    public function testTypeOfVars()
+    {
+        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['type-of-vars' => null]);
+        isSame(0, $exitCode);
+        isSame('', $errOut);
+        isSame(implode("\n", [
+            '0',
+            'true',
+            'false',
+            'null',
+            '1',
+            '1',
+            '-0.001',
+        ]), $stdOut);
+    }
+
     public function testMuteErrors()
     {
-        [$exitCode] = Helper::executeReal('test:output', ['exception' => 'Some message']);
+        $exceptionMessage = 'Some message ' . Str::random();
+
+        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['exception' => $exceptionMessage]);
         isSame(1, $exitCode);
+        isContain($exceptionMessage, $errOut);
 
-        [$exitCode] = Helper::executeReal('test:output', ['exception' => 'Some message', 'mute-errors' => null]);
+        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['exception' => $exceptionMessage, 'mute-errors' => null]);
         isSame(0, $exitCode);
+        isContain($exceptionMessage, $errOut);
 
-        [$exitCode] = Helper::executeReal(
+        [$exitCode, $stdOut, $errOut] = Helper::executeReal(
             'test:output',
-            ['exception' => 'Some message', 'mute-errors' => null, 'non-zero-on-error' => null]
+            ['exception' => $exceptionMessage, 'mute-errors' => null, 'non-zero-on-error' => null]
         );
         isSame(0, $exitCode);
+        isContain($exceptionMessage, $errOut);
     }
 }
