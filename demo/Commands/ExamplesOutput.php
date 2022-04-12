@@ -97,8 +97,10 @@ class ExamplesOutput extends CliCommand
 
         // Error output (StdErr)
         // ./my-app examples:output -vvv > /dev/null
-        cli("Not critical error message in runtime is written to <u>StdErr</u>.        {$code('OutLvl::E')}",
-            OutLvl::E);
+        cli(
+            "Not critical error message in runtime is written to <u>StdErr</u>.        {$code('OutLvl::E')}",
+            OutLvl::E
+        );
         cli(
             "Not critical error message in runtime is written to <u>StdErr</u>. {$code('OutLvl::ERROR')}",
             OutLvl::ERROR

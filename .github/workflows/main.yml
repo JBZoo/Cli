@@ -96,6 +96,9 @@ jobs:
       - name: 👍 Code Quality
         run: make codestyle --no-print-directory
 
+      - name: 👍 Code Quality (Demo App)
+        run: make codestyle PATH_SRC=./demo --no-print-directory
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
