@@ -32,7 +32,7 @@ class ExamplesOutput extends CliCommand
         $this
             ->setName('examples:output')
             ->setDescription('Examples of output and error reporting')
-            ->addOption('exception', null, InputOption::VALUE_NONE, 'Throw the exception');
+            ->addOption('exception', 'e', InputOption::VALUE_NONE, 'Throw the exception');
 
         parent::configure();
     }
@@ -43,51 +43,56 @@ class ExamplesOutput extends CliCommand
     protected function executeAction(): int
     {
         // Legacy way
-        echo "Any message that is output in the classic way (echo, print, print_r, ect).\n";
+        echo "Any message that is output in the classic way (<comment>echo, print, print_r, ect</comment>).\n";
         echo "Will be caught and output at the end of the script run.\n";
 
 
         // ./my-app examples:output
         $this->_('Regular message');
         $this->_([
-            '   Several',
-            '       lines',
-            '           message.'
+            'Several',
+            '    lines',
+            '        message.'
         ]);
         $this->_(); // Break the line
 
 
         // Info output
         // ./my-app examples:output -v
-        $this->_('Verbose message #1 (-v)', CliHelper::VERB_V);     // No label
-        $this->_('Verbose message #2 (-v)', CliHelper::VERB_INFO);  // With Label
+        $this->_('Verbose message #1 <info>`CliHelper::VERB_V`</info> (-v)', CliHelper::VERB_V);          // No label
+        $this->_('Verbose message #2 <info>`CliHelper::VERB_INFO`</info> (-v)', CliHelper::VERB_INFO);    // With Label
         $this->isInfoLevel() && $this->_();
 
 
         // Warning output
         // ./my-app examples:output -vv
-        $this->_('Very verbose or not critical warning messages #1 (-vv)', CliHelper::VERB_VV);      // No label
-        $this->_('Very verbose or not critical warning messages #2 (-vv)', CliHelper::VERB_WARNING); // With Label
+        $this->_('Very verbose or warning message #1 <info>`CliHelper::VERB_VV`</info> (-vv)', CliHelper::VERB_VV);
+        $this->_('Very verbose or warning message #2 <info>`CliHelper::VERB_WARNING`</info> (-vv)', CliHelper::VERB_WARNING);
         $this->isWarningLevel() && $this->_();
 
 
         // Debug output
         // ./my-app examples:output -vvv
-        $this->_('Super low-level message for developers #1 (-vvv)', CliHelper::VERB_VVV);     // No label
-        $this->_('Super low-level message for developers #2 (-vvv)', CliHelper::VERB_DEBUG);   // With Label
+        $this->_('Low-level message for devs #1 <info>`CliHelper::VERB_VVV`</info> (-vvv)', CliHelper::VERB_VVV);
+        $this->_('Low-level message for devs #2 <info>`CliHelper::VERB_DEBUG`</info>  (-vvv)', CliHelper::VERB_DEBUG);
         $this->isDebugLevel() && $this->_();
 
 
         // If output is hidden, we can use this method to show the message. It's like "always"
         // ./my-app examples:output -q
-        $this->_('You will see this line, even if <info>`--quiet`</info> is used.', CliHelper::VERB_QUIET);
+        $this->_(
+            'You can see this line even if <info>`--quie`</info> or <info>`-q`</info> is used.',
+            CliHelper::VERB_QUIET
+        );
         $this->_();
 
 
         // Error output (StdErr)
         // ./my-app examples:output -vvv > /dev/null
-        $this->_('Your error message in runtime (non-stop)', CliHelper::VERB_ERROR);
-        $this->_('Your exception message in runtime (--mute-errors)', CliHelper::VERB_EXCEPTION);
+        $this->_(
+            'Not critical error message in runtime to StdErr. <info>`CliHelper::VERB_ERROR`</info>',
+            CliHelper::VERB_ERROR
+        );
         $this->_();
 
 
@@ -97,7 +102,7 @@ class ExamplesOutput extends CliCommand
         // ./my-app examples:output -e > /dev/null       # Show only error messages (StdErr)
         // ./my-app examples:output -e --mute-errors     # Don't send error code on exceptions (on your own risk!)
         if ($this->getOptBool('exception')) {
-            throw new Exception('Exception like managable fatal error');
+            throw new Exception('You can iggnored exception message <info>`--mute-errors`</info>. On your own risk!');
         }
 
 
