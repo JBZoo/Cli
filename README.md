@@ -146,7 +146,7 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
 
 
 
-### Useful projects and links
+## Useful projects and links
 
 * [Symfony/Console Docs](https://symfony.com/doc/current/components/console.html)
 * [kevinlebrun/colors.php - New colors for the terminal](https://github.com/kevinlebrun/colors.php)
@@ -157,7 +157,7 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
 * [Exit Codes With Special Meanings](https://tldp.org/LDP/abs/html/exitcodes.html)
 
 
-### License
+## License
 
 MIT
 
