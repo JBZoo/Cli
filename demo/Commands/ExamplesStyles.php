@@ -17,9 +17,11 @@ declare(strict_types=1);
 
 namespace DemoApp\Commands;
 
-use JBZoo\Cli\Cli;
 use JBZoo\Cli\CliCommand;
+use JBZoo\Cli\CliRender;
 use JBZoo\Cli\Codes;
+
+use function JBZoo\Cli\cli;
 
 /**
  * Class ExamplesStyles
@@ -41,35 +43,54 @@ class ExamplesStyles extends CliCommand
     protected function executeAction(): int
     {
         // Render list of values
-        $this->_('Render list of values');
-        $this->_(Cli::renderList([
-            ' Key'    => 'Value',
-            ' Key #2' => 123
+        cli('Render list of values');
+        cli(CliRender::list([
+            'Like a title',
+            'Key'    => 'Value',
+            'Key #2' => 123
         ], '-'));
 
 
         /**
          * Literally you can use the tags:
          *  - <color>Text</color>
-         *  - <color-bold>Text</color-bold>
-         *  - <color-under>Text</color-under>
-         *  - <color-blink>Text</color-blink>
+         *  - <color-b>Text</color-b>
+         *  - <color-u>Text</color-ur>
+         *  - <color-bl>Text</color-bl>
          *  - <color-bg>Text</color-bg>
+         *  - <color-r>Text</color-r>
          */
-        $this->_('Use different styles/colors to make terminal reading life easier');
+        cli('Use different styles/colors to make terminal reading life easier');
         $availableColors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
         $listOfExamples = [];
         foreach ($availableColors as $color) {
-            $listOfExamples[$color] = implode(' ', [
+            $listOfExamples["\<{$color}\>"] = implode(' ', [
                 "<{$color}>Regular</{$color}>",
-                "<{$color}-bold>Bold</{$color}-bold>",
-                "<{$color}-under>Underlined</{$color}-under>",
+                "<{$color}-b>Bold</{$color}-b>",
+                "<{$color}-u>Underlined</{$color}-u>",
                 "<{$color}-bg>Background</{$color}-bg>",
-                "<{$color}-blink>Blink</{$color}-blink>",
+                "<{$color}-r>Reverse</{$color}-r>",
+                "<{$color}-bl>Blink</{$color}-bl>",
             ]);
         }
-        $this->_(Cli::renderList($listOfExamples, '*'));
-        $this->_();
+        cli(CliRender::list($listOfExamples, '*'));
+
+        cli('Shortcuts:');
+        cli(CliRender::list([
+            '\<bl\>' => '<bl>Blink</bl>',
+            '\<b\>'  => '<b>Bold</b>',
+            '\<u\>'  => '<u>Underscore</u>',
+            '\<r\>'  => '<r>Reverse</r>',
+            '\<bg\>' => '<bg>Background</bg>',
+        ], '*'));
+
+        cli('Aliases:');
+        cli(CliRender::list([
+            '\<i\>' => '<i>Alias for \<info\></i>',
+            '\<c\>' => '<c>Alias for \<commnet\></c>',
+            '\<q\>' => '<q>Alias for \<question\></q>',
+            '\<e\>' => '<e>Alias for \<error\></e>',
+        ], '*'));
 
         // Default success exist code is "0". Max value is 255.
         // See JBZoo\Cli\Codes class for more info

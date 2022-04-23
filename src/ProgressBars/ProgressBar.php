@@ -19,6 +19,7 @@ namespace JBZoo\Cli\ProgressBars;
 
 use Countable;
 use JBZoo\Cli\Cli;
+use JBZoo\Cli\CliRender;
 use JBZoo\Cli\Icons;
 use JBZoo\Utils\Str;
 use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
@@ -241,7 +242,7 @@ class ProgressBar extends AbstractProgressBar
 
             if ($this->progressBar) {
                 $errorNumbers = \count($exceptionMessages);
-                $errMessage = $errorNumbers > 0 ? "<red-blink>{$errorNumbers}</red-blink>" : '0';
+                $errMessage = $errorNumbers > 0 ? "<red-bl>{$errorNumbers}</red-bl>" : '0';
                 $this->progressBar->setMessage($errMessage, 'jbzoo_caught_exceptions');
             }
 
@@ -425,7 +426,7 @@ class ProgressBar extends AbstractProgressBar
 
         $footerLine['Last Step Message'] = '%message%';
 
-        return \implode("\n", $progressBarLines) . "\n" . Cli::renderList($footerLine) . "\n";
+        return \implode("\n", $progressBarLines) . "\n" . CliRender::list($footerLine) . "\n";
     }
 
     /**

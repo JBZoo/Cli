@@ -34,7 +34,6 @@ class CliProgressTest extends PHPUnit
         isContain('100% (2 / 2) [•', $output[2]);
         isContain('Last Step Message: n/a', $output[2]);
 
-
         $output = Helper::executeReal('test:progress', ['case' => 'minimal', 'stdout-only' => null, 'sleep' => 1]);
         isSame(0, $output[0]);
         isSame('', $output[2]);
