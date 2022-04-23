@@ -26,7 +26,7 @@ use JBZoo\Utils\Str;
 class CliRender
 {
     /**
-     * @param string[]    $metrics
+     * @param array       $metrics
      * @param string|null $addDot
      * @return string
      */
