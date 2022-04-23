@@ -38,15 +38,15 @@ class CliRender
         }
 
         if (null !== $addDot) {
-            $addDot = trim($addDot);
-            $list = explode("\n", $result);
-            array_walk($list, function (string &$item) use ($addDot) {
-                if (trim($item)) {
+            $addDot = \trim($addDot);
+            $list = \explode("\n", $result);
+            \array_walk($list, static function (string &$item) use ($addDot): void {
+                if (\trim($item)) {
                     $item = " {$addDot} {$item}";
                 }
             });
 
-            $result = implode("\n", $list);
+            $result = \implode("\n", $list);
         }
 
         return $result;
