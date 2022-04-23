@@ -39,7 +39,10 @@ class CliRender
 
         if (null !== $addDot) {
             $addDot = \trim($addDot);
+
+            /** @var string[] $list */
             $list = \explode("\n", $result);
+
             \array_walk($list, static function (string &$item) use ($addDot): void {
                 if (\trim($item)) {
                     $item = " {$addDot} {$item}";
