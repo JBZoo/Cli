@@ -17,7 +17,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli\ProgressBars;
 
-use JBZoo\Cli\Cli;
+use JBZoo\Cli\CliRender;
 use JBZoo\Cli\Icons;
 use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -125,6 +125,6 @@ class ProgressBarProcessManager extends AbstractProgressBar
             'Caught exceptions' => '%jbzoo_caught_exceptions%'
         ];
 
-        return \implode(" ", $progressBarLines) . "\n" . Cli::renderList($footerLine) . "\n";
+        return \implode(" ", $progressBarLines) . "\n" . CliRender::list($footerLine) . "\n";
     }
 }

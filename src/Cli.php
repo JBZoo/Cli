@@ -159,18 +159,24 @@ class Cli
 
         foreach ($colors as $color) {
             $formatter->setStyle($color, new OutputFormatterStyle($color));
-            $formatter->setStyle("{$color}-blink", new OutputFormatterStyle($color, null, ['blink']));
-            $formatter->setStyle("{$color}-bold", new OutputFormatterStyle($color, null, ['bold']));
-            $formatter->setStyle("{$color}-under", new OutputFormatterStyle($color, null, ['underscore']));
+            $formatter->setStyle("{$color}-b", new OutputFormatterStyle($color, null, ['bold']));
+            $formatter->setStyle("{$color}-u", new OutputFormatterStyle($color, null, ['underscore']));
+            $formatter->setStyle("{$color}-r", new OutputFormatterStyle($color, null, ['reverse']));
             $formatter->setStyle("{$color}-bg", new OutputFormatterStyle(null, $color));
+            $formatter->setStyle("{$color}-bl", new OutputFormatterStyle($color, null, ['blink']));
         }
 
-        $formatter->setStyle("bl", new OutputFormatterStyle($defaultColor, null, ['blink']));
-        $formatter->setStyle("b", new OutputFormatterStyle($defaultColor, null, ['bold']));
-        $formatter->setStyle("u", new OutputFormatterStyle($defaultColor, null, ['underscore']));
-        $formatter->setStyle("r", new OutputFormatterStyle(null, null, ['reverse']));
-        $formatter->setStyle("bg", new OutputFormatterStyle('black', 'white'));
-        $formatter->setStyle("i", new OutputFormatterStyle('green')); // Alias for <info>
+        $formatter->setStyle('bl', new OutputFormatterStyle($defaultColor, null, ['blink']));
+        $formatter->setStyle('b', new OutputFormatterStyle($defaultColor, null, ['bold']));
+        $formatter->setStyle('u', new OutputFormatterStyle($defaultColor, null, ['underscore']));
+        $formatter->setStyle('r', new OutputFormatterStyle(null, null, ['reverse']));
+        $formatter->setStyle('bg', new OutputFormatterStyle('black', 'white'));
+
+        // Aliases
+        $formatter->setStyle('i', new OutputFormatterStyle('green')); // Alias for <info>
+        $formatter->setStyle('c', new OutputFormatterStyle('yellow')); // Alias for <comment>
+        $formatter->setStyle('q', new OutputFormatterStyle('black', 'cyan')); // Alias for <question>
+        $formatter->setStyle('e', new OutputFormatterStyle('white', 'red')); // Alias for <error>
 
         return $output;
     }
@@ -277,46 +283,5 @@ class Cli
     public function isOutputHasErrors(): bool
     {
         return $this->outputHasErrors;
-    }
-
-    /**
-     * @param array $items
-     * @return int
-     */
-    public static function findMaxLength(array $items): int
-    {
-        $result = 0;
-        foreach ($items as $item) {
-            $tmpMax = \strlen($item);
-            if ($result < $tmpMax) {
-                $result = $tmpMax;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array       $metrics
-     * @param string|null $addDot
-     * @return string
-     */
-    public static function renderList(array $metrics, ?string $addDot = null): string
-    {
-        $maxLength = self::findMaxLength(\array_keys($metrics));
-        $lines = [];
-
-        foreach ($metrics as $metricKey => $metricTmpl) {
-            $currentLength = \strlen((string)$metricKey);
-            $lines[] = \implode('', [
-                $addDot ? " {$addDot} " : '',
-                $metricKey,
-                \str_repeat(' ', $maxLength - $currentLength),
-                ': ',
-                \implode('; ', (array)$metricTmpl)
-            ]);
-        }
-
-        return \implode("\n", \array_filter($lines)) . "\n";
     }
 }
