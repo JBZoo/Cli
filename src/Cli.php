@@ -211,7 +211,6 @@ class Cli
         $currentMemory = \memory_get_usage(false);
 
         $currDiff = $currentMemory - $this->prevMemory;
-
         $result = [
             \number_format($currentTime - $this->prevTime, 3),
             ($currDiff < 0 ? '-' : '+') . FS::format(\abs($currDiff))

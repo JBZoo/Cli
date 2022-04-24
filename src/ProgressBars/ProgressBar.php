@@ -263,6 +263,7 @@ class ProgressBar extends AbstractProgressBar
         }
 
         self::showListOfExceptions($exceptionMessages);
+        $this->helper->_('');
 
         return true;
     }
