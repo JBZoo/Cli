@@ -52,7 +52,7 @@ The simplest CLI application has the following file structure. See the [Demo App
 
   ```json
   {
-      "name"        : "vendor/cli-application",
+      "name"        : "vendor/my-app",
       "type"        : "project",
       "description" : "Example of CLI App based on JBZoo/CLI",
       "license"     : "MIT",
@@ -71,7 +71,7 @@ The simplest CLI application has the following file structure. See the [Demo App
           "psr-4" : {"DemoApp\\" : ""}
       },
   
-      "bin"         : ["cli-application"]
+      "bin"         : ["my-app"]
   }
   ```
 
@@ -87,21 +87,42 @@ Binary file: [demo/my-app](demo/my-app)
   #!/usr/bin/env php
   <?php declare(strict_types=1);
   
-  namespace ExampleApp;
+  namespace DemoApp;
   
   use JBZoo\Cli\CliApplication;
   
-  require_once __DIR__ . '/vendor/autoload.php';
+  // Init composer autoloader
+  if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+      require_once __DIR__ . '/vendor/autoload.php';
+  } else {
+      require_once dirname(__DIR__) . '/vendor/autoload.php';
+  }
   
   // Set your application name and version.
-  $application = new CliApplication('Your Application Name', 'v1.0.0');
+  $application = new CliApplication('My Console Application', 'v1.0.0');
+  
+  // Looks at the online generator of ASCII logos
+  // https://patorjk.com/software/taag/#p=testall&f=Epic&t=My%20Console%20App
+  $application->setLogo(implode(PHP_EOL, [
+      "  __  __          _____                      _                             ",
+      " |  \/  |        / ____|                    | |          /\                ",
+      " | \  / |_   _  | |     ___  _ __  ___  ___ | | ___     /  \   _ __  _ __  ",
+      " | |\/| | | | | | |    / _ \| '_ \/ __|/ _ \| |/ _ \   / /\ \ | '_ \| '_ \ ",
+      " | |  | | |_| | | |___| (_) | | | \__ \ (_) | |  __/  / ____ \| |_) | |_) |",
+      " |_|  |_|\__, |  \_____\___/|_| |_|___/\___/|_|\___| /_/    \_\ .__/| .__/ ",
+      "          __/ |                                               | |   | |    ",
+      "         |___/                                                |_|   |_|    ",
+  ]));
   
   // Scan directory to find commands.
   //  * It doesn't work recursively!
   //  * They must be inherited from the class \JBZoo\Cli\CliCommand
   $application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);
   
-  // Execute it.
+  // Action name by default (if there is no arguments)
+  $application->setDefaultCommand('list');
+  
+  // Run application
   $application->run();
   
   ```
@@ -149,7 +170,9 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
 
 
 
-## Sanitize input variables
+## Built-in Functionality
+
+### Sanitize input variables
 
 As live-demo take a look at demo application - [./demo/Commands/ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
 
@@ -188,7 +211,7 @@ $value = self::getStdIn();                   // Reads StdIn as string value. `$v
 
 
 
-## Rendering text in different colors and styles
+### Rendering text in different colors and styles
 
 There are list of predefined colors
 
@@ -238,7 +261,7 @@ And predefined shortcuts for standard styles of Symfony Console
 
 
 
-## Verbosity Levels
+### Verbosity Levels
 
 Console commands have different verbosity levels, which determine the messages displayed in their output. 
 
@@ -279,7 +302,7 @@ As result, you will see
 
 
 
-## Memory and time profiling
+### Memory and time profiling
 
 As live-demo take a look at demo application - [./demo/Commands/ExamplesProfile.php](demo/Commands/ExamplesProfile.php).
 
@@ -289,7 +312,7 @@ Try to launch `./my-app examples:profile --profile`.
 
 
 
-## Easy logging
+### Easy logging
 
 No need to bother with the logging setup as Symfony/Console suggests. Just add the `--timestamp` flag and save the output to a file. Especially, this is very handy for saving cron logs.
 
@@ -301,7 +324,7 @@ No need to bother with the logging setup as Symfony/Console suggests. Just add t
 
 
 
-## Helper Functions
+### Helper Functions
 
 As live-demo take a look at demo application - [./demo/Commands/ExamplesHelpers.php](demo/Commands/ExamplesHelpers.php).
 
@@ -309,7 +332,7 @@ Try to launch `./my-app examples:helpers`.
 
 JBZoo/Cli uses [Symfony Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html) as base for aliases.
 
-### Regualar question
+#### Regualar question
 
 Ask any custom question and wait for a user's input. There is an option to set a default value.
 
@@ -318,7 +341,7 @@ $yourName = $this->ask("What's your name?", 'Default Noname');
 $this->_("Your name is \"{$yourName}\"");
 ```
 
-### Ask user's password
+#### Ask user's password
 
 Ask a question and hide the response. This is particularly convenient for passwords.
 There is an option to set a random value as default value.
@@ -328,7 +351,7 @@ $yourSecret = $this->askPassword("New password?", true);
 $this->_("Your secret is \"{$yourSecret}\"");
 ```
 
-### Ask user to select the option
+#### Ask user to select the option
 
 If you have a predefined set of answers the user can choose from, you could use a method `askOption` which makes sure
 that the user can only enter a valid string from a predefined list.
@@ -339,7 +362,7 @@ $selectedColor = $this->askOption("What's your favorite color?", ['Red', 'Blue',
 $this->_("Selected color is {$selectedColor}");
 ```
 
-### Represent a yes/no question
+#### Represent a yes/no question
 
 Suppose you want to confirm an action before actually executing it. Add the following to your command.
 
@@ -348,7 +371,7 @@ $isConfirmed = $this->confirmation('Are you ready to execute the script?');
 $this->_("Is confirmed: " . ($isConfirmed ? 'Yes' : 'No'));
 ```
 
-### Rendering key=>value list
+#### Rendering key=>value list
 
 If you need to show an aligned list, use the following code.
 
