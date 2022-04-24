@@ -42,9 +42,12 @@ class ExamplesProfile extends CliCommand
     {
         cli('Start cycles');
 
-        for ($parentIndex = 0; $parentIndex < 3; $parentIndex++) {
+        $parentMaxStep = 3;
+        $childMaxStep = 10 ^ 6;
+
+        for ($parentIndex = 0; $parentIndex < $parentMaxStep; $parentIndex++) {
             $array = [];
-            for ($index = 0; $index < 100000; $index++) {
+            for ($index = 0; $index < $childMaxStep; $index++) {
                 $array[] = $index;
             }
 
