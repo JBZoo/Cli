@@ -27,7 +27,8 @@ The library greatly extends the functionality of [Symfony/Console](https://symfo
 composer require jbzoo/cli
 ```
 
-## Usage example
+
+## Usage Example
 
 The simplest CLI application has the following file structure. See the [Demo App](demo) for more details.
 
@@ -144,11 +145,12 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
 
 </details>
 
+
 ## Sanitize input variables
 
-As live-demo take a look at demo
-application. [./demo/Commands/ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php). Try to
-launch `./my-app examples:options-strict-types`.
+As live-demo take a look at demo application. [./demo/Commands/ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
+
+Try to launch `./my-app examples:options-strict-types`.
 
 ```php
 // If the option has `InputOption::VALUE_NONE` it returns true/false.
@@ -180,6 +182,7 @@ $value = $this->getOptDatetime('flag-name'); // Converts an input variable to \D
 // Example. `echo " Qwerty 123 " | php ./my-app examples:agruments`
 $value = self::getStdIn();                   // Reads StdIn as string value. `$value === " Qwerty 123 \n"`
 ```
+
 
 ## Rendering text in different colors and styles
 
@@ -230,13 +233,13 @@ And predefined shortcuts for standard styles of Symfony Console
 ```
 
 
-## Helper functions
+## Helper Functions
 
 As live-demo take a look at demo application. [./demo/Commands/ExamplesHelpers.php](demo/Commands/ExamplesHelpers.php).
+
 Try to launch `./my-app examples:helpers`.
 
-JBZoo/Cli uses [Symfony Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html)
-as base for aliases.
+JBZoo/Cli uses [Symfony Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html) as base for aliases.
 
 ### Regualar question
 
@@ -300,7 +303,6 @@ $this->_(CliRender::list([
 ```
 
 
-
 ## Useful projects and links
 
 * [Symfony/Console Docs](https://symfony.com/doc/current/components/console.html)
@@ -328,3 +330,5 @@ MIT
 - [Data](https://github.com/JBZoo/Data) - Extended implementation of ArrayObject. Use files as config/array. 
 - [Retry](https://github.com/JBZoo/Retry) - Tiny PHP library providing retry/backoff functionality with multiple backoff strategies and jitter support.
 - [SimpleTypes](https://github.com/JBZoo/SimpleTypes) - Converting any values and measures - money, weight, exchange rates, length, ...
+
+
