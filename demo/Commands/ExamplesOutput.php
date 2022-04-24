@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
-use JBZoo\Cli\Codes;
 use JBZoo\Cli\OutLvl;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -45,15 +44,15 @@ class ExamplesOutput extends CliCommand
     protected function executeAction(): int
     {
         $code = function (string $flag): string {
-            return "<black-bold>`cli(\$text, {$flag})`</black-bold>";
+            return "<black-b>`cli(\$text, {$flag})`</black-b>";
         };
 
         // Legacy way
         echo "Any message that is output in the classic way (<comment>echo, print, print_r, ...</comment>).\n";
         echo "The output will be caught and print at the end of the script run with legacy mark.";
 
-        $tag1 = "<black-bold>`";
-        $tag2 = "`</black-bold>";
+        $tag1 = "<black-b>`";
+        $tag2 = "`</black-b>";
 
         // If output is hidden, we can use this method to show the message. It's like "always"
         // ./my-app examples:output --quiet
