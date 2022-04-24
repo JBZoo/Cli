@@ -21,11 +21,13 @@ The library greatly extends the functionality of [Symfony/Console](https://symfo
 [![asciicast](https://asciinema.org/a/486674.svg)](https://asciinema.org/a/486674)
 
 
+
 ## Installing
 
 ```sh
 composer require jbzoo/cli
 ```
+
 
 
 ## Usage Example
@@ -146,6 +148,7 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
 </details>
 
 
+
 ## Sanitize input variables
 
 As live-demo take a look at demo application - [./demo/Commands/ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
@@ -182,6 +185,7 @@ $value = $this->getOptDatetime('flag-name'); // Converts an input variable to \D
 // Example. `echo " Qwerty 123 " | php ./my-app examples:agruments`
 $value = self::getStdIn();                   // Reads StdIn as string value. `$value === " Qwerty 123 \n"`
 ```
+
 
 
 ## Rendering text in different colors and styles
@@ -233,6 +237,7 @@ And predefined shortcuts for standard styles of Symfony Console
 ```
 
 
+
 ## Verbosity Levels
 
 Console commands have different verbosity levels, which determine the messages displayed in their output. 
@@ -271,6 +276,29 @@ cli($messages, $verboseLevel);      // This is global alias function of `$this->
 As result, you will see
 
 ![ExamplesOutput -vvv](.github/assets/ExamplesOutput-vvv.png)
+
+
+
+## Memory and time profiling
+
+As live-demo take a look at demo application - [./demo/Commands/ExamplesProfile.php](demo/Commands/ExamplesProfile.php).
+
+Try to launch `./my-app examples:profile --profile`.
+
+![ExamplesProfile](.github/assets/ExamplesProfile.png)
+
+
+
+## Easy logging
+
+No need to bother with the logging setup as Symfony/Console suggests. Just add the `--timestamp` flag and save the output to a file. Especially, this is very handy for saving cron logs.
+
+```bash
+./my-app examples:profile --timestamp >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log
+```
+
+![ExamplesProfile--timestamp](.github/assets/ExamplesProfile--timestamp.png)
+
 
 
 ## Helper Functions
@@ -343,6 +371,7 @@ $this->_(CliRender::list([
 ```
 
 
+
 ## Useful projects and links
 
 * [Symfony/Console Docs](https://symfony.com/doc/current/components/console.html)
@@ -354,9 +383,11 @@ $this->_(CliRender::list([
 * [Exit Codes With Special Meanings](https://tldp.org/LDP/abs/html/exitcodes.html)
 
 
+
 ## License
 
 MIT
+
 
 
 ## See Also
