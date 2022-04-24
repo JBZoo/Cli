@@ -257,6 +257,7 @@ As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.p
 ./my-app my-commnd -vvv
 ```
 
+Example of usage of verbosity levels
 
 ```php
 // There two strictly recommended output ways:
