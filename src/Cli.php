@@ -214,7 +214,7 @@ class Cli
 
         $result = [
             \number_format($currentTime - $this->prevTime, 3),
-            ($currDiff < 0 ? '-' : '+') . FS::format(abs($currDiff))
+            ($currDiff < 0 ? '-' : '+') . FS::format(\abs($currDiff))
         ];
 
         $this->prevTime = $currentTime;
@@ -270,7 +270,7 @@ class Cli
 
         if ($this->input->getOption('profile')) {
             [$totalTime, $curMemory] = $this->getProfileInfo();
-            $curMemory = str_pad($curMemory, 10, ' ', STR_PAD_LEFT);
+            $curMemory = \str_pad($curMemory, 10, ' ', \STR_PAD_LEFT);
             $profilePrefix .= "<green>[</green>+{$totalTime}s<green>/</green>{$curMemory}<green>]</green> ";
         }
 

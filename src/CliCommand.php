@@ -22,7 +22,6 @@ use JBZoo\Utils\FS;
 use JBZoo\Utils\Str;
 use JBZoo\Utils\Vars;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -278,10 +277,10 @@ abstract class CliCommand extends Command
         if (!$this->isProfile()) {
             return;
         }
-        
+
         $totalTime = \number_format(\microtime(true) - $this->helper->getStartTime(), 3);
-        $curMemory = FS::format(memory_get_usage(false));
-        $maxMemory = FS::format(memory_get_peak_usage(true));
+        $curMemory = FS::format(\memory_get_usage(false));
+        $maxMemory = FS::format(\memory_get_peak_usage(true));
 
         $this->_(\implode('; ', [
             "Memory Usage/Peak: <green>{$curMemory}</green>/<green>{$maxMemory}</green>",
@@ -346,13 +345,13 @@ abstract class CliCommand extends Command
      */
     protected function ask(string $question, string $default = '', bool $isHidden = false): string
     {
-        $question = rtrim($question, ':');
+        $question = \rtrim($question, ':');
         $questionText = "<yellow-r>Question:</yellow-r> {$question}";
         if (!$isHidden) {
             $questionText .= ($default ? " (Default: <i>{$default}</i>)" : '');
         }
 
-        /** @var QuestionHelper $helper */
+        /** @var \Symfony\Component\Console\Helper\QuestionHelper $helper */
         $helper = $this->getHelper('question');
         $questionObj = new Question($questionText . ': ', $default);
         if ($isHidden) {
@@ -388,7 +387,7 @@ abstract class CliCommand extends Command
     {
         $question = '<yellow-r>Question:</yellow-r> ' . \trim($question);
 
-        /** @var QuestionHelper $helper */
+        /** @var \Symfony\Component\Console\Helper\QuestionHelper $helper */
         $helper = $this->getHelper('question');
         $defaultValue = $default ? 'Y' : 'n';
 
@@ -419,9 +418,9 @@ abstract class CliCommand extends Command
         }
 
         $helper = $this->getHelper('question');
-        $questionHelper = new ChoiceQuestion($question . $defaultValue . ': ', $options, $default);
-        $questionHelper->setErrorMessage('The option "%s" is undefined. See the avaialable options');
+        $questionObj = new ChoiceQuestion($question . $defaultValue . ': ', $options, $default);
+        $questionObj->setErrorMessage('The option "%s" is undefined. See the avaialable options');
 
-        return (string)$helper->ask($this->helper->getInput(), $this->helper->getOutput(), $questionHelper);
+        return (string)$helper->ask($this->helper->getInput(), $this->helper->getOutput(), $questionObj);
     }
 }
