@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
-use JBZoo\Cli\Codes;
 use JBZoo\Cli\ProgressBars\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 

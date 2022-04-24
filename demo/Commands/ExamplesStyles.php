@@ -19,7 +19,6 @@ namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\CliRender;
-use JBZoo\Cli\Codes;
 
 use function JBZoo\Cli\cli;
 

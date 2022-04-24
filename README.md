@@ -144,6 +144,161 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
 
 </details>
 
+## Sanitize input variables
+
+As live-demo take a look at demo
+application. [./demo/Commands/ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php). Try to
+launch `./my-app examples:options-strict-types`.
+
+```php
+// If the option has `InputOption::VALUE_NONE` it returns true/false.
+// --flag-name
+$value = $this->getOpt('flag-name');         // `$value === true` 
+
+// --flag-name="    123.6   "
+$value = $this->getOpt('flag-name');         // Returns the value AS-IS. `$value ===  "   123.6   "`
+
+// --flag-name="    123.6   "
+$value = $this->getOptBool('flag-name');     // Converts an input variable to boolean. `$value === true`
+
+// --flag-name="    123.6   "
+$value = $this->getOptInt('flag-name');      // Converts an input variable to integer. `$value === 123`
+
+// --flag-name="    123.6   "
+$value = $this->getOptFloat('flag-name');    // Converts an input variable to float. `$value === 123.6`
+
+// --flag-name="    123.6   "
+$value = $this->getOptString('flag-name');   // Converts an input variable to trimmed string. `$value === "123.6"`
+
+// --flag-name=123.6
+$value = $this->getOptArray('flag-name');    // Converts an input variable to trimmed string. `$value === ["123.6"]`
+
+// --flag-name="15 July 2021 13:48:00"
+$value = $this->getOptDatetime('flag-name'); // Converts an input variable to \DateTimeImmutable object.
+
+// Use standard input as input variable.
+// Example. `echo " Qwerty 123 " | php ./my-app examples:agruments`
+$value = self::getStdIn();                   // Reads StdIn as string value. `$value === " Qwerty 123 \n"`
+```
+
+## Rendering text in different colors and styles
+
+There are list of predefined colors
+
+```html
+<black>  Text in Black color  </black>
+<red>    Text in Red Color    </red>
+<green>  Text in Green Color  </green>
+<yellow> Text in Yellow Color </yellow>
+<blue>   Text in Blue Color   </blue>
+<magenta>Text in Magenta Color</magenta>
+<cyan>   Text in Cyan Color   </cyan>
+<white>  Text in White Color  </white>
+
+<!-- Usually default color is white. It depends on terminal settings. -->
+<!-- You should use it only to overwrite nested tags. -->
+<default>Text in Default Color</default>
+```
+
+There are list of predefined styles
+
+```html
+<bl>Blinked Text</bl>
+<b>Bold Text</b>
+<u>Underlined Text</u>
+<r>Reverse Color/Backgroud</r>
+<bg>Change Background Only</bg>
+```
+
+Also, you can combine colors ans styles.
+
+```html
+<magenta-bl>Blinked text in magenta color</magenta-bl>
+<magenta-b>Bold text in magenta color</magenta-b>
+<magenta-u>Underlined text in magenta color</magenta-u>
+<magenta-r>Reverse text in magenta color</magenta-r>
+<magenta-bg>Reverse only background of text in magenta color</magenta-bg>
+```
+
+And predefined shortcuts for standard styles of Symfony Console
+
+```html
+<i> alias for <info>
+<c> alias for <commnet>
+<q> alias for <question>
+<e> alias for <error>
+```
+
+
+## Helper functions
+
+As live-demo take a look at demo application. [./demo/Commands/ExamplesHelpers.php](demo/Commands/ExamplesHelpers.php).
+Try to launch `./my-app examples:helpers`.
+
+JBZoo/Cli uses [Symfony Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html)
+as base for aliases.
+
+### Regualar question
+
+Ask any custom question and wait for a user's input. There is an option to set a default value.
+
+```php
+$yourName = $this->ask("What's your name?", 'Default Noname');
+$this->_("Your name is \"{$yourName}\"");
+```
+
+### Ask user's password
+
+Ask a question and hide the response. This is particularly convenient for passwords.
+There is an option to set a random value as default value.
+
+```php
+$yourSecret = $this->askPassword("New password?", true);
+$this->_("Your secret is \"{$yourSecret}\"");
+```
+
+### Ask user to select the option
+
+If you have a predefined set of answers the user can choose from, you could use a method `askOption` which makes sure
+that the user can only enter a valid string from a predefined list.
+There is an option to set a default option (index or string).
+
+```php
+$selectedColor = $this->askOption("What's your favorite color?", ['Red', 'Blue', 'Yellow'], 'Blue');
+$this->_("Selected color is {$selectedColor}");
+```
+
+### Represent a yes/no question
+
+Suppose you want to confirm an action before actually executing it. Add the following to your command.
+
+```php
+$isConfirmed = $this->confirmation('Are you ready to execute the script?');
+$this->_("Is confirmed: " . ($isConfirmed ? 'Yes' : 'No'));
+```
+
+### Rendering key=>value list
+
+If you need to show an aligned list, use the following code.
+
+```php
+use JBZoo\Cli\CliRender;
+
+$this->_(CliRender::list([
+    "It's like a title",
+    'Option Name' => 'Option Value',
+    'Key' => 'Value',
+    'Another Key #2' => 'Qwerty',
+], '*')); // It's bullet character
+``` 
+
+```text
+ * It's like a title
+ * Option Name   : Option Value
+ * Key           : Value
+ * Another Key #2: Qwerty
+```
+
 
 
 ## Useful projects and links
