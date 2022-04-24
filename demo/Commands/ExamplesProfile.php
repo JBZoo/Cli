@@ -47,12 +47,12 @@ class ExamplesProfile extends CliCommand
             for ($index = 0; $index < 100000; $index++) {
                 $array[] = $index;
             }
-            
+
             cli("Iteration: {$parentIndex}");
-            //unset ($array);
+            unset($array);
             usleep(random_int(10000, 300000));
         }
-        
+
         cli('Finish cycles');
 
         // Default success exist code is "0". Max value is 255.
