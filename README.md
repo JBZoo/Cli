@@ -237,12 +237,34 @@ And predefined shortcuts for standard styles of Symfony Console
 
 Console commands have different verbosity levels, which determine the messages displayed in their output. 
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/ExamplesOutput.php). You can see [ascii Demo video](https://asciinema.org/a/486674).
+As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/ExamplesOutput.php). You can see [Demo video](https://asciinema.org/a/486674).
+
+```bash
+# Do not output any message
+./my-app my-commnd -q
+./my-app my-commnd --quiet
+
+# Normal behavior, no option required. Only the most useful messages.
+./my-app my-commnd 
+
+# Increase verbosity of messages
+./my-app my-commnd -v
+
+# Display also the informative non essential messages
+./my-app my-commnd -vv
+
+# Display all messages (useful to debug errors)
+./my-app my-commnd -vvv
+```
+
 
 ```php
 // There two strictly recommended output ways:
 $this->_($messages, $verboseLevel); // Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
-cli($messages, $verboseLevel);      // This is global alias function of `$this->_(...)` 
+cli($messages, $verboseLevel);      // This is global alias function of `$this->_(...)`. It's nice to have it if you want to display a text from not CliCommand class.
+
+// * `$messages` can be an array of strings or a string. Array of strings will be imploded with new line.
+// * `$verboseLevel` is one of value form the class \JBZoo\Cli\OutLvl::* 
 ```
 
 ![ExamplesOutput -vvv](.github/assets/ExamplesOutput-vvv.png)
