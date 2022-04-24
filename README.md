@@ -69,7 +69,7 @@ The simplest CLI application has the following file structure. See the [Demo App
           "psr-4" : {"DemoApp\\" : ""}
       },
   
-      "bin"         : ["my-app"]
+      "bin"         : ["cli-application"]
   }
   ```
 
@@ -148,7 +148,7 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
 
 ## Sanitize input variables
 
-As live-demo take a look at demo application. [./demo/Commands/ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
+As live-demo take a look at demo application - [./demo/Commands/ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
 
 Try to launch `./my-app examples:options-strict-types`.
 
@@ -233,9 +233,24 @@ And predefined shortcuts for standard styles of Symfony Console
 ```
 
 
+## Verbosity Levels
+
+Console commands have different verbosity levels, which determine the messages displayed in their output. 
+
+As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/ExamplesOutput.php). You can see [ascii Demo video](https://asciinema.org/a/486674).
+
+```php
+// There two strictly recommended output ways:
+$this->_($messages, $verboseLevel); // Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
+cli($messages, $verboseLevel);      // This is global alias function of `$this->_(...)` 
+```
+
+![ExamplesOutput -vvv](.github/assets/ExamplesOutput-vvv.png)
+
+
 ## Helper Functions
 
-As live-demo take a look at demo application. [./demo/Commands/ExamplesHelpers.php](demo/Commands/ExamplesHelpers.php).
+As live-demo take a look at demo application - [./demo/Commands/ExamplesHelpers.php](demo/Commands/ExamplesHelpers.php).
 
 Try to launch `./my-app examples:helpers`.
 
@@ -330,5 +345,3 @@ MIT
 - [Data](https://github.com/JBZoo/Data) - Extended implementation of ArrayObject. Use files as config/array. 
 - [Retry](https://github.com/JBZoo/Retry) - Tiny PHP library providing retry/backoff functionality with multiple backoff strategies and jitter support.
 - [SimpleTypes](https://github.com/JBZoo/SimpleTypes) - Converting any values and measures - money, weight, exchange rates, length, ...
-
-
