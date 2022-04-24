@@ -90,8 +90,8 @@ class ExamplesProgressBar extends CliCommand
             }, 'Handling list of exceptions at once', true);
         }
 
+
         // Default success exist code is "0". Max value is 255.
-        // See JBZoo\Cli\Codes class for more info
-        return Codes::OK;
+        return self::SUCCESS;
     }
 }

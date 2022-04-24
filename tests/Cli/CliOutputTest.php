@@ -142,10 +142,10 @@ class CliOutputTest extends PHPUnit
     {
         $output = Helper::executeReal('test:output', ['profile' => null])[1];
 
-        isContain('s] Normal 1', $output);
-        isContain('s] Normal 2', $output);
-        isContain('s] Quiet -q', $output);
-        isContain('s] Memory Usage/Peak:', $output);
+        isContain('B] Normal 1', $output);
+        isContain('B] Normal 2', $output);
+        isContain('B] Quiet -q', $output);
+        isContain('B] Memory Usage/Peak:', $output);
         isContain('Execution Time:', $output);
     }
 
