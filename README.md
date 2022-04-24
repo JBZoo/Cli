@@ -239,24 +239,6 @@ Console commands have different verbosity levels, which determine the messages d
 
 As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/ExamplesOutput.php). You can see [Demo video](https://asciinema.org/a/486674).
 
-```bash
-# Do not output any message
-./my-app my-commnd -q
-./my-app my-commnd --quiet
-
-# Normal behavior, no option required. Only the most useful messages.
-./my-app my-commnd 
-
-# Increase verbosity of messages
-./my-app my-commnd -v
-
-# Display also the informative non essential messages
-./my-app my-commnd -vv
-
-# Display all messages (useful to debug errors)
-./my-app my-commnd -vvv
-```
-
 Example of usage of verbosity levels
 
 ```php
@@ -267,6 +249,26 @@ cli($messages, $verboseLevel);      // This is global alias function of `$this->
 // * `$messages` can be an array of strings or a string. Array of strings will be imploded with new line.
 // * `$verboseLevel` is one of value form the class \JBZoo\Cli\OutLvl::* 
 ```
+
+```bash
+# Do not output any message
+./my-app examples:output -q
+./my-app examples:output --quiet
+
+# Normal behavior, no option required. Only the most useful messages.
+./my-app examples:output 
+
+# Increase verbosity of messages
+./my-app examples:output -v
+
+# Display also the informative non essential messages
+./my-app examples:output -vv
+
+# Display all messages (useful to debug errors)
+./my-app examples:output -vvv
+```
+
+As result, you will see
 
 ![ExamplesOutput -vvv](.github/assets/ExamplesOutput-vvv.png)
 
