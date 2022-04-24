@@ -64,12 +64,25 @@ class Cli
     private $outputHasErrors = false;
 
     /**
+     * @var float
+     */
+    private $prevTime;
+
+    /**
+     * @var int
+     */
+    private $prevMemory;
+
+    /**
      * @param InputInterface  $input
      * @param OutputInterface $output
      */
     public function __construct(InputInterface $input, OutputInterface $output)
     {
+        $this->prevMemory = \memory_get_usage(false);
         $this->startTimer = \microtime(true);
+        $this->prevTime = $this->startTimer;
+
         $this->input = $input;
         $this->output = self::addOutputStyles($output);
 
@@ -86,6 +99,14 @@ class Cli
         }
 
         self::$instance = $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getStartTime(): float
+    {
+        return $this->startTimer;
     }
 
     /**
@@ -186,11 +207,20 @@ class Cli
      */
     public function getProfileInfo(): array
     {
-        return [
-            \number_format(\microtime(true) - $this->startTimer, 3),
-            FS::format(\memory_get_usage(false)),
-            FS::format(\memory_get_peak_usage(false)),
+        $currentTime = \microtime(true);
+        $currentMemory = \memory_get_usage(false);
+
+        $currDiff = $currentMemory - $this->prevMemory;
+
+        $result = [
+            \number_format($currentTime - $this->prevTime, 3),
+            ($currDiff < 0 ? '-' : '+') . FS::format(abs($currDiff))
         ];
+
+        $this->prevTime = $currentTime;
+        $this->prevMemory = $currentMemory;
+
+        return $result;
     }
 
     /**
@@ -240,7 +270,8 @@ class Cli
 
         if ($this->input->getOption('profile')) {
             [$totalTime, $curMemory] = $this->getProfileInfo();
-            $profilePrefix .= "<green>[</green>{$curMemory}<green>/</green>{$totalTime}s<green>]</green> ";
+            $curMemory = str_pad($curMemory, 10, ' ', STR_PAD_LEFT);
+            $profilePrefix .= "<green>[</green>+{$totalTime}s<green>/</green>{$curMemory}<green>]</green> ";
         }
 
         $vNormal = OutputInterface::VERBOSITY_NORMAL;

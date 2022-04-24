@@ -197,7 +197,6 @@ class ExamplesOptionsStrictTypes extends CliCommand
 
 
         // Default success exist code is "0". Max value is 255.
-        // See JBZoo\Cli\Codes class for more info
-        return Codes::OK;
+        return self::SUCCESS;
     }
 }

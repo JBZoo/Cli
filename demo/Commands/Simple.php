@@ -42,6 +42,6 @@ class Simple extends CliCommand
         $this->_('Hello world!');
 
         // Exit code. 0 - success, 1 - error.
-        return Codes::OK;
+        return self::SUCCESS;
     }
 }

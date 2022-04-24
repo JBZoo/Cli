@@ -137,7 +137,7 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
           $this->_('Hello world!');
   
           // Exit code. 0 - success, 1 - error.
-          return Codes::OK;
+          return self::SUCCESS;
       }
   }
   ```

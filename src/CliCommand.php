@@ -18,11 +18,17 @@ declare(strict_types=1);
 namespace JBZoo\Cli;
 
 use JBZoo\Utils\Arr;
+use JBZoo\Utils\FS;
+use JBZoo\Utils\Str;
 use JBZoo\Utils\Vars;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 
 use function JBZoo\Utils\bool;
 use function JBZoo\Utils\float;
@@ -272,8 +278,10 @@ abstract class CliCommand extends Command
         if (!$this->isProfile()) {
             return;
         }
-
-        [$totalTime, $curMemory, $maxMemory] = $this->helper->getProfileInfo();
+        
+        $totalTime = \number_format(\microtime(true) - $this->helper->getStartTime(), 3);
+        $curMemory = FS::format(memory_get_usage(false));
+        $maxMemory = FS::format(memory_get_peak_usage(true));
 
         $this->_(\implode('; ', [
             "Memory Usage/Peak: <green>{$curMemory}</green>/<green>{$maxMemory}</green>",
@@ -328,5 +336,92 @@ abstract class CliCommand extends Command
         } else {
             $this->_($echoContent, OutLvl::LEGACY);
         }
+    }
+
+    /**
+     * @param string $question
+     * @param string $default
+     * @param bool   $isHidden
+     * @return string
+     */
+    protected function ask(string $question, string $default = '', bool $isHidden = false): string
+    {
+        $question = rtrim($question, ':');
+        $questionText = "<yellow-r>Question:</yellow-r> {$question}";
+        if (!$isHidden) {
+            $questionText .= ($default ? " (Default: <i>{$default}</i>)" : '');
+        }
+
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper('question');
+        $questionObj = new Question($questionText . ': ', $default);
+        if ($isHidden) {
+            $questionObj->setHidden(true);
+            $questionObj->setHiddenFallback(false);
+        }
+
+        return (string)$helper->ask($this->helper->getInput(), $this->helper->getOutput(), $questionObj);
+    }
+
+    /**
+     * @param string $question
+     * @param bool   $randomDefault
+     * @return string
+     */
+    protected function askPassword(string $question, bool $randomDefault = true): string
+    {
+        $default = '';
+        if ($randomDefault) {
+            $question .= ' (Default: <i>Random</i>)';
+            $default = Str::random(10, false);
+        }
+
+        return $this->ask($question, $default, true);
+    }
+
+    /**
+     * @param string $question
+     * @param bool   $default
+     * @return bool
+     */
+    protected function confirmation(string $question = 'Are you sure?', bool $default = false): bool
+    {
+        $question = '<yellow-r>Question:</yellow-r> ' . \trim($question);
+
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper('question');
+        $defaultValue = $default ? 'Y' : 'n';
+
+        $questionObj = new ConfirmationQuestion(
+            "{$question} (<c>Y/n</c>; Default: <i>{$defaultValue}</i>): ",
+            $default
+        );
+
+        return (bool)$helper->ask($this->helper->getInput(), $this->helper->getOutput(), $questionObj);
+    }
+
+    /**
+     * @param string          $question
+     * @param string[]        $options
+     * @param string|int|null $default
+     * @return string
+     */
+    protected function askOption(string $question, array $options, $default = null): string
+    {
+        $question = '<yellow-r>Question:</yellow-r> ' . \trim($question);
+
+        $defaultValue = '';
+        if (null !== $default) {
+            $defaultValue = $options[$default] ?? $default ?: '';
+            if ('' !== $defaultValue) {
+                $defaultValue = " (Default: <i>{$defaultValue}</i>)";
+            }
+        }
+
+        $helper = $this->getHelper('question');
+        $questionHelper = new ChoiceQuestion($question . $defaultValue . ': ', $options, $default);
+        $questionHelper->setErrorMessage('The option "%s" is undefined. See the avaialable options');
+
+        return (string)$helper->ask($this->helper->getInput(), $this->helper->getOutput(), $questionHelper);
     }
 }
