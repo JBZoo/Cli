@@ -43,7 +43,7 @@ abstract class CliCommandMultiProc extends CliCommand
     /**
      * @var ProgressBarProcessManager|null
      */
-    private ?ProgressBarProcessManager $progressBar;
+    private ?ProgressBarProcessManager $progressBar = null;
 
     /**
      * @inheritDoc

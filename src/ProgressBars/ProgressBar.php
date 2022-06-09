@@ -44,7 +44,7 @@ class ProgressBar extends AbstractProgressBar
     /**
      * @var SymfonyProgressBar|null
      */
-    private ?SymfonyProgressBar $progressBar;
+    private ?SymfonyProgressBar $progressBar = null;
 
     /**
      * @var iterable|array
@@ -64,7 +64,7 @@ class ProgressBar extends AbstractProgressBar
     /**
      * @var \Closure|null
      */
-    private ?\Closure $callback;
+    private ?\Closure $callback = null;
 
     /**
      * @var bool
