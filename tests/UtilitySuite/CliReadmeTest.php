@@ -27,5 +27,5 @@ class CliReadmeTest extends AbstractReadmeTest
     /**
      * @var string
      */
-    protected $packageName = 'Cli';
+    protected string $packageName = 'Cli';
 }

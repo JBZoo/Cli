@@ -31,12 +31,12 @@ class ProgressBarProcessManager extends AbstractProgressBar
     /**
      * @var OutputInterface
      */
-    private $output;
+    private OutputInterface $output;
 
     /**
      * @var SymfonyProgressBar
      */
-    private $progressBar;
+    private SymfonyProgressBar $progressBar;
 
     /**
      * @param OutputInterface $output

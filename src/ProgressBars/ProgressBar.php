@@ -34,52 +34,52 @@ class ProgressBar extends AbstractProgressBar
     /**
      * @var OutputInterface
      */
-    private $output;
+    private OutputInterface $output;
 
     /**
      * @var string
      */
-    private $title = '';
+    private string $title = '';
 
     /**
      * @var SymfonyProgressBar|null
      */
-    private $progressBar;
+    private ?SymfonyProgressBar $progressBar = null;
 
     /**
      * @var iterable|array
      */
-    private $list = [];
+    private iterable $list = [];
 
     /**
      * @var Cli
      */
-    private $helper;
+    private Cli $helper;
 
     /**
      * @var int
      */
-    private $max = 0;
+    private int $max = 0;
 
     /**
      * @var \Closure|null
      */
-    private $callback;
+    private ?\Closure $callback = null;
 
     /**
      * @var bool
      */
-    private $throwBatchException = true;
+    private bool $throwBatchException = true;
 
     /**
      * @var string
      */
-    private $finishIcon;
+    private string $finishIcon;
 
     /**
      * @var string
      */
-    private $progressIcon;
+    private string $progressIcon;
 
     /**
      * ProgressBar constructor.
@@ -337,7 +337,7 @@ class ProgressBar extends AbstractProgressBar
      */
     private function createProgressBar(): ?SymfonyProgressBar
     {
-        if ($this->helper->getInput()->getOption('no-progress')) {
+        if ($this->helper->isProgressBarDisabled()) {
             return null;
         }
 
