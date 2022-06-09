@@ -26,6 +26,7 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\bool;
+use function JBZoo\Utils\int;
 
 /**
  * Class CliHelper
@@ -74,6 +75,8 @@ class Cli
      * @var int
      */
     private int $prevMemory;
+
+    private ?int $numberOfCpuCores = null;
 
     /**
      * @param InputInterface  $input
@@ -383,5 +386,54 @@ class Cli
     public function isProgressBarDisabled(): bool
     {
         return bool($this->getInput()->getOption('no-progress'));
+    }
+
+    /**
+     * @return int
+     * @see https://github.com/phpstan/phpstan-src/blob/f8be122188/src/Process/CpuCoreCounter.php
+     */
+    public function getNumberOfCpuCores(): int
+    {
+        if ($this->numberOfCpuCores !== null) {
+            return $this->numberOfCpuCores;
+        }
+
+        if (!\function_exists('proc_open')) {
+            return $this->numberOfCpuCores = 1;
+        }
+
+        // from brianium/paratest
+        // Linux (and potentially Windows with linux sub systems)
+        if (\is_file('/proc/cpuinfo')) {
+            $cpuinfo = \file_get_contents('/proc/cpuinfo');
+            if ($cpuinfo !== false) {
+                \preg_match_all('/^processor/m', $cpuinfo, $matches);
+                return $this->numberOfCpuCores = \count($matches[0]);
+            }
+        }
+
+        // Windows
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            $process = \popen('wmic cpu get NumberOfLogicalProcessors', 'rb');
+            if (\is_resource($process)) {
+                /** @phan-suppress-next-line PhanPluginUseReturnValueInternalKnown */
+                \fgets($process);
+                $cores = int(\fgets($process));
+                \pclose($process);
+
+                return $this->numberOfCpuCores = $cores;
+            }
+        }
+
+        // *nix (Linux, BSD and Mac)
+        $process = \popen('sysctl -n hw.ncpu', 'rb');
+        if (\is_resource($process)) {
+            $cores = int(\fgets($process));
+            \pclose($process);
+
+            return $this->numberOfCpuCores = $cores;
+        }
+
+        return $this->numberOfCpuCores = 2;
     }
 }

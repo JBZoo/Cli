@@ -24,16 +24,17 @@ use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\Process;
 
+use function JBZoo\Utils\int;
+
 /**
  * Class CliCommandMultiProc
  * @package JBZoo\Cli
  */
 abstract class CliCommandMultiProc extends CliCommand
 {
-    private const PM_DEFAULT_MAX_PROCESSES = 20;
-    private const PM_DEFAULT_INTERVAL      = 100;
-    private const PM_DEFAULT_START_DELAY   = 1;
-    private const PM_DEFAULT_TIMEOUT       = 7200;
+    private const PM_DEFAULT_INTERVAL    = 100;
+    private const PM_DEFAULT_START_DELAY = 1;
+    private const PM_DEFAULT_TIMEOUT     = 7200;
 
     /**
      * @var array
@@ -56,7 +57,7 @@ abstract class CliCommandMultiProc extends CliCommand
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Process Manager. The number of processes to execute in parallel (os isolated processes)',
-                self::PM_DEFAULT_MAX_PROCESSES
+                'auto'
             )
             ->addOption(
                 'pm-interval',
@@ -137,8 +138,19 @@ abstract class CliCommandMultiProc extends CliCommand
      */
     protected function executeMultiProcessAction(): int
     {
+        $procNum = $this->getNumberOfProcesses();
+        $cpuCores = $this->helper->getNumberOfCpuCores();
+        $this->_("Max number of sub-processes: {$procNum}", OutLvl::DEBUG);
+        if ($procNum > $cpuCores) {
+            $this->_(
+                "The specified number of processes (--pm-max={$procNum}) "
+                . "is more than the found number of CPU cores in the system ({$cpuCores}).",
+                OutLvl::WARNING
+            );
+        }
+
         $procManager = $this->initProcManager(
-            $this->getOptInt('pm-max') ?: self::PM_DEFAULT_MAX_PROCESSES,
+            $procNum,
             $this->getOptInt('pm-interval') ?: self::PM_DEFAULT_INTERVAL,
             $this->getOptInt('pm-start-delay') ?: self::PM_DEFAULT_START_DELAY
         );
@@ -342,5 +354,22 @@ abstract class CliCommandMultiProc extends CliCommand
     private function getMaxTimeout(): int
     {
         return $this->getOptInt('pm-max-timeout') ?: self::PM_DEFAULT_TIMEOUT;
+    }
+
+    /**
+     * @return int
+     */
+    private function getNumberOfProcesses(): int
+    {
+        $pmMax = \strtolower($this->getOptString('pm-max'));
+        $cpuCores = $this->helper->getNumberOfCpuCores();
+
+        if ($pmMax === 'auto') {
+            return $cpuCores;
+        }
+
+        $pmMaxInt = \abs(int($pmMax));
+
+        return $pmMaxInt > 0 ? $pmMaxInt : $cpuCores;
     }
 }
