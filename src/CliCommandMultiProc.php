@@ -139,7 +139,15 @@ abstract class CliCommandMultiProc extends CliCommand
     protected function executeMultiProcessAction(): int
     {
         $procNum = $this->getNumberOfProcesses();
+        $cpuCores = $this->helper->getNumberOfCpuCores();
         $this->_("Max number of sub-processes: {$procNum}", OutLvl::DEBUG);
+        if ($procNum > $cpuCores) {
+            $this->_(
+                "The specified number of processes (--pm-max={$procNum}) "
+                . "is more than the found number of CPU cores in the system ({$cpuCores}).",
+                OutLvl::WARNING
+            );
+        }
 
         $procManager = $this->initProcManager(
             $procNum,
@@ -362,6 +370,6 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $pmMaxInt = \abs(int($pmMax));
 
-        return \min($pmMaxInt, $cpuCores) ?: $cpuCores;
+        return $pmMaxInt > 0 ? $pmMaxInt : $cpuCores;
     }
 }

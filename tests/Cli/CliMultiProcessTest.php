@@ -30,7 +30,7 @@ class CliMultiProcessTest extends PHPUnit
         $start = microtime(true);
         $result = Helper::executeReal(
             'test:sleep-multi 123 " qwerty "',
-            ['sleep' => 1, 'no-progress' => null],
+            ['sleep' => 1, 'no-progress' => null, 'pm-max' => 50],
             'JBZOO_TEST_VAR=123456'
         );
 
@@ -61,7 +61,7 @@ class CliMultiProcessTest extends PHPUnit
     public function testAsVirtalExecution()
     {
         $start = microtime(true);
-        $result = Helper::executeVirtaul('test:sleep-multi', ['sleep' => 1, 'no-progress' => null]);
+        $result = Helper::executeVirtaul('test:sleep-multi', ['sleep' => 1, 'no-progress' => null, 'pm-max' => 5]);
         $time = microtime(true) - $start;
 
         $outputAsArray = json($result)->getArrayCopy();
@@ -88,9 +88,10 @@ class CliMultiProcessTest extends PHPUnit
     public function testException()
     {
         $start = microtime(true);
-        $result = Helper::executeReal('test:sleep-multi 123 456 789',
-            ['sleep' => 2, 'no-progress' => null, '-vvv' => null]);
-        dump($result);
+        $result = Helper::executeReal(
+            'test:sleep-multi 123 456 789',
+            ['sleep' => 2, 'no-progress' => null, 'pm-max' => 5]
+        );
         $time = microtime(true) - $start;
 
         $outputAsArray = json($result[1])->getArrayCopy();
@@ -113,5 +114,20 @@ class CliMultiProcessTest extends PHPUnit
         isContain('Exception messsage', $result[2]);
 
         isTrue($time < 5, "Total time: {$time}");
+    }
+
+    public function testNumberOfCpuCores()
+    {
+        $result = Helper::executeReal(
+            'test:sleep-multi 123 " qwerty "',
+            ['sleep' => 1, 'no-progress' => null, 'pm-max' => 50, '-vvv' => null]
+        );
+
+        isContain('Debug: Max number of sub-processes: 50', $result[1]);
+        isContain(
+            'Warning: The specified number of processes (--pm-max=50) '
+            . 'is more than the found number of CPU cores in the system',
+            $result[1]
+        );
     }
 }
