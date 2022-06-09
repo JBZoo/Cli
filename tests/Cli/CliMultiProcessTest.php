@@ -88,7 +88,9 @@ class CliMultiProcessTest extends PHPUnit
     public function testException()
     {
         $start = microtime(true);
-        $result = Helper::executeReal('test:sleep-multi 123 456 789', ['sleep' => 2, 'no-progress' => null]);
+        $result = Helper::executeReal('test:sleep-multi 123 456 789',
+            ['sleep' => 2, 'no-progress' => null, '-vvv' => null]);
+        dump($result);
         $time = microtime(true) - $start;
 
         $outputAsArray = json($result[1])->getArrayCopy();
