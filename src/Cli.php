@@ -36,42 +36,42 @@ class Cli
     /**
      * @var $this
      */
-    private static $instance;
+    private static Cli $instance;
 
     /**
      * @var InputInterface
      */
-    private $input;
+    private InputInterface $input;
 
     /**
      * @var OutputInterface
      */
-    private $output;
+    private OutputInterface $output;
 
     /**
      * @var OutputInterface
      */
-    private $errOutput;
+    private OutputInterface $errOutput;
 
     /**
      * @var float
      */
-    private $startTimer;
+    private float $startTimer;
 
     /**
      * @var bool
      */
-    private $outputHasErrors = false;
+    private bool $outputHasErrors = false;
 
     /**
      * @var float
      */
-    private $prevTime;
+    private float $prevTime;
 
     /**
      * @var int
      */
-    private $prevMemory;
+    private int $prevMemory;
 
     /**
      * @param InputInterface  $input

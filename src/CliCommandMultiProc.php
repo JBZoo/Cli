@@ -38,12 +38,12 @@ abstract class CliCommandMultiProc extends CliCommand
     /**
      * @var array
      */
-    private $procPool = [];
+    private array $procPool = [];
 
     /**
      * @var ProgressBarProcessManager|null
      */
-    private $progressBar;
+    private ?ProgressBarProcessManager $progressBar;
 
     /**
      * @inheritDoc

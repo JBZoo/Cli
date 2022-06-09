@@ -29,7 +29,7 @@ class Icons
     /**
      * @var array
      */
-    private static $icons = [
+    private static array $icons = [
         self::GROUP_PROGRESS => [
             "\xF0\x9F\x8D\xBA", // :beer:
             "\xF0\x9F\x8D\xB7", // :wine:

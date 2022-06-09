@@ -38,12 +38,12 @@ abstract class AbstractProgressBar
     /**
      * @var int[]
      */
-    protected $stepMemoryDiff = [];
+    protected array $stepMemoryDiff = [];
 
     /**
      * @var float[]
      */
-    protected $stepTimers = [];
+    protected array $stepTimers = [];
 
     /**
      * @return string

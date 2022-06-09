@@ -43,7 +43,7 @@ abstract class CliCommand extends Command
      * @var Cli
      * @psalm-suppress PropertyNotSetInConstructor
      */
-    protected $helper;
+    protected Cli $helper;
 
     /**
      * @inheritDoc

@@ -30,12 +30,12 @@ class CliApplication extends Application
     /**
      * @var EventManager|null
      */
-    private $eventManager;
+    private ?EventManager $eventManager;
 
     /**
      * @var string|null
      */
-    private $logo;
+    private ?string $logo;
 
     /**
      * Register commands by directory path
