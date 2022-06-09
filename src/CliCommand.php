@@ -67,7 +67,14 @@ abstract class CliCommand extends Command
             )
             ->addOption('non-zero-on-error', null, InputOption::VALUE_NONE, 'None-zero exit code on any StdErr message')
             ->addOption('timestamp', null, InputOption::VALUE_NONE, 'Show timestamp at the beginning of each message')
-            ->addOption('profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information');
+            ->addOption('profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information')
+            ->addOption(
+                'cron',
+                null,
+                InputOption::VALUE_NONE,
+                "Shortcut for crontab. It's basically focused on logs output. "
+                . 'It\'s combination of <info>--timestamp --profile --stdout-only --no-progress -vv</info>'
+            );
 
         parent::configure();
     }
@@ -245,7 +252,7 @@ abstract class CliCommand extends Command
      */
     protected function isInfoLevel(): bool
     {
-        return $this->helper->getOutput()->isVerbose();
+        return $this->helper->isInfoLevel();
     }
 
     /**
@@ -253,7 +260,7 @@ abstract class CliCommand extends Command
      */
     protected function isWarningLevel(): bool
     {
-        return $this->helper->getOutput()->isVeryVerbose();
+        return $this->helper->isWarningLevel();
     }
 
     /**
@@ -261,7 +268,7 @@ abstract class CliCommand extends Command
      */
     protected function isDebugLevel(): bool
     {
-        return $this->helper->getOutput()->isDebug();
+        return $this->helper->isDebugLevel();
     }
 
     /**
@@ -269,7 +276,15 @@ abstract class CliCommand extends Command
      */
     protected function isProfile(): bool
     {
-        return $this->getOptBool('profile');
+        return $this->helper->isDisplayProfiling();
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isCron(): bool
+    {
+        return $this->helper->isCron();
     }
 
     private function showProfiler(): void
