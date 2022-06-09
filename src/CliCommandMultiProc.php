@@ -145,7 +145,7 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $procListIds = $this->getListOfChildIds();
 
-        if (!$this->getOptBool('no-progress')) {
+        if (!$this->helper->isProgressBarDisabled()) {
             $this->progressBar = new ProgressBarProcessManager($this->helper->getOutput(), \count($procListIds));
             $this->progressBar->start();
         }

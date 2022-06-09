@@ -15,6 +15,7 @@ The library greatly extends the functionality of [Symfony/Console](https://symfo
  * None-zero exit code on any StdErr message with `--non-zero-on-error` option.
  * For any errors messages application will use StdOut instead of StdErr `--stdout-only` option (It's on your own risk!).
  * Disable progress bar animation for logs with `--no-progress` option.
+ * Shortcut for crontab `--cron`. It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv`.
 
 ## Live Demo
 
@@ -59,8 +60,8 @@ The simplest CLI application has the following file structure. See the [Demo App
       "keywords"    : ["cli", "application", "example"],
   
       "require"     : {
-          "php"       : ">=7.2",
-          "jbzoo/cli" : "^1.0.0"
+          "php"       : ">=7.4",
+          "jbzoo/cli" : "^2.0.0"
       },
   
       "require-dev" : {

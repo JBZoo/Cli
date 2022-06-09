@@ -259,20 +259,56 @@ class CliOutputTest extends PHPUnit
     {
         $exceptionMessage = 'Some message ' . Str::random();
 
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['exception' => $exceptionMessage]);
+        [$exitCode, , $errOut] = Helper::executeReal('test:output', ['exception' => $exceptionMessage]);
         isSame(1, $exitCode);
         isContain($exceptionMessage, $errOut);
 
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output',
-            ['exception' => $exceptionMessage, 'mute-errors' => null]);
+        [$exitCode, , $errOut] = Helper::executeReal(
+            'test:output',
+            ['exception' => $exceptionMessage, 'mute-errors' => null]
+        );
         isSame(0, $exitCode);
         isContain($exceptionMessage, $errOut);
 
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal(
+        [$exitCode, , $errOut] = Helper::executeReal(
             'test:output',
             ['exception' => $exceptionMessage, 'mute-errors' => null, 'non-zero-on-error' => null]
         );
         isSame(0, $exitCode);
         isContain($exceptionMessage, $errOut);
+    }
+
+    public function testCronMode()
+    {
+        [$exitCode, $stdOut, $errOut] = Helper::executeReal(
+            'test:output',
+            ['cron' => null, 'exception' => 'Custom runtime error']
+        );
+
+        isSame(1, $exitCode);
+        isSame('', $errOut);
+
+        isContain('] Normal 1', $stdOut);
+        isContain('] Normal 2', $stdOut);
+        isContain('] Error: Message', $stdOut);
+        isContain('] Info1 -v', $stdOut);
+        isContain('] Info: Info2 -v', $stdOut);
+        isContain('] Verbose1 -vv', $stdOut);
+        isContain('] Warning: Verbose2 -vv', $stdOut);
+        isContain('] Error (e)', $stdOut);
+        isContain('] Error: Error (error)', $stdOut);
+        isContain('] Muted Exception: Error (exception)', $stdOut);
+        isContain('] Quiet -q', $stdOut);
+        isContain('] Legacy Output: Legacy', $stdOut);
+        isContain('] Legacy Output:    Message', $stdOut);
+        isContain('] Memory Usage/Peak:', $stdOut);
+
+        isContain('[JBZoo\Cli\Exception]', $stdOut);
+        isContain('Custom runtime error', $stdOut);
+        isContain('Exception trace:', $stdOut);
+
+        isNotContain('Debug1 -vvv', $stdOut);
+        isNotContain('Message #1 -vvv', $stdOut);
+        isNotContain('Message #2 -vvv', $stdOut);
     }
 }

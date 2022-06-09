@@ -25,6 +25,8 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function JBZoo\Utils\bool;
+
 /**
  * Class CliHelper
  * @package JBZoo\Cli
@@ -89,7 +91,11 @@ class Cli
         $errOutput = $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
         $errOutput = self::addOutputStyles($errOutput);
 
-        if ($this->input->getOption('stdout-only')) {
+        if ($this->isCron()) {
+            $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
+        }
+
+        if ($this->isStdoutOnly()) {
             $this->errOutput = $this->output;
             if ($this->output instanceof ConsoleOutput) {
                 $this->output->setErrorOutput($this->output);
@@ -262,12 +268,12 @@ class Cli
 
         $profilePrefix = '';
 
-        if ($this->input->getOption('timestamp')) {
+        if ($this->isDisplayTimestamp()) {
             $timestamp = (new \DateTimeImmutable())->format(self::TIMESTAMP_FORMAT);
             $profilePrefix .= "<green>[</green>{$timestamp}<green>]</green> ";
         }
 
-        if ($this->input->getOption('profile')) {
+        if ($this->isDisplayProfiling()) {
             [$totalTime, $curMemory] = $this->getProfileInfo();
             $curMemory = \str_pad($curMemory, 10, ' ', \STR_PAD_LEFT);
             $profilePrefix .= "<green>[</green>+{$totalTime}s<green>/</green>{$curMemory}<green>]</green> ";
@@ -286,7 +292,7 @@ class Cli
         } elseif ($verboseLevel === OutLvl::Q) {
             $this->output->writeln($profilePrefix . $messages, OutputInterface::VERBOSITY_QUIET); // Show ALWAYS!
         } elseif ($verboseLevel === OutLvl::LEGACY) {
-            $this->_('<yellow>Legacy Output:</yellow> ' . $messages, OutLvl::DEFAULT);
+            $this->_('<yellow>Legacy Output:</yellow> ' . $messages);
         } elseif ($verboseLevel === OutLvl::DEBUG) {
             $this->_('<magenta>Debug:</magenta> ' . $messages, OutLvl::VVV);
         } elseif ($verboseLevel === OutLvl::WARNING) {
@@ -295,13 +301,13 @@ class Cli
             $this->_('<blue>Info:</blue> ' . $messages, OutLvl::V);
         } elseif ($verboseLevel === OutLvl::E) {
             $this->outputHasErrors = true;
-            $this->errOutput->writeln($profilePrefix . $messages, $vNormal);
+            $this->getErrOutput()->writeln($profilePrefix . $messages, $vNormal);
         } elseif ($verboseLevel === OutLvl::ERROR) {
             $this->outputHasErrors = true;
-            $this->errOutput->writeln($profilePrefix . '<red-bg>Error:</red-bg> ' . $messages, $vNormal);
+            $this->getErrOutput()->writeln($profilePrefix . '<red-bg>Error:</red-bg> ' . $messages, $vNormal);
         } elseif ($verboseLevel === OutLvl::EXCEPTION) {
             $this->outputHasErrors = true;
-            $this->errOutput->writeln($profilePrefix . '<red-bg>Muted Exception:</red-bg> ' . $messages, $vNormal);
+            $this->getErrOutput()->writeln($profilePrefix . '<red-bg>Muted Exception:</red-bg> ' . $messages, $vNormal);
         } else {
             throw new Exception("Undefined verbose level: \"{$verboseLevel}\"");
         }
@@ -313,5 +319,69 @@ class Cli
     public function isOutputHasErrors(): bool
     {
         return $this->outputHasErrors;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCron(): bool
+    {
+        return bool($this->input->getOption('cron'));
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStdoutOnly(): bool
+    {
+        return bool($this->input->getOption('stdout-only')) || $this->isCron();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDisplayProfiling(): bool
+    {
+        return bool($this->input->getOption('profile')) || $this->isCron();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDisplayTimestamp(): bool
+    {
+        return bool($this->input->getOption('timestamp')) || $this->isCron();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInfoLevel(): bool
+    {
+        return $this->getOutput()->isVerbose() || $this->isCron();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWarningLevel(): bool
+    {
+        return $this->getOutput()->isVeryVerbose() || $this->isCron();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebugLevel(): bool
+    {
+        return $this->getOutput()->isDebug();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProgressBarDisabled(): bool
+    {
+        return bool($this->getInput()->getOption('no-progress'));
     }
 }

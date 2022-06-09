@@ -337,7 +337,7 @@ class ProgressBar extends AbstractProgressBar
      */
     private function createProgressBar(): ?SymfonyProgressBar
     {
-        if ($this->helper->getInput()->getOption('no-progress')) {
+        if ($this->helper->isProgressBarDisabled()) {
             return null;
         }
 
