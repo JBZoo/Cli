@@ -95,7 +95,10 @@ class Cli
         $errOutput = self::addOutputStyles($errOutput);
 
         if ($this->isCron()) {
-            $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
+            $this->output->setDecorated(false);
+            if ($this->output->getVerbosity() < OutputInterface::VERBOSITY_VERY_VERBOSE) {
+                $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
+            }
         }
 
         if ($this->isStdoutOnly()) {
@@ -385,7 +388,7 @@ class Cli
      */
     public function isProgressBarDisabled(): bool
     {
-        return bool($this->getInput()->getOption('no-progress'));
+        return bool($this->getInput()->getOption('no-progress')) || $this->isCron();
     }
 
     /**
