@@ -402,7 +402,7 @@ abstract class CliCommand extends Command
     {
         $question = '<yellow-r>Question:</yellow-r> ' . \trim($question);
 
-        /** @var \Symfony\Component\Console\Helper\QuestionHelper $helper */
+        /** @var \Symfony\Component\Console\Helper\QuestionHelper|mixed $helper */
         $helper = $this->getHelper('question');
         $defaultValue = $default ? 'Y' : 'n';
 
