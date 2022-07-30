@@ -29,7 +29,7 @@
     },
 
     "require-dev"  : {
-        "jbzoo/toolbox-dev" : "^4.0.1"
+        "jbzoo/toolbox-dev" : "^4.1.1"
     },
 
     "autoload"     : {
