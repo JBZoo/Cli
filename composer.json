@@ -1,14 +1,22 @@
 {
-    "name"         : "jbzoo/cli",
-    "type"         : "library",
-    "description"  : "The framework helps create CLI tools and provides new tools for symfony/console, symfony/process.",
-    "license"      : "MIT",
-    "keywords"     : [
-        "jbzoo", "terminal", "console", "cli", "command-line", "console-application", "symfony", "process",
-        "symfony-console", "symfony-process"
+    "name"              : "jbzoo/cli",
+    "type"              : "library",
+    "description"       : "The framework helps create CLI tools and provides new tools for symfony/console, symfony/process.",
+    "license"           : "MIT",
+    "keywords"          : [
+        "jbzoo",
+        "terminal",
+        "console",
+        "cli",
+        "command-line",
+        "console-application",
+        "symfony",
+        "process",
+        "symfony-console",
+        "symfony-process"
     ],
 
-    "authors"      : [
+    "authors"           : [
         {
             "name"  : "Denis Smetannikov",
             "email" : "admin@jbzoo.com",
@@ -16,46 +24,44 @@
         }
     ],
 
-    "require"      : {
-        "php"                                 : ">=7.4",
+    "minimum-stability" : "dev",
+    "prefer-stable"     : true,
 
-        "jbzoo/utils"                         : "^4.4|^5.0",
-        "jbzoo/event"                         : "^3.2|^4.0",
+    "require"           : {
+        "php"                                 : "^8.1",
 
-        "symfony/process"                     : "^4.4|^5.4|^6.0",
-        "symfony/console"                     : "^4.4|^5.4|^6.0",
-        "symfony/lock"                        : "^4.4|^5.4|^6.0",
+        "jbzoo/utils"                         : "7.x-dev",
+        "jbzoo/event"                         : "7.x-dev",
+
+        "symfony/process"                     : ">=5.4",
+        "symfony/console"                     : ">=5.4",
+        "symfony/lock"                        : ">=5.4",
         "bluepsyduck/symfony-process-manager" : ">=1.3.3"
     },
 
-    "require-dev"  : {
-        "jbzoo/toolbox-dev" : "^4.0.1"
+    "require-dev"       : {
+        "jbzoo/toolbox-dev" : "7.x-dev"
     },
 
-    "autoload"     : {
+    "autoload"          : {
+        "psr-4" : {"JBZoo\\Cli\\" : "src"},
         "files" : [
             "src/functions.php"
-        ],
-        "psr-4" : {
-            "JBZoo\\Cli\\" : "src"
-        }
+        ]
     },
 
-    "autoload-dev" : {
-        "psr-4"    : {"DemoApp\\" : "demo"},
-        "classmap" : ["tests"]
+    "autoload-dev"      : {
+        "psr-4" : {"JBZoo\\PHPUnit\\" : "tests"}
     },
 
-    "config"       : {
+    "config"            : {
         "optimize-autoloader" : true,
-        "allow-plugins"       : {
-            "composer/package-versions-deprecated" : true
-        }
+        "allow-plugins"       : {"composer/package-versions-deprecated" : true}
     },
 
-    "extra"        : {
+    "extra"             : {
         "branch-alias" : {
-            "dev-master" : "1.x-dev"
+            "dev-master" : "7.x-dev"
         }
     }
 }
