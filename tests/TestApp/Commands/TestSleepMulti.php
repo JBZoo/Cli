@@ -14,11 +14,10 @@
 
 declare(strict_types=1);
 
-namespace JBZoo\TestApp\Commands;
+namespace JBZoo\PHPUnit\TestApp\Commands;
 
 use JBZoo\Cli\CliCommandMultiProc;
 use JBZoo\Cli\Exception;
-use JBZoo\Cli\Cli;
 use JBZoo\Cli\OutLvl;
 use JBZoo\Utils\Env;
 use Symfony\Component\Console\Input\InputArgument;

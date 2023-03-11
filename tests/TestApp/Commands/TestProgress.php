@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace JBZoo\TestApp\Commands;
+namespace JBZoo\PHPUnit\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\Exception;

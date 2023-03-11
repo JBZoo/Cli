@@ -17,11 +17,11 @@ declare(strict_types=1);
 namespace JBZoo\PHPUnit;
 
 use JBZoo\Cli\CliApplication;
-use JBZoo\TestApp\Commands\TestCliOptions;
-use JBZoo\TestApp\Commands\TestCliStdIn;
-use JBZoo\TestApp\Commands\TestProgress;
-use JBZoo\TestApp\Commands\TestSleep;
-use JBZoo\TestApp\Commands\TestSleepMulti;
+use JBZoo\PHPUnit\TestApp\Commands\TestCliOptions;
+use JBZoo\PHPUnit\TestApp\Commands\TestCliStdIn;
+use JBZoo\PHPUnit\TestApp\Commands\TestProgress;
+use JBZoo\PHPUnit\TestApp\Commands\TestSleep;
+use JBZoo\PHPUnit\TestApp\Commands\TestSleepMulti;
 use JBZoo\Utils\Cli;
 use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Input\StringInput;
@@ -47,7 +47,7 @@ class Helper extends PHPUnit
         string $preAction = '',
         string $postAction = ''
     ): array {
-        $cwd = __DIR__ . '/fake-app';
+        $cwd = __DIR__ . '/TestApp';
         $options['no-ansi'] = null;
 
         $realCommand = trim(implode(' ', [
@@ -65,17 +65,12 @@ class Helper extends PHPUnit
         return [$process->getExitCode(), trim($process->getOutput()), trim($process->getErrorOutput())];
     }
 
-    /**
-     * @param string $command
-     * @param array  $inputString
-     * @return string
-     */
     public static function executeVirtaul(string $command, array $options = []): string
     {
         $rootPath = dirname(__DIR__);
 
-        putenv("JBZOO_PATH_BIN={$rootPath}/tests/fake-app/cli-wrapper.php");
-        putenv("JBZOO_PATH_ROOT={$rootPath}/tests/fake-app");
+        putenv("JBZOO_PATH_BIN={$rootPath}/tests/TestApp/cli-wrapper.php");
+        putenv("JBZOO_PATH_ROOT={$rootPath}/tests/TestApp");
 
         $application = new CliApplication();
         $application->add(new TestCliOptions());

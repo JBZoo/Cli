@@ -15,4 +15,6 @@
 
 declare(strict_types=1);
 
+namespace JBZoo\PHPUnit\TestApp;
+
 include __DIR__ . '/cli-wrapper.php';

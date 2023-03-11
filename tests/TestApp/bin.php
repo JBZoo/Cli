@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace JBZoo\TestApp;
+namespace JBZoo\PHPUnit\TestApp;
 
 use JBZoo\Cli\CliApplication;
 
