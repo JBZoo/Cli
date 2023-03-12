@@ -25,7 +25,7 @@ require_once PROJECT_ROOT . '/vendor/autoload.php';
 
 $cliIndexFile = PROJECT_ROOT . '/tests/TestApp/bin.php';
 
-const JBZOO_PATH_ROOT = __DIR__;
+define('JBZOO_PATH_ROOT', __DIR__);
 define('JBZOO_PATH_BIN', JBZOO_PATH_ROOT . '/' . pathinfo(__FILE__, PATHINFO_BASENAME));
 
 if (class_exists(CovCatcher::class) && Sys::hasXdebug()) {

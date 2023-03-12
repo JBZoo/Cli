@@ -28,13 +28,14 @@ class CliMultiProcessTest extends PHPUnit
     {
         $start = microtime(true);
         $result = Helper::executeReal(
-            'test:sleep-multi 123 " qwerty "',
+            'test:sleep-multi 123 " qwerty " -v',
             ['sleep' => 1, 'no-progress' => null, 'pm-max' => 50],
             'JBZOO_TEST_VAR=123456'
         );
 
         $time = microtime(true) - $start;
 
+        isSame(0, $result[0], $result[2]);
         $outputAsArray = json($result[1])->getArrayCopy();
 
         $expectecContent = implode("\n", [
