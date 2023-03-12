@@ -23,6 +23,7 @@ use JBZoo\PHPUnit\TestApp\Commands\TestProgress;
 use JBZoo\PHPUnit\TestApp\Commands\TestSleep;
 use JBZoo\PHPUnit\TestApp\Commands\TestSleepMulti;
 use JBZoo\Utils\Cli;
+use JBZoo\Utils\Env;
 use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -48,11 +49,12 @@ class Helper extends PHPUnit
         string $postAction = ''
     ): array {
         $cwd = __DIR__ . '/TestApp';
+
         $options['no-ansi'] = null;
 
         $realCommand = trim(implode(' ', [
             $preAction,
-            Sys::getBinary(),
+            Env::string('PHP_BIN', 'php'),
             Cli::build("{$cwd}/cli-wrapper.php {$command}", $options),
             '',
             $postAction
