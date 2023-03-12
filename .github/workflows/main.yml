@@ -1,14 +1,13 @@
 #
-# JBZoo Toolbox - Cli
+# JBZoo Toolbox - Cli.
 #
 # This file is part of the JBZoo Toolbox project.
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code.
 #
-# @package    Cli
 # @license    MIT
 # @copyright  Copyright (C) JBZoo.com, All rights reserved.
-# @link       https://github.com/JBZoo/Cli
+# @see        https://github.com/JBZoo/Cli
 #
 
 name: CI
@@ -21,7 +20,7 @@ on:
     branches:
       - 'master'
   schedule:
-    - cron: '45 */8 * * *'
+    - cron: '32 */8 * * *'
 
 env:
   COLUMNS: 120
@@ -35,11 +34,12 @@ jobs:
       JBZOO_COMPOSER_UPDATE_FLAGS: ${{ matrix.composer_flags }}
     strategy:
       matrix:
-        php-version: [ 7.4, 8.0, 8.1 ]
+        php-version: [ 8.1, 8.2 ]
+        coverage: [ xdebug, none ]
         composer_flags: [ "--prefer-lowest", "" ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -47,8 +47,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          coverage: xdebug
+          coverage: ${{ matrix.coverage }}
           tools: composer
+          extensions: ast
 
       - name: Build the Project
         run: make update --no-print-directory
@@ -57,14 +58,17 @@ jobs:
         run: make test --no-print-directory
 
       - name: Uploading coverage to coveralls
+        if: ${{ matrix.coverage == 'xdebug' }}
+        continue-on-error: true
         env:
-            COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make report-coveralls --no-print-directory || true
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
+        continue-on-error: true
         with:
-          name: PHPUnit - ${{ matrix.php-version }} ${{ matrix.composer_flags }}
+          name: PHPUnit - ${{ matrix.php-version }} - ${{ matrix.coverage }}
           path: build/
 
 
@@ -73,10 +77,44 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ 7.4, 8.0, 8.1 ]
+        php-version: [ 8.1, 8.2 ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+          tools: composer
+          extensions: ast
+
+      - name: Build the Project
+        run: make update --no-print-directory
+
+      - name: 👍 Code Quality
+        run: make codestyle --no-print-directory
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        continue-on-error: true
+        with:
+          name: Linters - ${{ matrix.php-version }}
+          path: build/
+
+
+  report:
+    name: Reports
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ 8.1, 8.2 ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -91,46 +129,12 @@ jobs:
       - name: Build the Project
         run: make update --no-print-directory
 
-      - name: 👍 Code Quality
-        run: make codestyle --no-print-directory
-
-      - name: 👍 Code Quality (Demo App)
-        run: make codestyle PATH_SRC=./demo --no-print-directory
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: Linters - ${{ matrix.php-version }}
-          path: build/
-
-
-  report:
-    name: Reports
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-version: [ 7.4, 8.0, 8.1 ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          coverage: xdebug
-          tools: composer
-
-      - name: Build the Project
-        run: make update --no-print-directory
-
       - name: 📝 Build Reports
         run: make report-all --no-print-directory
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
+        continue-on-error: true
         with:
           name: Reports - ${{ matrix.php-version }}
           path: build/

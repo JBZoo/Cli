@@ -1,34 +1,35 @@
 <?php
 
 /**
- * JBZoo Toolbox - Cli
+ * JBZoo Toolbox - Cli.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Cli
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Cli
+ * @see        https://github.com/JBZoo/Cli
  */
 
 declare(strict_types=1);
 
+namespace JBZoo\PHPUnit\TestApp;
+
 use JBZoo\PHPUnit\CovCatcher;
 use JBZoo\Utils\Sys;
 
-define('PROJECT_ROOT', dirname(__DIR__, 2));
+\define('PROJECT_ROOT', \dirname(__DIR__, 2));
 
 require_once PROJECT_ROOT . '/vendor/autoload.php';
 
-$cliIndexFile = PROJECT_ROOT . '/tests/fake-app/bin.php';
+$cliIndexFile = PROJECT_ROOT . '/tests/TestApp/bin.php';
 
-const JBZOO_PATH_ROOT = __DIR__;
-define('JBZOO_PATH_BIN', JBZOO_PATH_ROOT . '/' . pathinfo(__FILE__, PATHINFO_BASENAME));
+\define('JBZOO_PATH_ROOT', __DIR__);
+\define('JBZOO_PATH_BIN', JBZOO_PATH_ROOT . '/' . \pathinfo(__FILE__, \PATHINFO_BASENAME));
 
-if (class_exists(CovCatcher::class) && Sys::hasXdebug()) {
-    $covCatcher = new CovCatcher(uniqid('prefix-', true), [
+if (\class_exists(CovCatcher::class) && Sys::hasXdebug()) {
+    $covCatcher = new CovCatcher(\uniqid('prefix-', true), [
         'html'      => 0,
         'xml'       => 1,
         'cov'       => 1,

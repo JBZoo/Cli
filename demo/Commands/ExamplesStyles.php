@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Cli
+ * JBZoo Toolbox - Cli.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Cli
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Cli
+ * @see        https://github.com/JBZoo/Cli
  */
 
 declare(strict_types=1);
@@ -22,9 +21,6 @@ use JBZoo\Cli\CliRender;
 
 use function JBZoo\Cli\cli;
 
-/**
- * Class ExamplesStyles
- */
 class ExamplesStyles extends CliCommand
 {
     protected function configure(): void
@@ -37,7 +33,7 @@ class ExamplesStyles extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {
@@ -46,9 +42,8 @@ class ExamplesStyles extends CliCommand
         cli(CliRender::list([
             'Like a title',
             'Key'    => 'Value',
-            'Key #2' => 123
+            'Key #2' => 123,
         ], '-'));
-
 
         /**
          * Literally you can use the tags:
@@ -57,13 +52,14 @@ class ExamplesStyles extends CliCommand
          *  - <color-u>Text</color-ur>
          *  - <color-bl>Text</color-bl>
          *  - <color-bg>Text</color-bg>
-         *  - <color-r>Text</color-r>
+         *  - <color-r>Text</color-r>.
          */
         cli('Use different styles/colors to make terminal reading life easier');
         $availableColors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
-        $listOfExamples = [];
+        $listOfExamples  = [];
+
         foreach ($availableColors as $color) {
-            $listOfExamples["\<{$color}\>"] = implode(' ', [
+            $listOfExamples["\\<{$color}\\>"] = \implode(' ', [
                 "<{$color}>Regular</{$color}>",
                 "<{$color}-b>Bold</{$color}-b>",
                 "<{$color}-u>Underlined</{$color}-u>",
@@ -90,7 +86,6 @@ class ExamplesStyles extends CliCommand
             '\<q\>' => '<q>Alias for \<question\></q>',
             '\<e\>' => '<e>Alias for \<error\></e>',
         ], '*'));
-
 
         // Default success exist code is "0". Max value is 255.
         return self::SUCCESS;

@@ -1,25 +1,23 @@
 <?php
 
 /**
- * JBZoo Toolbox - Cli
+ * JBZoo Toolbox - Cli.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Cli
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Cli
+ * @see        https://github.com/JBZoo/Cli
  */
 
 declare(strict_types=1);
 
-namespace JBZoo\TestApp\Commands;
+namespace JBZoo\PHPUnit\TestApp\Commands;
 
 use JBZoo\Cli\CliCommandMultiProc;
 use JBZoo\Cli\Exception;
-use JBZoo\Cli\Cli;
 use JBZoo\Cli\OutLvl;
 use JBZoo\Utils\Env;
 use Symfony\Component\Console\Input\InputArgument;
@@ -27,14 +25,10 @@ use Symfony\Component\Console\Input\InputOption;
 
 use function JBZoo\Data\json;
 
-/**
- * Class TestSleepMulti
- * @package JBZoo\TestApp\Commands
- */
 class TestSleepMulti extends CliCommandMultiProc
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -50,13 +44,13 @@ class TestSleepMulti extends CliCommandMultiProc
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeOneProcess(string $pmThreadId): int
     {
         $sleep = $this->getOptInt('sleep');
         if ($this->getOptBool('random-sleep')) {
-            $sleep = random_int(1, 5);
+            $sleep = \random_int(1, 5);
         }
 
         if ($sleep === 2 && $pmThreadId === '2') {
@@ -72,7 +66,7 @@ class TestSleepMulti extends CliCommandMultiProc
             'Env Var: ' . Env::string('JBZOO_TEST_VAR'),
         ]);
 
-        sleep($sleep);
+        \sleep($sleep);
 
         $this->_("Finished: {$pmThreadId}", OutLvl::Q);
 
@@ -88,7 +82,6 @@ class TestSleepMulti extends CliCommandMultiProc
     }
 
     /**
-     * @param array $procPool
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @phan-suppress PhanPluginPossiblyStaticProtectedMethod
      * @phan-suppress PhanUnusedProtectedNoOverrideMethodParameter
@@ -96,6 +89,7 @@ class TestSleepMulti extends CliCommandMultiProc
     protected function afterFinishAllProcesses(array $procPool): void
     {
         $result = [];
+
         foreach ($procPool as $procId => $procInfo) {
             $result[] = $procInfo['std_out'];
         }

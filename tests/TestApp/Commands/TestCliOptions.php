@@ -1,34 +1,30 @@
 <?php
 
 /**
- * JBZoo Toolbox - Cli
+ * JBZoo Toolbox - Cli.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Cli
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Cli
+ * @see        https://github.com/JBZoo/Cli
  */
 
 declare(strict_types=1);
 
-namespace JBZoo\TestApp\Commands;
+namespace JBZoo\PHPUnit\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 use function JBZoo\Data\json;
 
-/**
- *
- */
 class TestCliOptions extends CliCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -47,14 +43,19 @@ class TestCliOptions extends CliCommand
             // Array
             ->addOption('opt-array-optional', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '')
             ->addOption('opt-array-req', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, '')
-            ->addOption('opt-array-req-default', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, '',
-                [$defaultValue]);
+            ->addOption(
+                'opt-array-req-default',
+                null,
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                '',
+                [$defaultValue],
+            );
 
         parent::configure();
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {

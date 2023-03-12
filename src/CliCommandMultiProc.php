@@ -1,16 +1,15 @@
 <?php
 
 /**
- * JBZoo Toolbox - Cli
+ * JBZoo Toolbox - Cli.
  *
  * This file is part of the JBZoo Toolbox project.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package    Cli
  * @license    MIT
  * @copyright  Copyright (C) JBZoo.com, All rights reserved.
- * @link       https://github.com/JBZoo/Cli
+ * @see        https://github.com/JBZoo/Cli
  */
 
 declare(strict_types=1);
@@ -26,28 +25,24 @@ use Symfony\Component\Process\Process;
 
 use function JBZoo\Utils\int;
 
-/**
- * Class CliCommandMultiProc
- * @package JBZoo\Cli
- */
 abstract class CliCommandMultiProc extends CliCommand
 {
     private const PM_DEFAULT_INTERVAL    = 100;
     private const PM_DEFAULT_START_DELAY = 1;
     private const PM_DEFAULT_TIMEOUT     = 7200;
 
-    /**
-     * @var array
-     */
-    private array $procPool = [];
-
-    /**
-     * @var ProgressBarProcessManager|null
-     */
+    private array                      $procPool    = [];
     private ?ProgressBarProcessManager $progressBar = null;
 
+    abstract protected function executeOneProcess(string $pmThreadId): int;
+
     /**
-     * @inheritDoc
+     * @return string[]
+     */
+    abstract protected function getListOfChildIds(): array;
+
+    /**
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -57,50 +52,39 @@ abstract class CliCommandMultiProc extends CliCommand
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Process Manager. The number of processes to execute in parallel (os isolated processes)',
-                'auto'
+                'auto',
             )
             ->addOption(
                 'pm-interval',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Process Manager. The interval to use for polling the processes, in milliseconds',
-                self::PM_DEFAULT_INTERVAL
+                self::PM_DEFAULT_INTERVAL,
             )
             ->addOption(
                 'pm-start-delay',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Process Manager. The time to delay the start of processes to space them out, in milliseconds',
-                self::PM_DEFAULT_START_DELAY
+                self::PM_DEFAULT_START_DELAY,
             )
             ->addOption(
                 'pm-max-timeout',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Process Manager. The max timeout for each proccess, in seconds',
-                self::PM_DEFAULT_TIMEOUT
+                self::PM_DEFAULT_TIMEOUT,
             )
             ->addOption(
                 'pm-proc-id',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Process Manager. Unique ID of process to execute one child proccess.',
-                ''
+                '',
             );
 
         parent::configure();
     }
-
-    /**
-     * @param string $pmThreadId
-     * @return int
-     */
-    abstract protected function executeOneProcess(string $pmThreadId): int;
-
-    /**
-     * @return string[]
-     */
-    abstract protected function getListOfChildIds(): array;
 
     /**
      * @phan-suppress PhanPluginPossiblyStaticProtectedMethod
@@ -111,7 +95,6 @@ abstract class CliCommandMultiProc extends CliCommand
     }
 
     /**
-     * @param array $procPool
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @phan-suppress PhanPluginPossiblyStaticProtectedMethod
      * @phan-suppress PhanUnusedProtectedNoOverrideMethodParameter
@@ -121,39 +104,30 @@ abstract class CliCommandMultiProc extends CliCommand
         // noop
     }
 
-    /**
-     * @return int
-     */
     protected function executeAction(): int
     {
-        if ($pmProcId = $this->getOptString('pm-proc-id')) {
+        $pmProcId = $this->getOptString('pm-proc-id');
+        if ($pmProcId !== '') {
             return $this->executeOneProcess($pmProcId);
         }
 
         return $this->executeMultiProcessAction();
     }
 
-    /**
-     * @return int
-     */
     protected function executeMultiProcessAction(): int
     {
-        $procNum = $this->getNumberOfProcesses();
+        $procNum  = $this->getNumberOfProcesses();
         $cpuCores = $this->helper->getNumberOfCpuCores();
         $this->_("Max number of sub-processes: {$procNum}", OutLvl::DEBUG);
         if ($procNum > $cpuCores) {
             $this->_(
                 "The specified number of processes (--pm-max={$procNum}) "
                 . "is more than the found number of CPU cores in the system ({$cpuCores}).",
-                OutLvl::WARNING
+                OutLvl::WARNING,
             );
         }
 
-        $procManager = $this->initProcManager(
-            $procNum,
-            $this->getOptInt('pm-interval') ?: self::PM_DEFAULT_INTERVAL,
-            $this->getOptInt('pm-start-delay') ?: self::PM_DEFAULT_START_DELAY
-        );
+        $procManager = $this->initProcManager($procNum, $this->gePmInterval(), $this->getPmStartDelay());
 
         $procListIds = $this->getListOfChildIds();
 
@@ -169,7 +143,7 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $this->beforeStartAllProcesses();
         $procManager->waitForAllProcesses();
-        if ($this->progressBar) {
+        if ($this->progressBar !== null) {
             $this->progressBar->finish();
             $this->_('');
         }
@@ -189,35 +163,27 @@ abstract class CliCommandMultiProc extends CliCommand
         return 0;
     }
 
-    /**
-     * @param int $numberOfParallelProcesses
-     * @param int $pollInterval
-     * @param int $processStartDelay
-     * @return ProcessManager
-     */
     private function initProcManager(
         int $numberOfParallelProcesses,
         int $pollInterval,
-        int $processStartDelay
+        int $processStartDelay,
     ): ProcessManager {
         $finishCallback = function (Process $process): void {
             $virtProcId = \spl_object_id($process);
 
-            $exitCode = $process->getExitCode();
+            $exitCode    = $process->getExitCode();
             $errorOutput = \trim($process->getErrorOutput());
-            $stdOutput = \trim($process->getOutput());
+            $stdOutput   = \trim($process->getOutput());
 
-            $this->procPool[$virtProcId]['time_end'] = \microtime(true);
+            $this->procPool[$virtProcId]['time_end']  = \microtime(true);
             $this->procPool[$virtProcId]['exit_code'] = $exitCode;
-            $this->procPool[$virtProcId]['std_out'] = $stdOutput;
+            $this->procPool[$virtProcId]['std_out']   = $stdOutput;
 
-            if ($exitCode > 0) {
-                $this->procPool[$virtProcId]['err_out'] = $errorOutput;
-            } elseif ($errorOutput) {
+            if ($exitCode > 0 || $errorOutput !== '') {
                 $this->procPool[$virtProcId]['err_out'] = $errorOutput;
             }
 
-            if ($this->progressBar) {
+            if ($this->progressBar !== null) {
                 $this->progressBar->advance();
             }
         };
@@ -227,28 +193,25 @@ abstract class CliCommandMultiProc extends CliCommand
             ->setNumberOfParallelProcesses($numberOfParallelProcesses)
             ->setProcessStartDelay($processStartDelay)
             ->setProcessStartCallback(function (Process $process): void {
-                $virtProcId = \spl_object_id($process);
+                $virtProcId                                = \spl_object_id($process);
                 $this->procPool[$virtProcId]['time_start'] = \microtime(true);
             })
             ->setProcessFinishCallback($finishCallback)
             ->setProcessTimeoutCallback(function (Process $process) use ($finishCallback): void {
                 $finishCallback($process);
 
-                $virtProcId = \spl_object_id($process);
+                $virtProcId                                     = \spl_object_id($process);
                 $this->procPool[$virtProcId]['reached_timeout'] = true;
             });
     }
 
-    /**
-     * @param string $procId
-     * @return Process
-     */
     private function createSubProcess(string $procId): Process
     {
         // Prepare option list from the parent process
-        $options = \array_filter($this->helper->getInput()->getOptions(), static function ($optionValue): bool {
-            return $optionValue !== false && $optionValue !== '';
-        });
+        $options = \array_filter(
+            $this->helper->getInput()->getOptions(),
+            static fn ($optionValue): bool => $optionValue !== false && $optionValue !== '',
+        );
 
         foreach (\array_keys($options) as $optionKey) {
             if (!$this->getDefinition()->getOption((string)$optionKey)->acceptValue()) {
@@ -257,12 +220,12 @@ abstract class CliCommandMultiProc extends CliCommand
         }
 
         unset($options['ansi']);
-        $options['no-ansi'] = null;
+        $options['no-ansi']        = null;
         $options['no-interaction'] = null;
-        $options['pm-proc-id'] = $procId;
+        $options['pm-proc-id']     = $procId;
 
         // Prepare $argument list from the parent process
-        $arguments = $this->helper->getInput()->getArguments();
+        $arguments     = $this->helper->getInput()->getArguments();
         $argumentsList = [];
 
         foreach ($arguments as $argKey => $argValue) {
@@ -279,16 +242,22 @@ abstract class CliCommandMultiProc extends CliCommand
 
         // Build full command line
         $process = Process::fromShellCommandline(
-            CliUtils::build(\implode(' ', [
-                Sys::getBinary(),
-                Cli::getBinPath(),
-                $this->getName(),
-                \implode(" ", $argumentsList)
-            ]), $options),
+            CliUtils::build(
+                \implode(
+                    ' ',
+                    \array_filter([
+                        Sys::getBinary(),
+                        Cli::getBinPath(),
+                        $this->getName(),
+                        \implode(' ', $argumentsList),
+                    ]),
+                ),
+                $options,
+            ),
             Cli::getRootPath(),
             null,
             null,
-            $this->getMaxTimeout()
+            $this->getMaxTimeout(),
         );
 
         $this->procPool[\spl_object_id($process)] = [
@@ -305,9 +274,6 @@ abstract class CliCommandMultiProc extends CliCommand
         return $process;
     }
 
-    /**
-     * @return array
-     */
     private function getErrorList(): array
     {
         return \array_reduce($this->procPool, function (array $acc, array $procInfo): array {
@@ -330,9 +296,6 @@ abstract class CliCommandMultiProc extends CliCommand
         }, []);
     }
 
-    /**
-     * @return array
-     */
     private function getWarningList(): array
     {
         return \array_reduce($this->procPool, static function (array $acc, array $procInfo): array {
@@ -348,20 +311,30 @@ abstract class CliCommandMultiProc extends CliCommand
         }, []);
     }
 
-    /**
-     * @return int
-     */
     private function getMaxTimeout(): int
     {
-        return $this->getOptInt('pm-max-timeout') ?: self::PM_DEFAULT_TIMEOUT;
+        $pmMaxTimeout = $this->getOptInt('pm-max-timeout');
+
+        return $pmMaxTimeout > 0 ? $pmMaxTimeout : self::PM_DEFAULT_TIMEOUT;
     }
 
-    /**
-     * @return int
-     */
+    private function gePmInterval(): int
+    {
+        $pmInterval = $this->getOptInt('pm-interval');
+
+        return $pmInterval > 0 ? $pmInterval : self::PM_DEFAULT_INTERVAL;
+    }
+
+    private function getPmStartDelay(): int
+    {
+        $pmStartDelay = $this->getOptInt('pm-start-delay');
+
+        return $pmStartDelay > 0 ? $pmStartDelay : self::PM_DEFAULT_START_DELAY;
+    }
+
     private function getNumberOfProcesses(): int
     {
-        $pmMax = \strtolower($this->getOptString('pm-max'));
+        $pmMax    = \strtolower($this->getOptString('pm-max'));
         $cpuCores = $this->helper->getNumberOfCpuCores();
 
         if ($pmMax === 'auto') {
