@@ -17,10 +17,8 @@ declare(strict_types=1);
 namespace JBZoo\Cli;
 
 /**
- * Shortcut method
+ * Shortcut method.
  * @param array|mixed $messages
- * @param string      $verboseLevel
- * @return void
  */
 function cli($messages = '', string $verboseLevel = OutLvl::DEFAULT): void
 {

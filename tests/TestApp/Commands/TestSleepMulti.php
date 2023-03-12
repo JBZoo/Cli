@@ -25,14 +25,10 @@ use Symfony\Component\Console\Input\InputOption;
 
 use function JBZoo\Data\json;
 
-/**
- * Class TestSleepMulti
- * @package JBZoo\TestApp\Commands
- */
 class TestSleepMulti extends CliCommandMultiProc
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -48,13 +44,13 @@ class TestSleepMulti extends CliCommandMultiProc
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeOneProcess(string $pmThreadId): int
     {
         $sleep = $this->getOptInt('sleep');
         if ($this->getOptBool('random-sleep')) {
-            $sleep = random_int(1, 5);
+            $sleep = \random_int(1, 5);
         }
 
         if ($sleep === 2 && $pmThreadId === '2') {
@@ -70,7 +66,7 @@ class TestSleepMulti extends CliCommandMultiProc
             'Env Var: ' . Env::string('JBZOO_TEST_VAR'),
         ]);
 
-        sleep($sleep);
+        \sleep($sleep);
 
         $this->_("Finished: {$pmThreadId}", OutLvl::Q);
 
@@ -86,7 +82,6 @@ class TestSleepMulti extends CliCommandMultiProc
     }
 
     /**
-     * @param array $procPool
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @phan-suppress PhanPluginPossiblyStaticProtectedMethod
      * @phan-suppress PhanUnusedProtectedNoOverrideMethodParameter
@@ -94,6 +89,7 @@ class TestSleepMulti extends CliCommandMultiProc
     protected function afterFinishAllProcesses(array $procPool): void
     {
         $result = [];
+
         foreach ($procPool as $procId => $procInfo) {
             $result[] = $procInfo['std_out'];
         }

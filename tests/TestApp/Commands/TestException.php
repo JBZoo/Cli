@@ -19,13 +19,10 @@ namespace JBZoo\PHPUnit\TestApp\Commands;
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\Exception;
 
-/**
- * Class TestException
- */
 class TestException extends CliCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -34,7 +31,7 @@ class TestException extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {

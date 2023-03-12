@@ -21,13 +21,10 @@ use Symfony\Component\Console\Input\InputOption;
 
 use function JBZoo\Data\json;
 
-/**
- *
- */
 class TestCliOptions extends CliCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -46,14 +43,19 @@ class TestCliOptions extends CliCommand
             // Array
             ->addOption('opt-array-optional', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '')
             ->addOption('opt-array-req', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, '')
-            ->addOption('opt-array-req-default', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, '',
-                [$defaultValue]);
+            ->addOption(
+                'opt-array-req-default',
+                null,
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                '',
+                [$defaultValue],
+            );
 
         parent::configure();
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {

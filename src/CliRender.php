@@ -18,17 +18,8 @@ namespace JBZoo\Cli;
 
 use JBZoo\Utils\Str;
 
-/**
- * Class CliRender
- * @package JBZoo\Cli
- */
 class CliRender
 {
-    /**
-     * @param array       $metrics
-     * @param string|null $addDot
-     * @return string
-     */
     public static function list(array $metrics, ?string $addDot = null): string
     {
         $result = Str::listToDescription($metrics, true);
@@ -36,11 +27,9 @@ class CliRender
             return '';
         }
 
-        if (null !== $addDot) {
+        if ($addDot !== null) {
             $addDot = \trim($addDot);
-
-            /** @var string[] $list */
-            $list = \explode("\n", $result);
+            $list   = \explode("\n", $result);
 
             \array_walk($list, static function (string &$item) use ($addDot): void {
                 if (\trim($item)) {

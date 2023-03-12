@@ -16,10 +16,6 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
-/**
- * Class OutLvl
- * @package JBZoo\Cli
- */
 class OutLvl
 {
     public const Q       = 'q';

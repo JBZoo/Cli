@@ -19,13 +19,10 @@ namespace JBZoo\PHPUnit\TestApp\Commands;
 use JBZoo\Cli\CliCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-/**
- *
- */
 class TestSleep extends CliCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -38,12 +35,12 @@ class TestSleep extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {
         $this->_('Started');
-        sleep($this->getOptInt('sleep'));
+        \sleep($this->getOptInt('sleep'));
         $this->_('Finished');
 
         return 0;

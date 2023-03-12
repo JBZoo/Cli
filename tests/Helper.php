@@ -24,55 +24,43 @@ use JBZoo\PHPUnit\TestApp\Commands\TestSleep;
 use JBZoo\PHPUnit\TestApp\Commands\TestSleepMulti;
 use JBZoo\Utils\Cli;
 use JBZoo\Utils\Env;
-use JBZoo\Utils\Sys;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 
-/**
- * Class Helper
- * @package JBZoo\PHPUnit
- */
 class Helper extends PHPUnit
 {
-    /**
-     * @param string $command
-     * @param array  $options
-     * @param string $preAction
-     * @param string $postAction
-     * @return array
-     */
     public static function executeReal(
         string $command,
         array $options = [],
         string $preAction = '',
-        string $postAction = ''
+        string $postAction = '',
     ): array {
         $cwd = __DIR__ . '/TestApp';
 
         $options['no-ansi'] = null;
 
-        $realCommand = trim(implode(' ', [
+        $realCommand = \trim(\implode(' ', [
             $preAction,
             Env::string('PHP_BIN', 'php'),
             Cli::build("{$cwd}/cli-wrapper.php {$command}", $options),
             '',
-            $postAction
+            $postAction,
         ]));
 
-        //dump($realCommand);
+        // dump($realCommand);
         $process = Process::fromShellCommandline($realCommand, $cwd, null, null, 3600);
         $process->run();
 
-        return [$process->getExitCode(), trim($process->getOutput()), trim($process->getErrorOutput())];
+        return [$process->getExitCode(), \trim($process->getOutput()), \trim($process->getErrorOutput())];
     }
 
     public static function executeVirtaul(string $command, array $options = []): string
     {
-        $rootPath = dirname(__DIR__);
+        $rootPath = \dirname(__DIR__);
 
-        putenv("JBZOO_PATH_BIN={$rootPath}/tests/TestApp/cli-wrapper.php");
-        putenv("JBZOO_PATH_ROOT={$rootPath}/tests/TestApp");
+        \putenv("JBZOO_PATH_BIN={$rootPath}/tests/TestApp/cli-wrapper.php");
+        \putenv("JBZOO_PATH_ROOT={$rootPath}/tests/TestApp");
 
         $application = new CliApplication();
         $application->add(new TestCliOptions());
@@ -82,9 +70,9 @@ class Helper extends PHPUnit
         $application->add(new TestProgress());
         $command = $application->find($command);
 
-        $buffer = new BufferedOutput();
+        $buffer      = new BufferedOutput();
         $inputString = new StringInput(Cli::build('', $options));
-        $exitCode = $command->run($inputString, $buffer);
+        $exitCode    = $command->run($inputString, $buffer);
 
         if ($exitCode) {
             throw new Exception($buffer->fetch());

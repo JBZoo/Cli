@@ -16,10 +16,6 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
-/**
- * Class Codes
- * @package JBZoo\Cli
- */
 class Codes
 {
     // General codes

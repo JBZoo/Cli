@@ -18,27 +18,23 @@ namespace JBZoo\PHPUnit;
 
 use function JBZoo\Data\json;
 
-/**
- * Class CliMultiProcess
- * @package JBZoo\PHPUnit
- */
 class CliMultiProcessTest extends PHPUnit
 {
-    public function testAsRealExecution()
+    public function testAsRealExecution(): void
     {
-        $start = microtime(true);
+        $start  = \microtime(true);
         $result = Helper::executeReal(
             'test:sleep-multi 123 " qwerty " -v',
             ['sleep' => 1, 'no-progress' => null, 'pm-max' => 50],
-            'JBZOO_TEST_VAR=123456'
+            'JBZOO_TEST_VAR=123456',
         );
 
-        $time = microtime(true) - $start;
+        $time = \microtime(true) - $start;
 
         isSame(0, $result[0], $result[2]);
         $outputAsArray = json($result[1])->getArrayCopy();
 
-        $expectecContent = implode("\n", [
+        $expectecContent = \implode("\n", [
             'Sleep : 1',
             'Arg #1: 123',
             'Arg #2:  qwerty ',
@@ -58,15 +54,15 @@ class CliMultiProcessTest extends PHPUnit
         isTrue($time < 5, "Total time: {$time}");
     }
 
-    public function testAsVirtalExecution()
+    public function testAsVirtalExecution(): void
     {
-        $start = microtime(true);
+        $start  = \microtime(true);
         $result = Helper::executeVirtaul('test:sleep-multi', ['sleep' => 1, 'no-progress' => null, 'pm-max' => 5]);
-        $time = microtime(true) - $start;
+        $time   = \microtime(true) - $start;
 
         $outputAsArray = json($result)->getArrayCopy();
 
-        $expectecContent = implode("\n", [
+        $expectecContent = \implode("\n", [
             'Sleep : 1',
             'Arg #1: QWERTY-1',
             'Arg #2: QWERTY-2',
@@ -85,18 +81,18 @@ class CliMultiProcessTest extends PHPUnit
         isTrue($time < 5, "Total time: {$time}");
     }
 
-    public function testException()
+    public function testException(): void
     {
-        $start = microtime(true);
+        $start  = \microtime(true);
         $result = Helper::executeReal(
             'test:sleep-multi 123 456 789',
-            ['sleep' => 2, 'no-progress' => null, 'pm-max' => 5]
+            ['sleep' => 2, 'no-progress' => null, 'pm-max' => 5],
         );
-        $time = microtime(true) - $start;
+        $time = \microtime(true) - $start;
 
         $outputAsArray = json($result[1])->getArrayCopy();
 
-        $expectecContent = implode("\n", [
+        $expectecContent = \implode("\n", [
             'Sleep : 2',
             'Arg #1: 123',
             'Arg #2: 456',
@@ -106,7 +102,7 @@ class CliMultiProcessTest extends PHPUnit
 
         isSame([
             "Started: 1\n{$expectecContent}\nFinished: 1",
-            "",
+            '',
             "Started: 3\n{$expectecContent}\nFinished: 3",
             "Started: 4\n{$expectecContent}\nFinished: 4",
             "Started: 5\n{$expectecContent}\nFinished: 5",
@@ -116,18 +112,18 @@ class CliMultiProcessTest extends PHPUnit
         isTrue($time < 5, "Total time: {$time}");
     }
 
-    public function testNumberOfCpuCores()
+    public function testNumberOfCpuCores(): void
     {
         $result = Helper::executeReal(
             'test:sleep-multi 123 " qwerty "',
-            ['sleep' => 1, 'no-progress' => null, 'pm-max' => 50, '-vvv' => null]
+            ['sleep' => 1, 'no-progress' => null, 'pm-max' => 50, '-vvv' => null],
         );
 
         isContain('Debug: Max number of sub-processes: 50', $result[1]);
         isContain(
             'Warning: The specified number of processes (--pm-max=50) '
             . 'is more than the found number of CPU cores in the system',
-            $result[1]
+            $result[1],
         );
     }
 }

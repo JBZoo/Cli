@@ -19,9 +19,6 @@ namespace DemoApp\Commands;
 use JBZoo\Cli\CliCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-/**
- * Class ExamplesOptionsStrictTypes
- */
 class ExamplesOptionsStrictTypes extends CliCommand
 {
     protected function configure(): void
@@ -31,7 +28,7 @@ class ExamplesOptionsStrictTypes extends CliCommand
             ->setDescription('Show description of command.')
             ->setHelp(
                 "Full description and usage of command.\n" .
-                "You can use severla lines."
+                'You can use severla lines.',
             )
 
             // None
@@ -44,7 +41,7 @@ class ExamplesOptionsStrictTypes extends CliCommand
                 null,
                 InputOption::VALUE_REQUIRED,
                 'The option is requred but it has default value',
-                42
+                42,
             )
 
             // Optional
@@ -52,14 +49,14 @@ class ExamplesOptionsStrictTypes extends CliCommand
                 'opt-optional',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'Option is not required and can be undefined'
+                'Option is not required and can be undefined',
             )
             ->addOption(
                 'opt-optional-default',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Option is not required with default value',
-                42
+                42,
             )
 
             // Array
@@ -67,20 +64,20 @@ class ExamplesOptionsStrictTypes extends CliCommand
                 'opt-array-optional',
                 null,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                "Multiple values are allowed. Can be empty"
+                'Multiple values are allowed. Can be empty',
             )
             ->addOption(
                 'opt-array-req',
                 null,
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'Multiple values are allowed. Value is required'
+                'Multiple values are allowed. Value is required',
             )
             ->addOption(
                 'opt-array-req-default',
                 'a',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Multiple values are allowed. Value is required with defaut value',
-                [42, 'foo', 'bar']
+                [42, 'foo', 'bar'],
             )
 
             // Arguments
@@ -92,11 +89,11 @@ class ExamplesOptionsStrictTypes extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {
-        ////////////////////////////////////////// Just a boolean flag
+        // //////////////////////////////////////// Just a boolean flag
         // ./my-app examples:agruments
         $this->getOpt('opt'); // false
 
@@ -106,8 +103,7 @@ class ExamplesOptionsStrictTypes extends CliCommand
         // ./my-app examples:agruments -o
         $this->getOpt('opt'); // true
 
-
-        ////////////////////////////////////////// The option requires a value
+        // //////////////////////////////////////// The option requires a value
         // ./my-app examples:agruments --opt-req
         $this->getOpt('opt-req'); // Exception: The "--opt-req" option requires a value.
 
@@ -132,7 +128,7 @@ class ExamplesOptionsStrictTypes extends CliCommand
         // ./my-app examples:agruments --opt-req="15 July 2021 13:48:00"
         $this->getOptDatetime('opt-req'); // \DateTimeImmutable {date: 2021-07-15 13:48:00. UTC (+00:00) }
 
-        ////////////////////////////////////////// The option requires a value with default value
+        // //////////////////////////////////////// The option requires a value with default value
         // ./my-app examples:agruments
         $this->getOpt('opt-req-default'); // 42
 
@@ -142,8 +138,7 @@ class ExamplesOptionsStrictTypes extends CliCommand
         // ./my-app examples:agruments --opt-req-default=123.6
         $this->getOpt('opt-req-default'); // "123.6"
 
-
-        ////////////////////////////////////////// Multiple values are allowed. Value is required with defaut value
+        // //////////////////////////////////////// Multiple values are allowed. Value is required with defaut value
         // ./my-app examples:agruments
         $this->getOpt('opt-array-req-default'); // "bar"
 
@@ -163,7 +158,7 @@ class ExamplesOptionsStrictTypes extends CliCommand
         $this->getOpt('opt-array-req-default'); // 'Asd'
 
         $input = $this->helper->getInput();
-        ////////////////////////////////////////// Arguments
+        // //////////////////////////////////////// Arguments
         // ./my-app examples:agruments
         $input->getArgument('arg-req'); // null
 
@@ -188,11 +183,9 @@ class ExamplesOptionsStrictTypes extends CliCommand
         // ./my-app examples:agruments Qwerty "Some text" 123 456 "789 098"
         $input->getArgument('arg-optional'); // ["123", "456", "789 098"]
 
-
-        ////////////////////////////////////////// Standard input
+        // //////////////////////////////////////// Standard input
         // echo " Qwerty 123 " | php ./my-app examples:agruments
         self::getStdIn(); // " Qwerty 123 \n"
-
 
         // Default success exist code is "0". Max value is 255.
         return self::SUCCESS;

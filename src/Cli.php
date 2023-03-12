@@ -27,67 +27,27 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function JBZoo\Utils\bool;
 use function JBZoo\Utils\int;
 
-/**
- * Class CliHelper
- * @package JBZoo\Cli
- */
 class Cli
 {
     public const TIMESTAMP_FORMAT = 'Y-m-d H:i:s.v';
 
-    /**
-     * @var $this
-     */
-    private static Cli $instance;
-
-    /**
-     * @var InputInterface
-     */
-    private InputInterface $input;
-
-    /**
-     * @var OutputInterface
-     */
+    private static Cli      $instance;
+    private InputInterface  $input;
     private OutputInterface $output;
-
-    /**
-     * @var OutputInterface
-     */
     private OutputInterface $errOutput;
+    private float           $startTimer;
+    private bool            $outputHasErrors = false;
+    private float           $prevTime;
+    private int             $prevMemory;
+    private ?int            $numberOfCpuCores = null;
 
-    /**
-     * @var float
-     */
-    private float $startTimer;
-
-    /**
-     * @var bool
-     */
-    private bool $outputHasErrors = false;
-
-    /**
-     * @var float
-     */
-    private float $prevTime;
-
-    /**
-     * @var int
-     */
-    private int $prevMemory;
-
-    private ?int $numberOfCpuCores = null;
-
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     */
     public function __construct(InputInterface $input, OutputInterface $output)
     {
         $this->prevMemory = \memory_get_usage(false);
         $this->startTimer = \microtime(true);
-        $this->prevTime = $this->startTimer;
+        $this->prevTime   = $this->startTimer;
 
-        $this->input = $input;
+        $this->input  = $input;
         $this->output = self::addOutputStyles($output);
 
         $errOutput = $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
@@ -112,133 +72,47 @@ class Cli
         self::$instance = $this;
     }
 
-    /**
-     * @return float
-     */
     public function getStartTime(): float
     {
         return $this->startTimer;
     }
 
-    /**
-     * @return $this
-     */
-    public static function getInstance(): self
-    {
-        return self::$instance;
-    }
-
-    /**
-     * @return InputInterface
-     */
     public function getInput(): InputInterface
     {
         return $this->input;
     }
 
-    /**
-     * @return OutputInterface
-     */
     public function getOutput(): OutputInterface
     {
         return $this->output;
     }
 
-    /**
-     * @return OutputInterface
-     */
     public function getErrOutput(): OutputInterface
     {
         return $this->errOutput;
     }
 
-    /**
-     * @return string
-     */
-    public static function getRootPath(): string
-    {
-        $rootPath = \defined('JBZOO_PATH_ROOT') ? (string)\JBZOO_PATH_ROOT : null;
-        if (!$rootPath) {
-            return Env::string('JBZOO_PATH_ROOT');
-        }
-
-        return $rootPath;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getBinPath(): string
-    {
-        $binPath = \defined('JBZOO_PATH_BIN') ? (string)\JBZOO_PATH_BIN : null;
-        if (!$binPath) {
-            return Env::string('JBZOO_PATH_BIN');
-        }
-
-        return $binPath;
-    }
-
-    /**
-     * @param OutputInterface $output
-     * @return OutputInterface
-     */
-    public static function addOutputStyles(OutputInterface $output): OutputInterface
-    {
-        $formatter = $output->getFormatter();
-        $defaultColor = 'default';
-
-        $colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', $defaultColor];
-
-        foreach ($colors as $color) {
-            $formatter->setStyle($color, new OutputFormatterStyle($color));
-            $formatter->setStyle("{$color}-b", new OutputFormatterStyle($color, null, ['bold']));
-            $formatter->setStyle("{$color}-u", new OutputFormatterStyle($color, null, ['underscore']));
-            $formatter->setStyle("{$color}-r", new OutputFormatterStyle($color, null, ['reverse']));
-            $formatter->setStyle("{$color}-bg", new OutputFormatterStyle(null, $color));
-            $formatter->setStyle("{$color}-bl", new OutputFormatterStyle($color, null, ['blink']));
-        }
-
-        $formatter->setStyle('bl', new OutputFormatterStyle($defaultColor, null, ['blink']));
-        $formatter->setStyle('b', new OutputFormatterStyle($defaultColor, null, ['bold']));
-        $formatter->setStyle('u', new OutputFormatterStyle($defaultColor, null, ['underscore']));
-        $formatter->setStyle('r', new OutputFormatterStyle(null, null, ['reverse']));
-        $formatter->setStyle('bg', new OutputFormatterStyle('black', 'white'));
-
-        // Aliases
-        $formatter->setStyle('i', new OutputFormatterStyle('green')); // Alias for <info>
-        $formatter->setStyle('c', new OutputFormatterStyle('yellow')); // Alias for <comment>
-        $formatter->setStyle('q', new OutputFormatterStyle('black', 'cyan')); // Alias for <question>
-        $formatter->setStyle('e', new OutputFormatterStyle('white', 'red')); // Alias for <error>
-
-        return $output;
-    }
-
-    /**
-     * @return array
-     */
     public function getProfileInfo(): array
     {
-        $currentTime = \microtime(true);
+        $currentTime   = \microtime(true);
         $currentMemory = \memory_get_usage(false);
 
         $currDiff = $currentMemory - $this->prevMemory;
-        $result = [
+        $result   = [
             \number_format($currentTime - $this->prevTime, 3),
-            ($currDiff < 0 ? '-' : '+') . FS::format(\abs($currDiff))
+            ($currDiff < 0 ? '-' : '+') . FS::format(\abs($currDiff)),
         ];
 
-        $this->prevTime = $currentTime;
+        $this->prevTime   = $currentTime;
         $this->prevMemory = $currentMemory;
 
         return $result;
     }
 
     /**
-     * Alias to write new line in std output
+     * Alias to write new line in std output.
      *
-     * @param array|string|int|float|bool|null $messages
-     * @param string                           $verboseLevel
-     * @return void
+     * @param null|array|bool|float|int|string $messages
      *
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -255,10 +129,11 @@ class Cli
             foreach ($messages as $message) {
                 $this->_($message, $verboseLevel);
             }
+
             return;
         }
 
-        if (\is_null($messages)) {
+        if ($messages === null) {
             $messages = 'null';
         } elseif (\is_bool($messages)) {
             $messages = $messages ? 'true' : 'false';
@@ -266,8 +141,9 @@ class Cli
 
         $messages = (string)$messages;
 
-        if (\strpos($messages, "\n") !== false) {
+        if (\str_contains($messages, "\n")) {
             $this->_(\explode("\n", $messages), $verboseLevel);
+
             return;
         }
 
@@ -280,7 +156,7 @@ class Cli
 
         if ($this->isDisplayProfiling()) {
             [$totalTime, $curMemory] = $this->getProfileInfo();
-            $curMemory = \str_pad($curMemory, 10, ' ', \STR_PAD_LEFT);
+            $curMemory               = \str_pad($curMemory, 10, ' ', \STR_PAD_LEFT);
             $profilePrefix .= "<green>[</green>+{$totalTime}s<green>/</green>{$curMemory}<green>]</green> ";
         }
 
@@ -318,80 +194,52 @@ class Cli
         }
     }
 
-    /**
-     * @return bool
-     */
     public function isOutputHasErrors(): bool
     {
         return $this->outputHasErrors;
     }
 
-    /**
-     * @return bool
-     */
     public function isCron(): bool
     {
         return bool($this->input->getOption('cron'));
     }
 
-    /**
-     * @return bool
-     */
     public function isStdoutOnly(): bool
     {
         return bool($this->input->getOption('stdout-only')) || $this->isCron();
     }
 
-    /**
-     * @return bool
-     */
     public function isDisplayProfiling(): bool
     {
         return bool($this->input->getOption('profile')) || $this->isCron();
     }
 
-    /**
-     * @return bool
-     */
     public function isDisplayTimestamp(): bool
     {
         return bool($this->input->getOption('timestamp')) || $this->isCron();
     }
 
-    /**
-     * @return bool
-     */
     public function isInfoLevel(): bool
     {
         return $this->getOutput()->isVerbose() || $this->isCron();
     }
 
-    /**
-     * @return bool
-     */
     public function isWarningLevel(): bool
     {
         return $this->getOutput()->isVeryVerbose() || $this->isCron();
     }
 
-    /**
-     * @return bool
-     */
     public function isDebugLevel(): bool
     {
         return $this->getOutput()->isDebug();
     }
 
-    /**
-     * @return bool
-     */
     public function isProgressBarDisabled(): bool
     {
         return bool($this->getInput()->getOption('no-progress')) || $this->isCron();
     }
 
     /**
-     * @return int
      * @see https://github.com/phpstan/phpstan-src/blob/f8be122188/src/Process/CpuCoreCounter.php
      */
     public function getNumberOfCpuCores(): int
@@ -410,6 +258,7 @@ class Cli
             $cpuinfo = \file_get_contents('/proc/cpuinfo');
             if ($cpuinfo !== false) {
                 \preg_match_all('/^processor/m', $cpuinfo, $matches);
+
                 return $this->numberOfCpuCores = \count($matches[0]);
             }
         }
@@ -437,5 +286,61 @@ class Cli
         }
 
         return $this->numberOfCpuCores = 2;
+    }
+
+    public static function getInstance(): self
+    {
+        return self::$instance;
+    }
+
+    public static function getRootPath(): string
+    {
+        $rootPath = \defined('JBZOO_PATH_ROOT') ? (string)JBZOO_PATH_ROOT : null;
+        if (!$rootPath) {
+            return Env::string('JBZOO_PATH_ROOT');
+        }
+
+        return $rootPath;
+    }
+
+    public static function getBinPath(): string
+    {
+        $binPath = \defined('JBZOO_PATH_BIN') ? (string)JBZOO_PATH_BIN : null;
+        if (!$binPath) {
+            return Env::string('JBZOO_PATH_BIN');
+        }
+
+        return $binPath;
+    }
+
+    public static function addOutputStyles(OutputInterface $output): OutputInterface
+    {
+        $formatter    = $output->getFormatter();
+        $defaultColor = 'default';
+
+        $colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', $defaultColor];
+
+        foreach ($colors as $color) {
+            $formatter->setStyle($color, new OutputFormatterStyle($color));
+            $formatter->setStyle("{$color}-b", new OutputFormatterStyle($color, null, ['bold']));
+            $formatter->setStyle("{$color}-u", new OutputFormatterStyle($color, null, ['underscore']));
+            $formatter->setStyle("{$color}-r", new OutputFormatterStyle($color, null, ['reverse']));
+            $formatter->setStyle("{$color}-bg", new OutputFormatterStyle(null, $color));
+            $formatter->setStyle("{$color}-bl", new OutputFormatterStyle($color, null, ['blink']));
+        }
+
+        $formatter->setStyle('bl', new OutputFormatterStyle($defaultColor, null, ['blink']));
+        $formatter->setStyle('b', new OutputFormatterStyle($defaultColor, null, ['bold']));
+        $formatter->setStyle('u', new OutputFormatterStyle($defaultColor, null, ['underscore']));
+        $formatter->setStyle('r', new OutputFormatterStyle(null, null, ['reverse']));
+        $formatter->setStyle('bg', new OutputFormatterStyle('black', 'white'));
+
+        // Aliases
+        $formatter->setStyle('i', new OutputFormatterStyle('green')); // Alias for <info>
+        $formatter->setStyle('c', new OutputFormatterStyle('yellow')); // Alias for <comment>
+        $formatter->setStyle('q', new OutputFormatterStyle('black', 'cyan')); // Alias for <question>
+        $formatter->setStyle('e', new OutputFormatterStyle('white', 'red')); // Alias for <error>
+
+        return $output;
     }
 }

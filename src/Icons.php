@@ -16,18 +16,11 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
-/**
- * Class Icons
- * @package JBZoo\Cli
- */
 class Icons
 {
     public const GROUP_PROGRESS = 'progress';
     public const GROUP_FINISH   = 'finish';
 
-    /**
-     * @var array
-     */
     private static array $icons = [
         self::GROUP_PROGRESS => [
             "\xF0\x9F\x8D\xBA", // :beer:
@@ -145,14 +138,9 @@ class Icons
             "\xF0\x9F\x98\x87", // :innocent:
             "\xF0\x9F\x98\x89", // :wink:
             "\xF0\x9F\x98\x8C", // :relieved:
-        ]
+        ],
     ];
 
-    /**
-     * @param string $group
-     * @param bool   $isDecorated
-     * @return string
-     */
     public static function getRandomIcon(string $group, bool $isDecorated): string
     {
         if (!$isDecorated) {

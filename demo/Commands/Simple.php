@@ -18,9 +18,6 @@ namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 
-/**
- * Class Simple
- */
 class Simple extends CliCommand
 {
     protected function configure(): void
@@ -32,7 +29,7 @@ class Simple extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {

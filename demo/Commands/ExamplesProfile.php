@@ -20,9 +20,6 @@ use JBZoo\Cli\CliCommand;
 
 use function JBZoo\Cli\cli;
 
-/**
- * Class ExamplesProfile
- */
 class ExamplesProfile extends CliCommand
 {
     protected function configure(): void
@@ -35,24 +32,25 @@ class ExamplesProfile extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {
         cli('Start cycles');
 
         $parentMaxStep = 3;
-        $childMaxStep = 10 ^ 6;
+        $childMaxStep  = 10 ^ 6;
 
         for ($parentIndex = 0; $parentIndex < $parentMaxStep; $parentIndex++) {
             $array = [];
+
             for ($index = 0; $index < $childMaxStep; $index++) {
                 $array[] = $index;
             }
 
             cli("Iteration: {$parentIndex}");
             unset($array);
-            usleep(random_int(10000, 300000));
+            \usleep(\random_int(10000, 300000));
         }
 
         cli('Finish cycles');

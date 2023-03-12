@@ -19,13 +19,10 @@ namespace JBZoo\PHPUnit\TestApp\Commands;
 use JBZoo\Cli\CliCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-/**
- *
- */
 class TestCliStdIn extends CliCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -36,7 +33,7 @@ class TestCliStdIn extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {

@@ -21,13 +21,10 @@ use JBZoo\Cli\Exception;
 use JBZoo\Cli\OutLvl;
 use Symfony\Component\Console\Input\InputOption;
 
-/**
- *
- */
 class TestOutput extends CliCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function configure(): void
     {
@@ -40,7 +37,7 @@ class TestOutput extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {
@@ -59,11 +56,11 @@ class TestOutput extends CliCommand
 
         echo "\n";
         echo "Legacy    \n";
-        echo " ";
-        echo "";
-        echo "  Message  ";
+        echo ' ';
+        echo '';
+        echo '  Message  ';
         echo "\t";
-        
+
         $this->_(['Normal 1', 'Normal 2']);
         $this->_('Message', OutLvl::ERROR);
 
@@ -76,7 +73,7 @@ class TestOutput extends CliCommand
         $this->_('Debug1 -vvv', OutLvl::VVV);
         $this->_([
             'Message #1 -vvv',
-            'Message #2 -vvv'
+            'Message #2 -vvv',
         ], OutLvl::DEBUG);
 
         $this->_('Error (e)', OutLvl::E);

@@ -16,10 +16,6 @@ declare(strict_types=1);
 
 namespace DemoApp\Commands;
 
-/**
- * Class Exception
- * @package JBZoo\Cli
- */
 class Exception extends \RuntimeException
 {
 }

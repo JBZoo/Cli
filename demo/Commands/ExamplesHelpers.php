@@ -20,9 +20,6 @@ use JBZoo\Cli\CliCommand;
 
 use function JBZoo\Cli\cli;
 
-/**
- * Class ExamplesHelpers
- */
 class ExamplesHelpers extends CliCommand
 {
     protected function configure(): void
@@ -35,22 +32,22 @@ class ExamplesHelpers extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {
         $yourName = $this->ask("What's your name?", 'idk');
         cli("Your name is \"{$yourName}\"");
 
-        $yourSecret = $this->askPassword("New password?");
+        $yourSecret = $this->askPassword('New password?');
         cli("Your secret is \"{$yourSecret}\"");
 
         $selectedColor = $this->askOption('Choose your favorite color', ['Red', 'Blue', 'Yellow'], 1);
-        $colorAlias = strtolower($selectedColor);
+        $colorAlias    = \strtolower($selectedColor);
         cli("Selected color is \"<{$colorAlias}>{$selectedColor}</{$colorAlias}>\"");
 
         $isConfirmed = $this->confirmation('Are you ready to execute the script?');
-        cli("Is confirmed: " . ($isConfirmed ? 'Yes' : 'No'));
+        cli('Is confirmed: ' . ($isConfirmed ? 'Yes' : 'No'));
 
         return self::SUCCESS;
     }

@@ -20,35 +20,18 @@ use JBZoo\Event\EventManager;
 use JBZoo\Utils\FS;
 use Symfony\Component\Console\Application;
 
-/**
- * Class CliApplication
- * @package JBZoo\Cli
- */
 class CliApplication extends Application
 {
-    /**
-     * @var EventManager|null
-     */
     private ?EventManager $eventManager = null;
+    private ?string       $logo         = null;
 
     /**
-     * @var string|null
-     */
-    private ?string $logo = null;
-
-    /**
-     * Register commands by directory path
-     *
-     * @param string $commandsDir
-     * @param string $gloabalNamespace
-     * @param bool   $strictMode
-     * @return \JBZoo\Cli\CliApplication
-     * @throws \ReflectionException
+     * Register commands by directory path.
      */
     public function registerCommandsByPath(
         string $commandsDir,
         string $gloabalNamespace,
-        bool $strictMode = true
+        bool $strictMode = true,
     ): self {
         if ($strictMode && !\is_dir($commandsDir)) {
             throw new Exception('First argument is not directory!');
@@ -67,7 +50,7 @@ class CliApplication extends Application
 
             require_once $file;
 
-            $taskNamespace = \trim(\str_replace('/', '\\', (string)\strstr(\dirname($file), 'Commands')));
+            $taskNamespace    = \trim(\str_replace('/', '\\', (string)\strstr(\dirname($file), 'Commands')));
             $commandClassName = "{$gloabalNamespace}\\{$taskNamespace}\\" . FS::filename($file);
 
             if (\class_exists($commandClassName)) {
@@ -86,38 +69,27 @@ class CliApplication extends Application
         return $this;
     }
 
-    /**
-     * @param EventManager $eventManager
-     * @return $this
-     */
     public function setEventManager(EventManager $eventManager): self
     {
         $this->eventManager = $eventManager;
+
         return $this;
     }
 
-    /**
-     * @return EventManager|null
-     */
     public function getEventManager(): ?EventManager
     {
         return $this->eventManager;
     }
 
-    /**
-     * @param string|null $logo
-     * @return $this
-     */
     public function setLogo(?string $logo = null): self
     {
         $this->logo = $logo;
+
         return $this;
     }
 
     /**
      * Returns the long version of the application.
-     *
-     * @return string The long application version
      */
     public function getLongVersion(): string
     {

@@ -18,42 +18,41 @@ namespace JBZoo\PHPUnit;
 
 use JBZoo\Cli\CliRender;
 
-/**
- * Class CliRenderTest
- * @package JBZoo\PHPUnit
- */
 class CliRenderTest extends PHPUnit
 {
-    public function testList()
+    public function testList(): void
     {
-        isSame(implode("\n", [
+        isSame(
+            \implode("\n", [
                 'Qwerty: foo',
                 'Qwe   : bar',
                 'Ty    : baz',
             ]) . "\n",
-            CliRender::list(['qwerty' => 'foo', 'qwe' => 'bar', 'ty' => 'baz', 'False' => false])
+            CliRender::list(['qwerty' => 'foo', 'qwe' => 'bar', 'ty' => 'baz', 'False' => false]),
         );
 
-        isSame(implode("\n", [
+        isSame(
+            \implode("\n", [
                 'Lorem ipsum dolor sit amet',
                 'Qwe: bar',
                 'Ty : baz',
             ]) . "\n",
-            CliRender::list(['Lorem ipsum dolor sit amet', 'qwe' => 'bar', 'ty' => 'baz', 'empty' => ''])
+            CliRender::list(['Lorem ipsum dolor sit amet', 'qwe' => 'bar', 'ty' => 'baz', 'empty' => '']),
         );
 
-        isSame(implode("\n", [
+        isSame(
+            \implode("\n", [
                 ' * Lorem ipsum dolor',
                 ' * Qwe: bar',
                 ' * Ty : baz',
             ]) . "\n",
-            CliRender::list(['Lorem ipsum dolor', 'qwe' => 'bar', 'not_trimmed' => '   ', 'ty' => 'baz'], "  *  ")
+            CliRender::list(['Lorem ipsum dolor', 'qwe' => 'bar', 'not_trimmed' => '   ', 'ty' => 'baz'], '  *  '),
         );
 
-        isSame(" * Lorem ipsum dolor sit amet\n", CliRender::list(['Lorem ipsum dolor sit amet'], "  *  "));
+        isSame(" * Lorem ipsum dolor sit amet\n", CliRender::list(['Lorem ipsum dolor sit amet'], '  *  '));
 
-        isSame("", CliRender::list([], "  *  "));
-        isSame("", CliRender::list([''], "  *  "));
-        isSame("", CliRender::list(['', ' '], "  *  "));
+        isSame('', CliRender::list([], '  *  '));
+        isSame('', CliRender::list([''], '  *  '));
+        isSame('', CliRender::list(['', ' '], '  *  '));
     }
 }

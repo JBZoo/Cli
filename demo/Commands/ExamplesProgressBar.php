@@ -20,9 +20,6 @@ use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\ProgressBars\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 
-/**
- * Class ExamplesProgressBar
- */
 class ExamplesProgressBar extends CliCommand
 {
     protected function configure(): void
@@ -37,57 +34,55 @@ class ExamplesProgressBar extends CliCommand
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function executeAction(): int
     {
-        //////////////////////////////////////////////////////////////////////// Just 3 steps
-        ProgressBar::run(2, function ($stepValue, $stepIndex, $currentStep) {
-            sleep(1);
+        // ////////////////////////////////////////////////////////////////////// Just 3 steps
+        ProgressBar::run(2, static function ($stepValue, $stepIndex, $currentStep) {
+            \sleep(1);
+
             return "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}";
         }, 'Number of steps');
 
-
-        //////////////////////////////////////////////////////////////////////// Assoc array. Step-by-step
+        // ////////////////////////////////////////////////////////////////////// Assoc array. Step-by-step
         $list = [
             'key_1' => 'value_1',
             'key_2' => 'value_2',
-            'key_3' => 'value_3'
+            'key_3' => 'value_3',
         ];
-        ProgressBar::run($list, function ($stepValue, $stepIndex, $currentStep) {
-            return "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}";
-        }, 'Assoc array');
+        ProgressBar::run($list, static fn ($stepValue, $stepIndex, $currentStep) => "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}", 'Assoc array');
 
-
-        //////////////////////////////////////////////////////////////////////// Exit from the cycle
-        ProgressBar::run(3, function ($stepValue, $stepIndex, $currentStep) {
+        // ////////////////////////////////////////////////////////////////////// Exit from the cycle
+        ProgressBar::run(3, static function ($stepValue, $stepIndex, $currentStep) {
             if ($stepValue === 1) {
                 return ProgressBar::BREAK;
             }
+
             return "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}";
         }, 'Exit from the cycle');
 
-
-        //////////////////////////////////////////////////////////////////////// Exception
+        // ////////////////////////////////////////////////////////////////////// Exception
         if ($this->getOptBool('exception')) {
-            ProgressBar::run(3, function ($stepValue) {
+            ProgressBar::run(3, static function ($stepValue) {
                 if ($stepValue === 1) {
                     throw new Exception("Exception #{$stepValue}");
                 }
+
                 return "\$stepValue={$stepValue}";
             }, 'Exception handling', false);
         }
 
-        //////////////////////////////////////////////////////////////////////// List of Exceptions
+        // ////////////////////////////////////////////////////////////////////// List of Exceptions
         if ($this->getOptBool('exception-list')) {
-            ProgressBar::run(10, function ($stepValue) {
+            ProgressBar::run(10, static function ($stepValue) {
                 if ($stepValue % 3 === 0) {
                     throw new Exception("Exception #{$stepValue}");
                 }
+
                 return "\$stepValue={$stepValue}";
             }, 'Handling list of exceptions at once', true);
         }
-
 
         // Default success exist code is "0". Max value is 255.
         return self::SUCCESS;
