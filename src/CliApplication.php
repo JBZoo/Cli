@@ -20,6 +20,8 @@ use JBZoo\Event\EventManager;
 use JBZoo\Utils\FS;
 use Symfony\Component\Console\Application;
 
+use function JBZoo\Utils\isStrEmpty;
+
 class CliApplication extends Application
 {
     private ?EventManager $eventManager = null;
@@ -39,7 +41,7 @@ class CliApplication extends Application
 
         $files = FS::ls($commandsDir);
 
-        if (empty($files)) {
+        if (\count($files) === 0) {
             return $this;
         }
 
@@ -93,7 +95,7 @@ class CliApplication extends Application
      */
     public function getLongVersion(): string
     {
-        if ($this->logo) {
+        if (!isStrEmpty($this->logo)) {
             return "<info>{$this->logo}</info>\n<comment>{$this->getVersion()}</comment>";
         }
 

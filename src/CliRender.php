@@ -23,7 +23,8 @@ class CliRender
     public static function list(array $metrics, ?string $addDot = null): string
     {
         $result = Str::listToDescription($metrics, true);
-        if (!$result) {
+
+        if ($result === null) {
             return '';
         }
 
@@ -32,7 +33,8 @@ class CliRender
             $list   = \explode("\n", $result);
 
             \array_walk($list, static function (string &$item) use ($addDot): void {
-                if (\trim($item)) {
+                $item = \trim($item);
+                if ($item !== '') {
                     $item = " {$addDot} {$item}";
                 }
             });

@@ -26,6 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\bool;
 use function JBZoo\Utils\int;
+use function JBZoo\Utils\isStrEmpty;
 
 class Cli
 {
@@ -296,21 +297,21 @@ class Cli
     public static function getRootPath(): string
     {
         $rootPath = \defined('JBZOO_PATH_ROOT') ? (string)JBZOO_PATH_ROOT : null;
-        if (!$rootPath) {
+        if (isStrEmpty($rootPath)) {
             return Env::string('JBZOO_PATH_ROOT');
         }
 
-        return $rootPath;
+        return (string)$rootPath;
     }
 
     public static function getBinPath(): string
     {
         $binPath = \defined('JBZOO_PATH_BIN') ? (string)JBZOO_PATH_BIN : null;
-        if (!$binPath) {
+        if (isStrEmpty($binPath)) {
             return Env::string('JBZOO_PATH_BIN');
         }
 
-        return $binPath;
+        return (string)$binPath;
     }
 
     public static function addOutputStyles(OutputInterface $output): OutputInterface

@@ -23,6 +23,8 @@ use JBZoo\Utils\Str;
 use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function JBZoo\Utils\isStrEmpty;
+
 class ProgressBar extends AbstractProgressBar
 {
     private OutputInterface     $output;
@@ -41,7 +43,7 @@ class ProgressBar extends AbstractProgressBar
     public function __construct(?OutputInterface $output = null)
     {
         $this->helper = Cli::getInstance();
-        $this->output = $output ?: $this->helper->getOutput();
+        $this->output = $output ?? $this->helper->getOutput();
 
         $this->progressIcon = Icons::getRandomIcon(Icons::GROUP_PROGRESS, $this->output->isDecorated());
         $this->finishIcon   = Icons::getRandomIcon(Icons::GROUP_FINISH, $this->output->isDecorated());
@@ -98,7 +100,7 @@ class ProgressBar extends AbstractProgressBar
     {
         if ($this->max <= 0) {
             $this->helper->_(
-                $this->title
+                !isStrEmpty($this->title)
                     ? "{$this->title}. Number of items is 0 or less"
                     : 'Number of items is 0 or less',
             );
@@ -107,9 +109,9 @@ class ProgressBar extends AbstractProgressBar
         }
 
         $this->progressBar = $this->createProgressBar();
-        if (!$this->progressBar) {
+        if ($this->progressBar === null) {
             $this->helper->_(
-                $this->title
+                !isStrEmpty($this->title)
                     ? "Working on \"<blue>{$this->title}</blue>\". Number of steps: <blue>{$this->max}</blue>."
                     : "Number of steps: <blue>{$this->max}</blue>.",
             );
@@ -142,7 +144,7 @@ class ProgressBar extends AbstractProgressBar
 
             $exceptionMessages = \array_merge($exceptionMessages, (array)$exceptionMessage);
 
-            if ($this->progressBar) {
+            if ($this->progressBar !== null) {
                 $errorNumbers = \count($exceptionMessages);
                 $errMessage   = $errorNumbers > 0 ? "<red-bl>{$errorNumbers}</red-bl>" : '0';
                 $this->progressBar->setMessage($errMessage, 'jbzoo_caught_exceptions');
@@ -156,7 +158,7 @@ class ProgressBar extends AbstractProgressBar
             $currentIndex++;
         }
 
-        if ($this->progressBar) {
+        if ($this->progressBar !== null) {
             if ($isSkipped) {
                 $this->progressBar->display();
             } else {
@@ -200,11 +202,12 @@ class ProgressBar extends AbstractProgressBar
     {
         $progressBarLines = [];
         $footerLine       = [];
-        $bar              = '[%bar%]';
-        $percent          = '%percent:2s%%';
-        $steps            = '(%current% / %max%)';
 
-        if ($this->title) {
+        $bar     = '[%bar%]';
+        $percent = '%percent:2s%%';
+        $steps   = '(%current% / %max%)';
+
+        if (!isStrEmpty($this->title)) {
             $progressBarLines[] = "Progress of <blue>{$this->title}</blue>";
         }
 
@@ -260,22 +263,15 @@ class ProgressBar extends AbstractProgressBar
         return \implode("\n", $progressBarLines) . "\n" . CliRender::list($footerLine) . "\n";
     }
 
-    /**
-     * @param int|string $stepIndex
-     */
-    private function setStep($stepIndex, int $currentIndex): void
+    private function setStep(int|float|string $stepIndex, int $currentIndex): void
     {
-        if ($this->progressBar) {
+        if ($this->progressBar !== null) {
             $this->progressBar->setProgress($currentIndex);
             $this->progressBar->setMessage($stepIndex . ': ', 'jbzoo_current_index');
         }
     }
 
-    /**
-     * @param mixed      $stepValue
-     * @param int|string $stepIndex
-     */
-    private function handleOneStep($stepValue, $stepIndex, int $currentIndex): array
+    private function handleOneStep(mixed $stepValue, int|float|string $stepIndex, int $currentIndex): array
     {
         if ($this->callback === null) {
             throw new Exception('Callback function is not defined');
@@ -300,21 +296,19 @@ class ProgressBar extends AbstractProgressBar
 
         // Handle status messages
         $stepResult = '';
-        if (!empty($callbackResults)) {
+        if (\count($callbackResults) > 0) {
             $stepResult = \str_replace(["\n", "\r", "\t"], ' ', \implode('; ', $callbackResults));
 
-            if ($this->progressBar) {
-                if ($stepResult !== '') {
-                    if (\strlen(\strip_tags($stepResult)) > self::MAX_LINE_LENGTH) {
-                        $stepResult = Str::limitChars(\strip_tags($stepResult), self::MAX_LINE_LENGTH);
-                    }
-
-                    $this->progressBar->setMessage($stepResult);
+            if ($this->progressBar !== null) {
+                if (\strlen(\strip_tags($stepResult)) > self::MAX_LINE_LENGTH) {
+                    $stepResult = Str::limitChars(\strip_tags($stepResult), self::MAX_LINE_LENGTH);
                 }
+
+                $this->progressBar->setMessage($stepResult);
             } else {
                 $this->helper->_(" * ({$prefixMessage}): {$stepResult}");
             }
-        } elseif (!$this->progressBar) {
+        } elseif ($this->progressBar === null) {
             $this->helper->_(" * ({$prefixMessage}): n/a");
         }
 
@@ -351,7 +345,7 @@ class ProgressBar extends AbstractProgressBar
 
     private static function showListOfExceptions(array $exceptionMessages): void
     {
-        if (\count($exceptionMessages)) {
+        if (\count($exceptionMessages) > 0) {
             $listOfErrors = \implode("\n", $exceptionMessages) . "\n";
             $listOfErrors = \str_replace('<error>Error.</error> ', '', $listOfErrors);
 

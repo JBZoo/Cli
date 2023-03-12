@@ -21,6 +21,7 @@ use JBZoo\Utils\FS;
 use JBZoo\Utils\Str;
 use JBZoo\Utils\Vars;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,9 +35,7 @@ use function JBZoo\Utils\int;
 
 abstract class CliCommand extends Command
 {
-    /**
-     * @psalm-suppress PropertyNotSetInConstructor
-     */
+    /** @psalm-suppress PropertyNotSetInConstructor */
     protected Cli $helper;
 
     abstract protected function executeAction(): int;
@@ -89,12 +88,14 @@ abstract class CliCommand extends Command
         try {
             $this->trigger('exec.before', [$this, $this->helper]);
             \ob_start();
-            $exitCode = $this->executeAction();
-            if ($echoContent = \ob_get_clean()) {
+            $exitCode    = $this->executeAction();
+            $echoContent = \ob_get_clean();
+            if ($echoContent !== false && $echoContent !== '') {
                 $this->showLegacyOutput($echoContent);
             }
         } catch (\Exception $exception) {
-            if ($echoContent = \ob_get_clean()) {
+            $echoContent = \ob_get_clean();
+            if ($echoContent !== false && $echoContent !== '') {
                 $this->showLegacyOutput($echoContent);
             }
 
@@ -129,7 +130,7 @@ abstract class CliCommand extends Command
     /**
      * @return null|mixed
      */
-    protected function getOpt(string $optionName, bool $canBeArray = true)
+    protected function getOpt(string $optionName, bool $canBeArray = true): mixed
     {
         $value = $this->helper->getInput()->getOption($optionName);
 
@@ -183,19 +184,17 @@ abstract class CliCommand extends Command
         string $optionName,
         string $defaultDatetime = '1970-01-01 00:00:00',
     ): \DateTimeImmutable {
-        $dateAsString = $this->getOptString($optionName) ?: $defaultDatetime;
+        $value        = $this->getOptString($optionName);
+        $dateAsString = $value === '' ? $defaultDatetime : $value;
 
         return new \DateTimeImmutable($dateAsString);
     }
 
     /**
      * Alias to write new line in std output.
-     *
-     * @param array|string $messages
-     *
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
-    protected function _($messages = '', string $verboseLevel = ''): void
+    protected function _(mixed $messages = '', string $verboseLevel = ''): void
     {
         $this->helper->_($messages, $verboseLevel);
     }
@@ -228,13 +227,13 @@ abstract class CliCommand extends Command
     protected function trigger(string $eventName, array $arguments = [], ?callable $continueCallback = null): int
     {
         $application = $this->getApplication();
-        if (!$application) {
+        if ($application === null) {
             return 0;
         }
 
         if ($application instanceof CliApplication) {
             $eManager = $application->getEventManager();
-            if (!$eManager) {
+            if ($eManager === null) {
                 return 0;
             }
 
@@ -249,18 +248,20 @@ abstract class CliCommand extends Command
         $question     = \rtrim($question, ':');
         $questionText = "<yellow-r>Question:</yellow-r> {$question}";
         if (!$isHidden) {
-            $questionText .= ($default ? " (Default: <i>{$default}</i>)" : '');
+            $questionText .= ($default !== '' ? " (Default: <i>{$default}</i>)" : '');
         }
 
-        /** @var \Symfony\Component\Console\Helper\QuestionHelper $helper */
-        $helper      = $this->getHelper('question');
         $questionObj = new Question($questionText . ': ', $default);
         if ($isHidden) {
             $questionObj->setHidden(true);
             $questionObj->setHiddenFallback(false);
         }
 
-        return (string)$helper->ask($this->helper->getInput(), $this->helper->getOutput(), $questionObj);
+        return (string)$this->getQuestionHelper()->ask(
+            $this->helper->getInput(),
+            $this->helper->getOutput(),
+            $questionObj,
+        );
     }
 
     protected function askPassword(string $question, bool $randomDefault = true): string
@@ -276,41 +277,44 @@ abstract class CliCommand extends Command
 
     protected function confirmation(string $question = 'Are you sure?', bool $default = false): bool
     {
-        $question = '<yellow-r>Question:</yellow-r> ' . \trim($question);
-
-        /** @var \Symfony\Component\Console\Helper\QuestionHelper $helper */
-        $helper       = $this->getHelper('question');
+        $question     = '<yellow-r>Question:</yellow-r> ' . \trim($question);
         $defaultValue = $default ? 'Y' : 'n';
-
-        $questionObj = new ConfirmationQuestion(
+        $questionObj  = new ConfirmationQuestion(
             "{$question} (<c>Y/n</c>; Default: <i>{$defaultValue}</i>): ",
             $default,
         );
 
-        return (bool)$helper->ask($this->helper->getInput(), $this->helper->getOutput(), $questionObj);
+        return (bool)$this->getQuestionHelper()->ask(
+            $this->helper->getInput(),
+            $this->helper->getOutput(),
+            $questionObj,
+        );
     }
 
     /**
-     * @param string[]        $options
-     * @param null|int|string $default
+     * @param string[] $options
      */
-    protected function askOption(string $question, array $options, $default = null): string
+    protected function askOption(string $question, array $options, int|float|string $default = null): string
     {
         $question = '<yellow-r>Question:</yellow-r> ' . \trim($question);
 
         $defaultValue = '';
         if ($default !== null) {
+            /** @phpstan-ignore-next-line */
             $defaultValue = $options[$default] ?? $default ?: '';
             if ($defaultValue !== '') {
                 $defaultValue = " (Default: <i>{$defaultValue}</i>)";
             }
         }
 
-        $helper      = $this->getHelper('question');
         $questionObj = new ChoiceQuestion($question . $defaultValue . ': ', $options, $default);
         $questionObj->setErrorMessage('The option "%s" is undefined. See the avaialable options');
 
-        return (string)$helper->ask($this->helper->getInput(), $this->helper->getOutput(), $questionObj);
+        return (string)$this->getQuestionHelper()->ask(
+            $this->helper->getInput(),
+            $this->helper->getOutput(),
+            $questionObj,
+        );
     }
 
     protected static function getStdIn(): ?string
@@ -339,16 +343,16 @@ abstract class CliCommand extends Command
         $curMemory = FS::format(\memory_get_usage(false));
         $maxMemory = FS::format(\memory_get_peak_usage(true));
 
-        $this->_(\implode('; ', [
-            "Memory Usage/Peak: <green>{$curMemory}</green>/<green>{$maxMemory}</green>",
-            "Execution Time: <green>{$totalTime} sec</green>",
-        ]));
+        $this->_(
+            \implode('; ', [
+                "Memory Usage/Peak: <green>{$curMemory}</green>/<green>{$maxMemory}</green>",
+                "Execution Time: <green>{$totalTime} sec</green>",
+            ]),
+        );
     }
 
-    private function showLegacyOutput(?string $echoContent): void
+    private function showLegacyOutput(string $echoContent): void
     {
-        $echoContent = $echoContent ?: '';
-
         $lines = \explode("\n", $echoContent);
         $lines = \array_map(static fn ($line) => \rtrim($line), $lines);
 
@@ -359,5 +363,15 @@ abstract class CliCommand extends Command
         } else {
             $this->_($echoContent, OutLvl::LEGACY);
         }
+    }
+
+    private function getQuestionHelper(): QuestionHelper
+    {
+        $helper = $this->getHelper('question');
+        if ($helper instanceof QuestionHelper) {
+            return $helper;
+        }
+
+        throw new Exception('Symfony QuestionHelper not found');
     }
 }

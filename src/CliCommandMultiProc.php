@@ -106,7 +106,8 @@ abstract class CliCommandMultiProc extends CliCommand
 
     protected function executeAction(): int
     {
-        if ($pmProcId = $this->getOptString('pm-proc-id')) {
+        $pmProcId = $this->getOptString('pm-proc-id');
+        if ($pmProcId !== '') {
             return $this->executeOneProcess($pmProcId);
         }
 
@@ -126,11 +127,7 @@ abstract class CliCommandMultiProc extends CliCommand
             );
         }
 
-        $procManager = $this->initProcManager(
-            $procNum,
-            $this->getOptInt('pm-interval') ?: self::PM_DEFAULT_INTERVAL,
-            $this->getOptInt('pm-start-delay') ?: self::PM_DEFAULT_START_DELAY,
-        );
+        $procManager = $this->initProcManager($procNum, $this->gePmInterval(), $this->getPmStartDelay());
 
         $procListIds = $this->getListOfChildIds();
 
@@ -146,7 +143,7 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $this->beforeStartAllProcesses();
         $procManager->waitForAllProcesses();
-        if ($this->progressBar) {
+        if ($this->progressBar !== null) {
             $this->progressBar->finish();
             $this->_('');
         }
@@ -182,13 +179,11 @@ abstract class CliCommandMultiProc extends CliCommand
             $this->procPool[$virtProcId]['exit_code'] = $exitCode;
             $this->procPool[$virtProcId]['std_out']   = $stdOutput;
 
-            if ($exitCode > 0) {
-                $this->procPool[$virtProcId]['err_out'] = $errorOutput;
-            } elseif ($errorOutput) {
+            if ($exitCode > 0 || $errorOutput !== '') {
                 $this->procPool[$virtProcId]['err_out'] = $errorOutput;
             }
 
-            if ($this->progressBar) {
+            if ($this->progressBar !== null) {
                 $this->progressBar->advance();
             }
         };
@@ -248,12 +243,15 @@ abstract class CliCommandMultiProc extends CliCommand
         // Build full command line
         $process = Process::fromShellCommandline(
             CliUtils::build(
-                \implode(' ', [
-                    Sys::getBinary(),
-                    Cli::getBinPath(),
-                    $this->getName(),
-                    \implode(' ', $argumentsList),
-                ]),
+                \implode(
+                    ' ',
+                    \array_filter([
+                        Sys::getBinary(),
+                        Cli::getBinPath(),
+                        $this->getName(),
+                        \implode(' ', $argumentsList),
+                    ]),
+                ),
                 $options,
             ),
             Cli::getRootPath(),
@@ -315,7 +313,23 @@ abstract class CliCommandMultiProc extends CliCommand
 
     private function getMaxTimeout(): int
     {
-        return $this->getOptInt('pm-max-timeout') ?: self::PM_DEFAULT_TIMEOUT;
+        $pmMaxTimeout = $this->getOptInt('pm-max-timeout');
+
+        return $pmMaxTimeout > 0 ? $pmMaxTimeout : self::PM_DEFAULT_TIMEOUT;
+    }
+
+    private function gePmInterval(): int
+    {
+        $pmInterval = $this->getOptInt('pm-interval');
+
+        return $pmInterval > 0 ? $pmInterval : self::PM_DEFAULT_INTERVAL;
+    }
+
+    private function getPmStartDelay(): int
+    {
+        $pmStartDelay = $this->getOptInt('pm-start-delay');
+
+        return $pmStartDelay > 0 ? $pmStartDelay : self::PM_DEFAULT_START_DELAY;
     }
 
     private function getNumberOfProcesses(): int
