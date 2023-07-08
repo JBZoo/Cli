@@ -294,7 +294,7 @@ abstract class CliCommand extends Command
     /**
      * @param string[] $options
      */
-    protected function askOption(string $question, array $options, int|float|string $default = null): string
+    protected function askOption(string $question, array $options, int|float|string|null $default = null): string
     {
         $question = '<yellow-r>Question:</yellow-r> ' . \trim($question);
 
