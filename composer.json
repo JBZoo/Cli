@@ -30,8 +30,8 @@
     "require"           : {
         "php"                                 : "^8.1",
 
-        "jbzoo/utils"                         : "7.x-dev",
-        "jbzoo/event"                         : "7.x-dev",
+        "jbzoo/utils"                         : "^7.0",
+        "jbzoo/event"                         : "^7.0",
 
         "symfony/process"                     : ">=5.4",
         "symfony/console"                     : ">=5.4",
@@ -40,14 +40,12 @@
     },
 
     "require-dev"       : {
-        "jbzoo/toolbox-dev" : "7.x-dev"
+        "jbzoo/toolbox-dev" : "^7.0"
     },
 
     "autoload"          : {
         "psr-4" : {"JBZoo\\Cli\\" : "src"},
-        "files" : [
-            "src/functions.php"
-        ]
+        "files" : ["src/functions.php"]
     },
 
     "autoload-dev"      : {

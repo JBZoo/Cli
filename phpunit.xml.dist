@@ -10,21 +10,7 @@
     @copyright  Copyright (C) JBZoo.com, All rights reserved.
     @see        https://github.com/JBZoo/Cli
 -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         bootstrap="tests/autoload.php"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         convertDeprecationsToExceptions="true"
-         executionOrder="random"
-         processIsolation="false"
-         stopOnError="false"
-         stopOnFailure="false"
-         stopOnIncomplete="false"
-         stopOnSkipped="false"
-         stopOnRisky="false"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
->
+<phpunit bootstrap="tests/autoload.php" colors="true">
     <coverage processUncoveredFiles="true">
         <include>
             <directory suffix=".php">src</directory>
