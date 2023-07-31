@@ -6,8 +6,8 @@
     "keywords"    : ["cli", "application", "example"],
 
     "require"     : {
-        "php"       : ">=7.2",
-        "jbzoo/cli" : "1.x-dev"
+        "php"       : "^8.1",
+        "jbzoo/cli" : "7.x-dev"
     },
 
     "require-dev" : {

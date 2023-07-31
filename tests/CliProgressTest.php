@@ -72,87 +72,115 @@ class CliProgressTest extends PHPUnit
         [$exitCode, $stdOut, $errOut] = $this->exec('no-messages');
         isSame('', $errOut);
         isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "no-messages". Number of steps: 3.',
-            ' * (0): n/a',
-            ' * (1): n/a',
-            ' * (2): n/a',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "no-messages". Number of steps: 3.',
+                ' * (0): n/a',
+                ' * (1): n/a',
+                ' * (2): n/a',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('one-message');
         isSame('', $errOut);
         isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "one-message". Number of steps: 3.',
-            ' * (0): n/a',
-            ' * (1): 1, 1, 1',
-            ' * (2): n/a',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "one-message". Number of steps: 3.',
+                ' * (0): n/a',
+                ' * (1): 1, 1, 1',
+                ' * (2): n/a',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('simple-message-all');
         isSame('', $errOut);
         isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "simple-message-all". Number of steps: 3.',
-            ' * (0): 0, 0, 0',
-            ' * (1): 1, 1, 1',
-            ' * (2): 2, 2, 2',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "simple-message-all". Number of steps: 3.',
+                ' * (0): 0, 0, 0',
+                ' * (1): 1, 1, 1',
+                ' * (2): 2, 2, 2',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('array-int');
         isSame('', $errOut);
         isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "array-int". Number of steps: 3.',
-            ' * (0): 4, 0, 0',
-            ' * (1): 5, 1, 1',
-            ' * (2): 6, 2, 2',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "array-int". Number of steps: 3.',
+                ' * (0): 4, 0, 0',
+                ' * (1): 5, 1, 1',
+                ' * (2): 6, 2, 2',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('array-string');
         isSame('', $errOut);
         isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "array-string". Number of steps: 2.',
-            ' * (0): qwerty, 0, 0',
-            ' * (1): asdfgh, 1, 1',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "array-string". Number of steps: 2.',
+                ' * (0): qwerty, 0, 0',
+                ' * (1): asdfgh, 1, 1',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('array-assoc');
         isSame('', $errOut);
         isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "array-assoc". Number of steps: 2.',
-            ' * (key_1/0): value_1, key_1, 0',
-            ' * (key_2/1): value_2, key_2, 1',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "array-assoc". Number of steps: 2.',
+                ' * (key_1/0): value_1, key_1, 0',
+                ' * (key_2/1): value_2, key_2, 1',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('data');
         isSame('', $errOut);
         isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "data". Number of steps: 2.',
-            ' * (key_1/0): value_1, key_1, 0',
-            ' * (key_2/1): value_2, key_2, 1',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "data". Number of steps: 2.',
+                ' * (key_1/0): value_1, key_1, 0',
+                ' * (key_2/1): value_2, key_2, 1',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('break');
         isSame('', $errOut);
+        dump([$exitCode, $stdOut, $errOut]);
         isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "break". Number of steps: 3.',
-            ' * (0): 0',
-            ' * (1): Progress stopped',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "break". Number of steps: 3.',
+                ' * (0): 0',
+                ' * (1): Progress stopped',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('output-as-array');
         isSame('', $errOut);
         isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "output-as-array". Number of steps: 2.',
-            ' * (key_1/0): value_1; key_1; 0',
-            ' * (key_2/1): value_2; key_2; 1',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "output-as-array". Number of steps: 2.',
+                ' * (key_1/0): value_1; key_1; 0',
+                ' * (key_2/1): value_2; key_2; 1',
+            ]),
+            $stdOut,
+        );
     }
 
     public function testException(): void
@@ -160,10 +188,13 @@ class CliProgressTest extends PHPUnit
         [$exitCode, $stdOut, $errOut] = $this->exec('exception');
         isSame(1, $exitCode);
         isContain('Exception #1', $errOut);
-        isSame(\implode("\n", [
-            'Working on "exception". Number of steps: 3.',
-            ' * (0): n/a',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "exception". Number of steps: 3.',
+                ' * (0): n/a',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('exception-list');
         isSame(1, $exitCode);
@@ -177,12 +208,15 @@ class CliProgressTest extends PHPUnit
         isSame(1, $exitCode);
         isContain('Error list:', $errOut);
         isContain('* (1): Exception #1', $errOut);
-        isSame(\implode("\n", [
-            'Working on "exception". Number of steps: 3.',
-            ' * (0): n/a',
-            ' * (1): Error. Exception #1',
-            ' * (2): n/a',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "exception". Number of steps: 3.',
+                ' * (0): n/a',
+                ' * (1): Error. Exception #1',
+                ' * (2): n/a',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('exception-list', ['batch-exception' => null]);
         isSame(1, $exitCode);
@@ -191,19 +225,22 @@ class CliProgressTest extends PHPUnit
         isContain('* (3): Exception #3', $errOut);
         isContain('* (6): Exception #6', $errOut);
         isContain('* (9): Exception #9', $errOut);
-        isSame(\implode("\n", [
-            'Working on "exception-list". Number of steps: 10.',
-            ' * (0): Error. Exception #0',
-            ' * (1): n/a',
-            ' * (2): n/a',
-            ' * (3): Error. Exception #3',
-            ' * (4): n/a',
-            ' * (5): n/a',
-            ' * (6): Error. Exception #6',
-            ' * (7): n/a',
-            ' * (8): n/a',
-            ' * (9): Error. Exception #9',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "exception-list". Number of steps: 10.',
+                ' * (0): Error. Exception #0',
+                ' * (1): n/a',
+                ' * (2): n/a',
+                ' * (3): Error. Exception #3',
+                ' * (4): n/a',
+                ' * (5): n/a',
+                ' * (6): Error. Exception #6',
+                ' * (7): n/a',
+                ' * (8): n/a',
+                ' * (9): Error. Exception #9',
+            ]),
+            $stdOut,
+        );
 
         [$exitCode, $stdOut, $errOut] = $this->exec('exception-list', ['-b' => null, '-vv' => null], false);
         isSame(1, $exitCode);
@@ -216,39 +253,43 @@ class CliProgressTest extends PHPUnit
         isContain('Caught exceptions                : 4', $errOut);
         isContain('Last Step Message                : Error. Exception #9', $errOut);
         isContain('Exception trace:', $errOut);
-        isSame('', $stdOut);
+        isEmpty($stdOut, $stdOut);
     }
 
     public function testNested(): void
     {
         [$exitCode, $stdOut, $errOut] = $this->exec('nested', ['-b' => null, '-vv' => null]);
+        dump([$exitCode, $stdOut, $errOut]);
 
         isSame(0, $exitCode);
         isSame('', $errOut);
-        isSame(\implode("\n", [
-            'Working on "nested_parent". Number of steps: 3.',
-            'Working on "nested_child_0". Number of steps: 4.',
-            ' * (0): out_child_0_0',
-            ' * (1): out_child_0_1',
-            ' * (2): out_child_0_2',
-            ' * (3): out_child_0_3',
-            '',
-            ' * (0): out_parent_0',
-            'Working on "nested_child_1". Number of steps: 4.',
-            ' * (0): out_child_1_0',
-            ' * (1): out_child_1_1',
-            ' * (2): out_child_1_2',
-            ' * (3): out_child_1_3',
-            '',
-            ' * (1): out_parent_1',
-            'Working on "nested_child_2". Number of steps: 4.',
-            ' * (0): out_child_2_0',
-            ' * (1): out_child_2_1',
-            ' * (2): out_child_2_2',
-            ' * (3): out_child_2_3',
-            '',
-            ' * (2): out_parent_2',
-        ]), $stdOut);
+        isSame(
+            \implode("\n", [
+                'Working on "nested_parent". Number of steps: 3.',
+                'Working on "nested_child_0". Number of steps: 4.',
+                ' * (0): out_child_0_0',
+                ' * (1): out_child_0_1',
+                ' * (2): out_child_0_2',
+                ' * (3): out_child_0_3',
+                '',
+                ' * (0): out_parent_0',
+                'Working on "nested_child_1". Number of steps: 4.',
+                ' * (0): out_child_1_0',
+                ' * (1): out_child_1_1',
+                ' * (2): out_child_1_2',
+                ' * (3): out_child_1_3',
+                '',
+                ' * (1): out_parent_1',
+                'Working on "nested_child_2". Number of steps: 4.',
+                ' * (0): out_child_2_0',
+                ' * (1): out_child_2_1',
+                ' * (2): out_child_2_2',
+                ' * (3): out_child_2_3',
+                '',
+                ' * (2): out_parent_2',
+            ]),
+            $stdOut,
+        );
     }
 
     private function exec(string $testCase, array $addOptions = [], bool $noProgress = true): array

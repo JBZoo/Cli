@@ -16,8 +16,12 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
+use JBZoo\Cli\OutputMods\AbstractOutputMode;
+use JBZoo\Cli\OutputMods\Cron;
+use JBZoo\Cli\OutputMods\Logstash;
+use JBZoo\Cli\OutputMods\Text;
+use JBZoo\Cli\ProgressBars\AbstractProgressBar;
 use JBZoo\Utils\Arr;
-use JBZoo\Utils\FS;
 use JBZoo\Utils\Str;
 use JBZoo\Utils\Vars;
 use Symfony\Component\Console\Command\Command;
@@ -35,8 +39,7 @@ use function JBZoo\Utils\int;
 
 abstract class CliCommand extends Command
 {
-    /** @psalm-suppress PropertyNotSetInConstructor */
-    protected Cli $helper;
+    protected ?AbstractOutputMode $outputMode = null;
 
     abstract protected function executeAction(): int;
 
@@ -45,30 +48,70 @@ abstract class CliCommand extends Command
      */
     protected function configure(): void
     {
+        $definedShortcuts = !\defined('\JBZOO_CLI_NO_PREDEFINED_SHORTCUTS');
+
         $this
-            ->addOption('no-progress', null, InputOption::VALUE_NONE, 'Disable progress bar animation for logs')
+            ->addOption(
+                'no-progress',
+                $definedShortcuts ? 'P' : null,
+                InputOption::VALUE_NONE,
+                'Disable progress bar animation for logs. '
+                . 'It will be used only for <info>' . Text::NAME . '</info> output format.',
+            )
             ->addOption(
                 'mute-errors',
-                null,
+                $definedShortcuts ? 'M' : null,
                 InputOption::VALUE_NONE,
-                "Mute any sort of errors. So exit code will be always \"0\" (if it's possible).\n" .
-                "It has major priority then <info>--non-zero-on-error</info>. It's on your own risk!",
+                "Mute any sort of errors. So exit code will be always \"0\" (if it's possible).\n"
+                . "It has major priority then <info>--non-zero-on-error</info>. It's on your own risk!",
             )
             ->addOption(
                 'stdout-only',
-                null,
+                $definedShortcuts ? '1' : null,
                 InputOption::VALUE_NONE,
                 "For any errors messages application will use StdOut instead of StdErr. It's on your own risk!",
             )
-            ->addOption('non-zero-on-error', null, InputOption::VALUE_NONE, 'None-zero exit code on any StdErr message')
-            ->addOption('timestamp', null, InputOption::VALUE_NONE, 'Show timestamp at the beginning of each message')
-            ->addOption('profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information')
+            ->addOption(
+                'stderr-only',
+                $definedShortcuts ? '2' : null,
+                InputOption::VALUE_NONE,
+                "For any output messages application will use StdErr instead of StdOut. It's on your own risk!",
+            )
+            ->addOption(
+                'non-zero-on-error',
+                $definedShortcuts ? 'Z' : null,
+                InputOption::VALUE_NONE,
+                'None-zero exit code on any StdErr message.',
+            )
+            ->addOption(
+                'timestamp',
+                $definedShortcuts ? 'T' : null,
+                InputOption::VALUE_NONE,
+                'Show timestamp at the beginning of each message.'
+                . 'It will be used only for <info>' . Text::NAME . '</info> output format.',
+            )
+            ->addOption(
+                'profile',
+                $definedShortcuts ? 'X' : '',
+                InputOption::VALUE_NONE,
+                'Display timing and memory usage information.',
+            )
             ->addOption(
                 'cron',
                 null,
                 InputOption::VALUE_NONE,
-                "Shortcut for crontab. It's basically focused on logs output. "
-                . 'It\'s combination of <info>--timestamp --profile --stdout-only --no-progress -vv</info>',
+                'Alias for <info>--output-mode=cron</info>. <comment>Deprecated!</comment>',
+            )
+            ->addOption(
+                'output-mode',
+                $definedShortcuts ? 'O' : null,
+                InputOption::VALUE_REQUIRED,
+                "Output format. Available options:\n" . CliHelper::renderListForHelpDescription([
+                    Text::NAME     => Text::DESCRIPTION,
+                    Cron::NAME     => Cron::DESCRIPTION,
+                    Logstash::NAME => Logstash::DESCRIPTION,
+                ]),
+                Text::NAME,
             );
 
         parent::configure();
@@ -79,14 +122,14 @@ abstract class CliCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->helper = new Cli($input, $output);
+        $this->outputMode = $this->createOutputMode($input, $output, $this->getOutputFormat($input));
+        $this->getCliApplication()->setOutputMode($this->outputMode);
 
-        $this->_('Working Directory is <i>' . \getcwd() . '</i>', OutLvl::DEBUG);
-
-        $exitCode = 0;
+        $exitCode = Codes::OK;
 
         try {
-            $this->trigger('exec.before', [$this, $this->helper]);
+            $this->outputMode->onExecBefore();
+            $this->trigger('exec.before', [$this, $this->outputMode]);
             \ob_start();
             $exitCode    = $this->executeAction();
             $echoContent = \ob_get_clean();
@@ -99,30 +142,28 @@ abstract class CliCommand extends Command
                 $this->showLegacyOutput($echoContent);
             }
 
-            $this->trigger('exception', [$this, $this->helper, $exception]);
+            $this->outputMode->onExecException($exception);
+            $this->trigger('exception', [$this, $this->outputMode, $exception]);
 
-            if ($this->getOptBool('mute-errors')) {
-                $this->_($exception->getMessage(), OutLvl::EXCEPTION);
-            } else {
-                $this->showProfiler();
+            $this->outputMode->onExecAfter($exitCode);
+
+            if (!$this->getOptBool('mute-errors')) {
                 throw $exception;
             }
         }
 
         $exitCode = Vars::range($exitCode, 0, 255);
 
-        if ($this->helper->isOutputHasErrors() && $this->getOptBool('non-zero-on-error')) {
-            $exitCode = 1;
+        if ($this->outputMode->isOutputHasErrors() && $this->getOptBool('non-zero-on-error')) {
+            $exitCode = Codes::GENERAL_ERROR;
         }
 
-        $this->trigger('exec.after', [$this, $this->helper, &$exitCode]);
-        $this->showProfiler();
+        $this->outputMode->onExecAfter($exitCode);
+        $this->trigger('exec.after', [$this, $this->outputMode, &$exitCode]);
 
         if ($this->getOptBool('mute-errors')) {
             $exitCode = 0;
         }
-
-        $this->_("Exit Code is \"{$exitCode}\"", OutLvl::DEBUG);
 
         return $exitCode;
     }
@@ -132,7 +173,7 @@ abstract class CliCommand extends Command
      */
     protected function getOpt(string $optionName, bool $canBeArray = true): mixed
     {
-        $value = $this->helper->getInput()->getOption($optionName);
+        $value = $this->outputMode->getInput()->getOption($optionName);
 
         if ($canBeArray && \is_array($value)) {
             return Arr::last($value);
@@ -165,12 +206,12 @@ abstract class CliCommand extends Command
         return float($value);
     }
 
-    protected function getOptString(string $optionName): string
+    protected function getOptString(string $optionName, string $default = ''): string
     {
         $value  = \trim((string)$this->getOpt($optionName));
         $length = \strlen($value);
 
-        return $length > 0 ? $value : '';
+        return $length > 0 ? $value : $default;
     }
 
     protected function getOptArray(string $optionName): array
@@ -194,34 +235,37 @@ abstract class CliCommand extends Command
      * Alias to write new line in std output.
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
-    protected function _(mixed $messages = '', string $verboseLevel = ''): void
-    {
-        $this->helper->_($messages, $verboseLevel);
+    protected function _(
+        iterable|string|int|float|bool|null $messages = '',
+        string $verboseLevel = '',
+        array $context = [],
+    ): void {
+        $this->outputMode->_($messages, $verboseLevel, $context);
     }
 
     protected function isInfoLevel(): bool
     {
-        return $this->helper->isInfoLevel();
+        return $this->outputMode->isInfoLevel();
     }
 
     protected function isWarningLevel(): bool
     {
-        return $this->helper->isWarningLevel();
+        return $this->outputMode->isWarningLevel();
     }
 
     protected function isDebugLevel(): bool
     {
-        return $this->helper->isDebugLevel();
+        return $this->outputMode->isDebugLevel();
     }
 
     protected function isProfile(): bool
     {
-        return $this->helper->isDisplayProfiling();
+        return $this->outputMode->isDisplayProfiling();
     }
 
-    protected function isCron(): bool
+    protected function getOutputFormat1(): bool
     {
-        return $this->helper->isCron();
+        return $this->outputMode::NAME;
     }
 
     protected function trigger(string $eventName, array $arguments = [], ?callable $continueCallback = null): int
@@ -258,8 +302,8 @@ abstract class CliCommand extends Command
         }
 
         return (string)$this->getQuestionHelper()->ask(
-            $this->helper->getInput(),
-            $this->helper->getOutput(),
+            $this->outputMode->getInput(),
+            $this->outputMode->getOutput(),
             $questionObj,
         );
     }
@@ -285,8 +329,8 @@ abstract class CliCommand extends Command
         );
 
         return (bool)$this->getQuestionHelper()->ask(
-            $this->helper->getInput(),
-            $this->helper->getOutput(),
+            $this->outputMode->getInput(),
+            $this->outputMode->getOutput(),
             $questionObj,
         );
     }
@@ -311,16 +355,40 @@ abstract class CliCommand extends Command
         $questionObj->setErrorMessage('The option "%s" is undefined. See the avaialable options');
 
         return (string)$this->getQuestionHelper()->ask(
-            $this->helper->getInput(),
-            $this->helper->getOutput(),
+            $this->outputMode->getInput(),
+            $this->outputMode->getOutput(),
             $questionObj,
         );
     }
 
+    public function progressBar(
+        iterable|int $listOrMax,
+        \Closure $callback,
+        string $title = '',
+        bool $throwBatchException = true,
+        ?AbstractOutputMode $outputMode = null,
+    ): AbstractProgressBar {
+        $outputMode ??= $this->outputMode;
+
+        $progressBar = $outputMode->createProgressBar()
+            ->setTitle($title)
+            ->setCallback($callback)
+            ->setThrowBatchException($throwBatchException);
+
+        if (\is_iterable($listOrMax)) {
+            $progressBar->setList($listOrMax);
+        } else {
+            $progressBar->setMax($listOrMax);
+        }
+
+        $progressBar->execute();
+
+        return $progressBar;
+    }
+
     protected static function getStdIn(): ?string
     {
-        // It can be read only once, so we save result as internal varaible
-        static $result;
+        static $result; // It can be read only once, so we save result as internal varaible
 
         if ($result === null) {
             $result = '';
@@ -331,24 +399,6 @@ abstract class CliCommand extends Command
         }
 
         return $result;
-    }
-
-    private function showProfiler(): void
-    {
-        if (!$this->isProfile()) {
-            return;
-        }
-
-        $totalTime = \number_format(\microtime(true) - $this->helper->getStartTime(), 3);
-        $curMemory = FS::format(\memory_get_usage(false));
-        $maxMemory = FS::format(\memory_get_peak_usage(true));
-
-        $this->_(
-            \implode('; ', [
-                "Memory Usage/Peak: <green>{$curMemory}</green>/<green>{$maxMemory}</green>",
-                "Execution Time: <green>{$totalTime} sec</green>",
-            ]),
-        );
     }
 
     private function showLegacyOutput(string $echoContent): void
@@ -373,5 +423,50 @@ abstract class CliCommand extends Command
         }
 
         throw new Exception('Symfony QuestionHelper not found');
+    }
+
+    private function getOutputFormat(InputInterface $input): string
+    {
+        if ($input->getOption('cron')) { // TODO: Must be deprecated in future
+            return Cron::NAME;
+        }
+
+        return $input->getOption('output-mode') ?? Text::NAME;
+    }
+
+    private function createOutputMode(
+        InputInterface $input,
+        OutputInterface $output,
+        string $outputFormat,
+    ): AbstractOutputMode {
+        $application = $this->getCliApplication();
+
+        if ($outputFormat === Text::NAME) {
+            return new Text($input, $output, $application);
+        }
+
+        if ($outputFormat === Cron::NAME) {
+            return new Cron($input, $output, $application);
+        }
+
+        if ($outputFormat === Logstash::NAME) {
+            return new Logstash($input, $output, $application);
+        }
+
+        throw new Exception("Unknown output format: {$outputFormat}");
+    }
+
+    private function getCliApplication(): CliApplication
+    {
+        $application = $this->getApplication();
+        if ($application === null) {
+            throw new Exception('Application not defined. Please, use "setApplication()" method.');
+        }
+
+        if ($application instanceof CliApplication) {
+            return $application;
+        }
+
+        throw new Exception('Application must be instance of "\JBZoo\Cli\CliApplication"');
     }
 }

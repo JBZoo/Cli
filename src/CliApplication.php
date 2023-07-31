@@ -16,16 +16,20 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
+use JBZoo\Cli\OutputMods\AbstractOutputMode;
+use JBZoo\Cli\OutputMods\Text;
 use JBZoo\Event\EventManager;
 use JBZoo\Utils\FS;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\isStrEmpty;
 
 class CliApplication extends Application
 {
-    private ?EventManager $eventManager = null;
-    private ?string       $logo         = null;
+    private ?EventManager       $eventManager = null;
+    private ?string             $logo         = null;
+    private ?AbstractOutputMode $outputMode   = null;
 
     /**
      * Register commands by directory path.
@@ -90,6 +94,13 @@ class CliApplication extends Application
         return $this;
     }
 
+    public function renderThrowable(\Throwable $e, OutputInterface $output): void
+    {
+        if ($this->outputMode === null || $this->outputMode instanceof Text) {
+            parent::renderThrowable($e, $output);
+        }
+    }
+
     /**
      * Returns the long version of the application.
      */
@@ -100,5 +111,12 @@ class CliApplication extends Application
         }
 
         return parent::getLongVersion();
+    }
+
+    public function setOutputMode(AbstractOutputMode $outputMode): self
+    {
+        $this->outputMode = $outputMode;
+
+        return $this;
     }
 }

@@ -18,6 +18,7 @@ namespace JBZoo\Cli\ProgressBars;
 
 use JBZoo\Cli\CliRender;
 use JBZoo\Cli\Icons;
+use JBZoo\Cli\ProgressBars\AbstractProgressBar;
 use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 

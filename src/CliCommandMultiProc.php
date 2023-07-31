@@ -117,7 +117,7 @@ abstract class CliCommandMultiProc extends CliCommand
     protected function executeMultiProcessAction(): int
     {
         $procNum  = $this->getNumberOfProcesses();
-        $cpuCores = $this->helper->getNumberOfCpuCores();
+        $cpuCores = CliHelper::getNumberOfCpuCores();
         $this->_("Max number of sub-processes: {$procNum}", OutLvl::DEBUG);
         if ($procNum > $cpuCores) {
             $this->_(
@@ -131,8 +131,8 @@ abstract class CliCommandMultiProc extends CliCommand
 
         $procListIds = $this->getListOfChildIds();
 
-        if (!$this->helper->isProgressBarDisabled()) {
-            $this->progressBar = new ProgressBarProcessManager($this->helper->getOutput(), \count($procListIds));
+        if (!$this->outputMode->isProgressBarDisabled()) {
+            $this->progressBar = new ProgressBarProcessManager($this->outputMode->getOutput(), \count($procListIds));
             $this->progressBar->start();
         }
 
@@ -209,7 +209,7 @@ abstract class CliCommandMultiProc extends CliCommand
     {
         // Prepare option list from the parent process
         $options = \array_filter(
-            $this->helper->getInput()->getOptions(),
+            $this->outputMode->getInput()->getOptions(),
             static fn ($optionValue): bool => $optionValue !== false && $optionValue !== '',
         );
 
@@ -225,7 +225,7 @@ abstract class CliCommandMultiProc extends CliCommand
         $options['pm-proc-id']     = $procId;
 
         // Prepare $argument list from the parent process
-        $arguments     = $this->helper->getInput()->getArguments();
+        $arguments     = $this->outputMode->getInput()->getArguments();
         $argumentsList = [];
 
         foreach ($arguments as $argKey => $argValue) {
@@ -247,14 +247,14 @@ abstract class CliCommandMultiProc extends CliCommand
                     ' ',
                     \array_filter([
                         Sys::getBinary(),
-                        Cli::getBinPath(),
+                        CliHelper::getBinPath(),
                         $this->getName(),
                         \implode(' ', $argumentsList),
                     ]),
                 ),
                 $options,
             ),
-            Cli::getRootPath(),
+            CliHelper::getRootPath(),
             null,
             null,
             $this->getMaxTimeout(),
@@ -335,7 +335,7 @@ abstract class CliCommandMultiProc extends CliCommand
     private function getNumberOfProcesses(): int
     {
         $pmMax    = \strtolower($this->getOptString('pm-max'));
-        $cpuCores = $this->helper->getNumberOfCpuCores();
+        $cpuCores = CliHelper::getNumberOfCpuCores();
 
         if ($pmMax === 'auto') {
             return $cpuCores;

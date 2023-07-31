@@ -39,41 +39,39 @@ class TestProgress extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         $testCase = $this->getOptString('case');
 
         if ($testCase === 'no-items-int') {
+            // Static call as backwards capability
             ProgressBar::run(0, static function (): void {
             }, $testCase);
         }
 
         if ($testCase === 'no-items-array') {
-            ProgressBar::run([], static function (): void {
+            $this->progressBar([], static function (): void {
             }, $testCase);
         }
 
         if ($testCase === 'no-items-data') {
-            ProgressBar::run(json(), static function (): void {
+            $this->progressBar(json(), static function (): void {
             }, $testCase);
         }
 
         if ($testCase === 'minimal') {
-            ProgressBar::run(2, function (): void {
+            $this->progressBar(2, function (): void {
                 \sleep($this->getOptInt('sleep'));
             });
         }
 
         if ($testCase === 'no-messages') {
-            ProgressBar::run(3, static function ($stepValue, $stepIndex, $currentStep): void {
+            $this->progressBar(3, static function ($stepValue, $stepIndex, $currentStep): void {
             }, $testCase);
         }
 
         if ($testCase === 'one-message') {
-            ProgressBar::run(3, static function ($stepValue, $stepIndex, $currentStep) {
+            $this->progressBar(3, static function ($stepValue, $stepIndex, $currentStep) {
                 if ($stepValue === 1) {
                     return "{$stepValue}, {$stepIndex}, {$currentStep}";
                 }
@@ -81,34 +79,58 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'simple-message-all') {
-            ProgressBar::run(3, static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
+            $this->progressBar(
+                3,
+                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                $testCase,
+            );
         }
 
         if ($testCase === 'output-as-array') {
             $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
-            ProgressBar::run($list, static fn ($stepValue, $stepIndex, $currentStep) => [$stepValue, $stepIndex, $currentStep], $testCase);
+            $this->progressBar(
+                $list,
+                static fn ($stepValue, $stepIndex, $currentStep) => [$stepValue, $stepIndex, $currentStep],
+                $testCase,
+            );
         }
 
         if ($testCase === 'array-int') {
-            ProgressBar::run([4, 5, 6], static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
+            $this->progressBar(
+                [4, 5, 6],
+                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                $testCase,
+            );
         }
 
         if ($testCase === 'array-string') {
-            ProgressBar::run(['qwerty', 'asdfgh'], static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
+            $this->progressBar(
+                ['qwerty', 'asdfgh'],
+                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                $testCase,
+            );
         }
 
         if ($testCase === 'array-assoc') {
             $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
-            ProgressBar::run($list, static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
+            $this->progressBar(
+                $list,
+                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                $testCase,
+            );
         }
 
         if ($testCase === 'data') {
             $list = json(['key_1' => 'value_1', 'key_2' => 'value_2']);
-            ProgressBar::run($list, static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
+            $this->progressBar(
+                $list,
+                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                $testCase,
+            );
         }
 
         if ($testCase === 'break') {
-            ProgressBar::run(3, static function ($stepValue) {
+            $this->progressBar(3, static function ($stepValue) {
                 if ($stepValue === 1) {
                     return ProgressBar::BREAK;
                 }
@@ -118,7 +140,7 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'exception') {
-            ProgressBar::run(3, static function ($stepValue): void {
+            $this->progressBar(3, static function ($stepValue): void {
                 if ($stepValue === 1) {
                     throw new \Exception("Exception #{$stepValue}");
                 }
@@ -126,7 +148,7 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'exception-list') {
-            ProgressBar::run(10, static function ($stepValue): void {
+            $this->progressBar(10, static function ($stepValue): void {
                 if ($stepValue % 3 === 0) {
                     throw new \Exception("Exception #{$stepValue}");
                 }
@@ -134,12 +156,12 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'million-items') {
-            ProgressBar::run(100000, static fn ($stepValue) => $stepValue, $testCase);
+            $this->progressBar(100000, static fn ($stepValue) => $stepValue, $testCase);
         }
 
         if ($testCase === 'memory-leak') {
             $array = [];
-            ProgressBar::run(3, function () use (&$array): void {
+            $this->progressBar(3, function () use (&$array): void {
                 for ($i = 0; $i < 100000; $i++) {
                     $array[] = $i;
                 }
@@ -150,13 +172,13 @@ class TestProgress extends CliCommand
 
         if ($testCase === 'nested') {
             $array         = [];
-            $parentSection = $this->helper->getOutput()->section();
-            $childSection  = $this->helper->getOutput()->section();
+            $parentSection = $this->outputMode->getOutput()->section();
+            $childSection  = $this->outputMode->getOutput()->section();
 
-            ProgressBar::run(3, function ($parentId) use ($testCase, $childSection) {
+            $this->progressBar(3, function ($parentId) use ($testCase, $childSection) {
                 \sleep($this->getOptInt('sleep'));
 
-                ProgressBar::run(4, function ($childId) use ($parentId) {
+                $this->progressBar(4, function ($childId) use ($parentId) {
                     \sleep($this->getOptInt('sleep'));
 
                     return "out_child_{$parentId}_{$childId}";

@@ -31,7 +31,7 @@ class CliMultiProcessTest extends PHPUnit
 
         $time = \microtime(true) - $start;
 
-        isSame(0, $result[0], $result[2]);
+        isSame(0, $result[0], print_r($result, true));
         $outputAsArray = json($result[1])->getArrayCopy();
 
         $expectecContent = \implode("\n", [

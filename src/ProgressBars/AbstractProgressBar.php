@@ -16,146 +16,68 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli\ProgressBars;
 
-use JBZoo\Utils\Arr;
-use JBZoo\Utils\Dates;
-use JBZoo\Utils\FS;
-use JBZoo\Utils\Stats;
-use JBZoo\Utils\Sys;
-use Symfony\Component\Console\Helper\Helper as SymfonyHelper;
-use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
+use JBZoo\Cli\OutputMods\AbstractOutputMode;
 
 abstract class AbstractProgressBar
 {
-    public const BREAK           = '<yellow>Progress stopped</yellow>';
-    public const MAX_LINE_LENGTH = 80;
+    protected ?AbstractOutputMode $outputMode = null;
 
-    /** @var int[] */
-    protected array $stepMemoryDiff = [];
+    protected ?\Closure $callback = null;
 
-    /** @var float[] */
-    protected array $stepTimers = [];
+    protected bool $throwBatchException = true;
 
-    abstract protected function buildTemplate(): string;
+    protected int $max = 0;
 
-    public static function setPlaceholder(string $name, callable $callable): void
+    protected iterable $list = [];
+
+    protected string $title = '';
+
+    abstract public function execute(): bool;
+
+    public function __construct(AbstractOutputMode $outputMode)
     {
-        SymfonyProgressBar::setPlaceholderFormatterDefinition($name, $callable);
+        $this->outputMode = $outputMode;
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     */
-    protected function configureProgressBar(): void
+    public function setTitle(string $title): self
     {
-        static $inited;
+        $this->title = $title;
 
-        if ($inited) {
-            return;
+        return $this;
+    }
+
+    public function setList(iterable $list): self
+    {
+        $this->list = $list;
+
+        if ($list instanceof \Countable) {
+            $this->max = \count($list);
+        } elseif (\is_array($list)) {
+            $this->max = \count($list);
         }
 
-        $inited = true;
+        return $this;
+    }
 
-        // Memory
-        self::setPlaceholder(
-            'jbzoo_memory_current',
-            static fn (): string => SymfonyHelper::formatMemory(\memory_get_usage(false)),
-        );
+    public function setCallback(\Closure $callback): self
+    {
+        $this->callback = $callback;
 
-        self::setPlaceholder(
-            'jbzoo_memory_peak',
-            static fn (): string => SymfonyHelper::formatMemory(\memory_get_peak_usage(false)),
-        );
+        return $this;
+    }
 
-        self::setPlaceholder('jbzoo_memory_limit', static fn (): string => Sys::iniGet('memory_limit'));
+    public function setThrowBatchException(bool $throwBatchException): self
+    {
+        $this->throwBatchException = $throwBatchException;
 
-        self::setPlaceholder('jbzoo_memory_step_avg', function (SymfonyProgressBar $bar): string {
-            if (
-                $bar->getMaxSteps() === 0
-                || $bar->getProgress() === 0
-                || \count($this->stepMemoryDiff) === 0
-            ) {
-                return 'n/a';
-            }
+        return $this;
+    }
 
-            return FS::format((int)Stats::mean($this->stepMemoryDiff));
-        });
+    public function setMax(int $max): self
+    {
+        $this->max  = $max;
+        $this->list = \range(0, $max - 1);
 
-        self::setPlaceholder('jbzoo_memory_step_last', function (SymfonyProgressBar $bar): string {
-            if (
-                $bar->getMaxSteps() === 0
-                || $bar->getProgress() === 0
-                || \count($this->stepMemoryDiff) === 0
-            ) {
-                return 'n/a';
-            }
-
-            return FS::format(Arr::last($this->stepMemoryDiff));
-        });
-
-        // Timers
-        self::setPlaceholder(
-            'jbzoo_time_elapsed',
-            static fn (SymfonyProgressBar $bar): string => Dates::formatTime(\time() - $bar->getStartTime()),
-        );
-
-        self::setPlaceholder('jbzoo_time_remaining', static function (SymfonyProgressBar $bar): string {
-            if ($bar->getMaxSteps() === 0) {
-                return 'n/a';
-            }
-
-            if ($bar->getProgress() === 0) {
-                $remaining = 0;
-            } else {
-                $remaining = \round(
-                    (\time() - $bar->getStartTime())
-                    / $bar->getProgress()
-                    * ($bar->getMaxSteps() - $bar->getProgress()),
-                );
-            }
-
-            return Dates::formatTime($remaining);
-        });
-
-        self::setPlaceholder('jbzoo_time_estimated', static function (SymfonyProgressBar $bar): string {
-            if ($bar->getMaxSteps() === 0) {
-                return 'n/a';
-            }
-
-            if ($bar->getProgress() === 0) {
-                $estimated = 0;
-            } else {
-                $estimated = \round(
-                    (\time() - $bar->getStartTime())
-                    / $bar->getProgress()
-                    * $bar->getMaxSteps(),
-                );
-            }
-
-            return Dates::formatTime($estimated);
-        });
-
-        self::setPlaceholder('jbzoo_time_step_avg', function (SymfonyProgressBar $bar): string {
-            if (
-                $bar->getMaxSteps() === 0
-                || $bar->getProgress() === 0
-                || \count($this->stepTimers) === 0
-            ) {
-                return 'n/a';
-            }
-
-            return \str_replace('±', '<blue>±</blue>', Stats::renderAverage($this->stepTimers)) . ' sec';
-        });
-
-        self::setPlaceholder('jbzoo_time_step_last', function (SymfonyProgressBar $bar): string {
-            if (
-                $bar->getMaxSteps() === 0
-                || $bar->getProgress() === 0
-                || \count($this->stepTimers) === 0
-            ) {
-                return 'n/a';
-            }
-
-            return Dates::formatTime(Arr::last($this->stepTimers));
-        });
+        return $this;
     }
 }

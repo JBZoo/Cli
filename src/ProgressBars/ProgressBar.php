@@ -16,90 +16,39 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli\ProgressBars;
 
-use JBZoo\Cli\Cli;
+use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\CliRender;
 use JBZoo\Cli\Icons;
+use JBZoo\Cli\OutputMods\AbstractOutputMode;
 use JBZoo\Utils\Str;
 use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\isStrEmpty;
 
-class ProgressBar extends AbstractProgressBar
+class ProgressBar extends AbstractSymfonyProgressBar
 {
     private OutputInterface     $output;
-    private string              $title       = '';
     private ?SymfonyProgressBar $progressBar = null;
-    private Cli                 $helper;
-    private int                 $max                 = 0;
-    private ?\Closure           $callback            = null;
-    private bool                $throwBatchException = true;
-    private string              $finishIcon;
-    private string              $progressIcon;
 
-    /** @var array|iterable */
-    private iterable $list = [];
+    private string $finishIcon;
+    private string $progressIcon;
 
-    public function __construct(?OutputInterface $output = null)
+    public function __construct(AbstractOutputMode $outputMode)
     {
-        $this->helper = Cli::getInstance();
-        $this->output = $output ?? $this->helper->getOutput();
+        parent::__construct($outputMode);
 
-        $this->progressIcon = Icons::getRandomIcon(Icons::GROUP_PROGRESS, $this->output->isDecorated());
-        $this->finishIcon   = Icons::getRandomIcon(Icons::GROUP_FINISH, $this->output->isDecorated());
-    }
+        $this->output = $outputMode->getOutput();
 
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function setList(iterable $list): self
-    {
-        $this->list = $list;
-
-        if ($list instanceof \Countable) {
-            $this->max = \count($list);
-        } elseif (\is_array($list)) {
-            $this->max = \count($list);
-        }
-
-        return $this;
-    }
-
-    public function setMax(int $max): self
-    {
-        $this->max  = $max;
-        $this->list = \range(0, $max - 1);
-
-        return $this;
-    }
-
-    public function setCallback(\Closure $callback): self
-    {
-        $this->callback = $callback;
-
-        return $this;
-    }
-
-    public function setThrowBatchException(bool $throwBatchException): self
-    {
-        $this->throwBatchException = $throwBatchException;
-
-        return $this;
-    }
-
-    public function getProgressBar(): ?SymfonyProgressBar
-    {
-        return $this->progressBar;
+        $isDecorated        = $this->output->isDecorated();
+        $this->progressIcon = Icons::getRandomIcon(Icons::GROUP_PROGRESS, $isDecorated);
+        $this->finishIcon   = Icons::getRandomIcon(Icons::GROUP_FINISH, $isDecorated);
     }
 
     public function init(): bool
     {
         if ($this->max <= 0) {
-            $this->helper->_(
+            $this->outputMode->_(
                 !isStrEmpty($this->title)
                     ? "{$this->title}. Number of items is 0 or less"
                     : 'Number of items is 0 or less',
@@ -110,7 +59,7 @@ class ProgressBar extends AbstractProgressBar
 
         $this->progressBar = $this->createProgressBar();
         if ($this->progressBar === null) {
-            $this->helper->_(
+            $this->outputMode->_(
                 !isStrEmpty($this->title)
                     ? "Working on \"<blue>{$this->title}</blue>\". Number of steps: <blue>{$this->max}</blue>."
                     : "Number of steps: <blue>{$this->max}</blue>.",
@@ -167,35 +116,23 @@ class ProgressBar extends AbstractProgressBar
         }
 
         self::showListOfExceptions($exceptionMessages);
-        $this->helper->_('');
+        $this->outputMode->_('');
 
         return true;
     }
 
-    /**
-     * @param array|int|iterable $listOrMax
-     */
     public static function run(
         $listOrMax,
         \Closure $callback,
         string $title = '',
         bool $throwBatchException = true,
         ?OutputInterface $output = null,
-    ): self {
-        $progress = (new self($output))
-            ->setTitle($title)
-            ->setCallback($callback)
-            ->setThrowBatchException($throwBatchException);
-
-        if (\is_iterable($listOrMax)) {
-            $progress->setList($listOrMax);
-        } else {
-            $progress->setMax($listOrMax);
+    ): void {
+        // get object of parent object where we call the static method
+        $command = \debug_backtrace(\DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[1]['object'];
+        if ($command instanceof CliCommand) {
+            $command->progressBar($listOrMax, $callback, $title, $throwBatchException, $output);
         }
-
-        $progress->execute();
-
-        return $progress;
     }
 
     protected function buildTemplate(): string
@@ -306,10 +243,10 @@ class ProgressBar extends AbstractProgressBar
 
                 $this->progressBar->setMessage($stepResult);
             } else {
-                $this->helper->_(" * ({$prefixMessage}): {$stepResult}");
+                $this->outputMode->_(" * ({$prefixMessage}): {$stepResult}");
             }
         } elseif ($this->progressBar === null) {
-            $this->helper->_(" * ({$prefixMessage}): n/a");
+            $this->outputMode->_(" * ({$prefixMessage}): n/a");
         }
 
         return [$stepResult, $exceptionMessage];
@@ -317,7 +254,7 @@ class ProgressBar extends AbstractProgressBar
 
     private function createProgressBar(): ?SymfonyProgressBar
     {
-        if ($this->helper->isProgressBarDisabled()) {
+        if ($this->outputMode->isProgressBarDisabled()) {
             return null;
         }
 

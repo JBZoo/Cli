@@ -40,7 +40,7 @@ class ExamplesProgressBar extends CliCommand
     {
         // ////////////////////////////////////////////////////////////////////// Just 3 steps
         ProgressBar::run(2, static function ($stepValue, $stepIndex, $currentStep) {
-            \sleep(1);
+            //sleep(1);
 
             return "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}";
         }, 'Number of steps');
@@ -51,7 +51,16 @@ class ExamplesProgressBar extends CliCommand
             'key_2' => 'value_2',
             'key_3' => 'value_3',
         ];
-        ProgressBar::run($list, static fn ($stepValue, $stepIndex, $currentStep) => "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}", 'Assoc array');
+
+        ProgressBar::run(
+            $list,
+            static fn (
+                $stepValue,
+                $stepIndex,
+                $currentStep,
+            ) => "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}",
+            'Assoc array',
+        );
 
         // ////////////////////////////////////////////////////////////////////// Exit from the cycle
         ProgressBar::run(3, static function ($stepValue, $stepIndex, $currentStep) {

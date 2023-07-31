@@ -40,13 +40,15 @@ class Helper extends PHPUnit
 
         $options['no-ansi'] = null;
 
-        $realCommand = \trim(\implode(' ', [
-            $preAction,
-            Env::string('PHP_BIN', 'php'),
-            Cli::build("{$cwd}/cli-wrapper.php {$command}", $options),
-            '',
-            $postAction,
-        ]));
+        $realCommand = \trim(
+            \implode(' ', [
+                $preAction,
+                Env::string('PHP_BIN', 'php'),
+                Cli::build("{$cwd}/cli-wrapper.php {$command}", $options),
+                '',
+                $postAction,
+            ]),
+        );
 
         // dump($realCommand);
         $process = Process::fromShellCommandline($realCommand, $cwd, null, null, 3600);

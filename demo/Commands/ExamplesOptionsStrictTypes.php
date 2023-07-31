@@ -157,7 +157,7 @@ class ExamplesOptionsStrictTypes extends CliCommand
         // ./my-app examples:agruments -aQwerty -aAsd
         $this->getOpt('opt-array-req-default'); // 'Asd'
 
-        $input = $this->helper->getInput();
+        $input = $this->outputMode->getInput();
         // //////////////////////////////////////// Arguments
         // ./my-app examples:agruments
         $input->getArgument('arg-req'); // null
