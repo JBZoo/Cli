@@ -50,11 +50,15 @@ class Helper extends PHPUnit
             ]),
         );
 
-        // dump($realCommand);
         $process = Process::fromShellCommandline($realCommand, $cwd, null, null, 3600);
         $process->run();
 
-        return [$process->getExitCode(), \trim($process->getOutput()), \trim($process->getErrorOutput())];
+        return [
+            $process->getExitCode(),
+            \trim($process->getOutput()),
+            \trim($process->getErrorOutput()),
+            $realCommand,
+        ];
     }
 
     public static function executeVirtaul(string $command, array $options = []): string

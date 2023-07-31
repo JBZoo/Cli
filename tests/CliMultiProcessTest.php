@@ -22,17 +22,19 @@ class CliMultiProcessTest extends PHPUnit
 {
     public function testAsRealExecution(): void
     {
-        $start  = \microtime(true);
-        $result = Helper::executeReal(
+        $start = \microtime(true);
+
+        [$exitCode, $stdOut, $errOut] = Helper::executeReal(
             'test:sleep-multi 123 " qwerty " -v',
             ['sleep' => 1, 'no-progress' => null, 'pm-max' => 50],
             'JBZOO_TEST_VAR=123456',
         );
 
-        $time = \microtime(true) - $start;
+        $time       = \microtime(true) - $start;
+        $errMessage = \print_r([$exitCode, $stdOut, $errOut], true);
 
-        isSame(0, $result[0], print_r($result, true));
-        $outputAsArray = json($result[1])->getArrayCopy();
+        isSame(0, $exitCode, $errMessage);
+        $outputAsArray = json($stdOut)->getArrayCopy();
 
         $expectecContent = \implode("\n", [
             'Sleep : 1',
@@ -48,8 +50,8 @@ class CliMultiProcessTest extends PHPUnit
             "Started: 3\n{$expectecContent}\nFinished: 3",
             "Started: 4\n{$expectecContent}\nFinished: 4",
             "Started: 5\n{$expectecContent}\nFinished: 5",
-        ], $outputAsArray);
-        isSame('', $result[2]);
+        ], $outputAsArray, $errMessage);
+        isSame('', $errOut, $errMessage);
 
         isTrue($time < 5, "Total time: {$time}");
     }
@@ -83,14 +85,17 @@ class CliMultiProcessTest extends PHPUnit
 
     public function testException(): void
     {
-        $start  = \microtime(true);
-        $result = Helper::executeReal(
+        $start = \microtime(true);
+
+        [$exitCode, $stdOut, $errOut] = Helper::executeReal(
             'test:sleep-multi 123 456 789',
             ['sleep' => 2, 'no-progress' => null, 'pm-max' => 5],
         );
         $time = \microtime(true) - $start;
 
-        $outputAsArray = json($result[1])->getArrayCopy();
+        $outputAsArray = json($stdOut)->getArrayCopy();
+
+        isSame(1, $exitCode);
 
         $expectecContent = \implode("\n", [
             'Sleep : 2',
@@ -107,7 +112,7 @@ class CliMultiProcessTest extends PHPUnit
             "Started: 4\n{$expectecContent}\nFinished: 4",
             "Started: 5\n{$expectecContent}\nFinished: 5",
         ], $outputAsArray);
-        isContain('Exception messsage', $result[2]);
+        isContain('Exception messsage', $errOut);
 
         isTrue($time < 5, "Total time: {$time}");
     }

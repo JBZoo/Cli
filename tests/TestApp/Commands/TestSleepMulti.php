@@ -90,10 +90,10 @@ class TestSleepMulti extends CliCommandMultiProc
     {
         $result = [];
 
-        foreach ($procPool as $procId => $procInfo) {
+        foreach ($procPool as $procInfo) {
             $result[] = $procInfo['std_out'];
         }
 
-        $this->_(json($result));
+        $this->_((string)json($result));
     }
 }

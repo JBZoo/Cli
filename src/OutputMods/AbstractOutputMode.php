@@ -120,6 +120,10 @@ abstract class AbstractOutputMode
         $message = $this->prepareMessages($messages, $verboseLevel);
         $context = $this->prepareContext($context);
 
+        if ($message === null) {
+            return;
+        }
+
         $this->printMessage($message, $verboseLevel, $context);
     }
 
