@@ -87,6 +87,10 @@ class Logstash extends AbstractOutputMode
         return false;
     }
 
+    public function createProgressBar(): AbstractProgressBar
+    {
+    }
+
     protected function printMessage(
         ?string $message = '',
         string $verboseLevel = OutLvl::DEFAULT,
@@ -135,9 +139,5 @@ class Logstash extends AbstractOutputMode
         }
 
         return null;
-    }
-
-    public function createProgressBar(): AbstractProgressBar
-    {
     }
 }

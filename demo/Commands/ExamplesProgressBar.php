@@ -40,7 +40,7 @@ class ExamplesProgressBar extends CliCommand
     {
         // ////////////////////////////////////////////////////////////////////// Just 3 steps
         ProgressBar::run(2, static function ($stepValue, $stepIndex, $currentStep) {
-            //sleep(1);
+            sleep(1);
 
             return "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}";
         }, 'Number of steps');
