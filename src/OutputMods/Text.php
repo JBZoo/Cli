@@ -36,13 +36,12 @@ class Text extends AbstractOutputMode
     {
         parent::__construct($input, $output, $application);
 
-        self::addOutputStyles($this->output);
-        self::addOutputStyles($this->errOutput);
+        self::addOutputStyles($this->getOutput());
+        self::addOutputStyles($this->getErrOutput());
 
         if ($this->isStdoutOnly()) {
-            $this->errOutput = $this->output;
             if ($this->output instanceof ConsoleOutput) {
-                $this->output->setErrorOutput(new ConsoleOutput());
+                $this->output->setErrorOutput($this->output);
             }
         }
     }
@@ -111,6 +110,8 @@ class Text extends AbstractOutputMode
         $formatter->setStyle('c', new OutputFormatterStyle('yellow')); // Alias for <comment>
         $formatter->setStyle('q', new OutputFormatterStyle('black', 'cyan')); // Alias for <question>
         $formatter->setStyle('e', new OutputFormatterStyle('white', 'red')); // Alias for <error>
+
+        $output->setFormatter($formatter);
     }
 
     /**
@@ -144,15 +145,15 @@ class Text extends AbstractOutputMode
         $vNormal = OutputInterface::VERBOSITY_NORMAL;
 
         if ($verboseLevel === OutLvl::DEFAULT) {
-            $this->output->writeln($profilePrefix . $message, $vNormal);
+            $this->getOutput()->writeln($profilePrefix . $message, $vNormal);
         } elseif ($verboseLevel === OutLvl::V) {
-            $this->output->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_VERBOSE);
+            $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_VERBOSE);
         } elseif ($verboseLevel === OutLvl::VV) {
-            $this->output->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_VERY_VERBOSE);
+            $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_VERY_VERBOSE);
         } elseif ($verboseLevel === OutLvl::VVV) {
-            $this->output->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_DEBUG);
+            $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_DEBUG);
         } elseif ($verboseLevel === OutLvl::Q) {
-            $this->output->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_QUIET); // Show ALWAYS!
+            $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_QUIET); // Show ALWAYS!
         } elseif ($verboseLevel === OutLvl::LEGACY) {
             $this->_('<yellow>Legacy Output:</yellow> ' . $message);
         } elseif ($verboseLevel === OutLvl::DEBUG) {
@@ -162,13 +163,13 @@ class Text extends AbstractOutputMode
         } elseif ($verboseLevel === OutLvl::INFO) {
             $this->_('<blue>Info:</blue> ' . $message, OutLvl::V);
         } elseif ($verboseLevel === OutLvl::E) {
-            $this->outputHasErrors = true;
+            $this->markOutputHasErrors(true);
             $this->getErrOutput()->writeln($profilePrefix . $message, $vNormal);
         } elseif ($verboseLevel === OutLvl::ERROR) {
-            $this->outputHasErrors = true;
+            $this->markOutputHasErrors(true);
             $this->getErrOutput()->writeln($profilePrefix . '<red-bg>Error:</red-bg> ' . $message, $vNormal);
         } elseif ($verboseLevel === OutLvl::EXCEPTION) {
-            $this->outputHasErrors = true;
+            $this->markOutputHasErrors(true);
             $this->getErrOutput()->writeln($profilePrefix . '<red-bg>Muted Exception:</red-bg> ' . $message, $vNormal);
         } else {
             throw new Exception("Undefined verbose level: \"{$verboseLevel}\"");

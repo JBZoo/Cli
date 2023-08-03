@@ -150,7 +150,7 @@ class TestProgress extends CliCommand
         if ($testCase === 'exception-list') {
             $this->progressBar(10, static function ($stepValue): void {
                 if ($stepValue % 3 === 0) {
-                    throw new \Exception("Exception #{$stepValue}");
+                    throw new \RuntimeException("Exception #{$stepValue}");
                 }
             }, $testCase, $this->getOptBool('batch-exception'));
         }
@@ -171,23 +171,19 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'nested') {
-            $array         = [];
-            $parentSection = $this->outputMode->getOutput()->section();
-            $childSection  = $this->outputMode->getOutput()->section();
+            $array = [];
 
-            $this->progressBar(3, function ($parentId) use ($testCase, $childSection) {
+            $this->progressBar(3, function ($parentId) use ($testCase) {
                 \sleep($this->getOptInt('sleep'));
 
                 $this->progressBar(4, function ($childId) use ($parentId) {
                     \sleep($this->getOptInt('sleep'));
 
                     return "out_child_{$parentId}_{$childId}";
-                }, "{$testCase}_child_{$parentId}", false, $childSection);
-
-                $childSection->clear();
+                }, "{$testCase}_child_{$parentId}", false);
 
                 return "out_parent_{$parentId}";
-            }, "{$testCase}_parent", false, $parentSection);
+            }, "{$testCase}_parent", false);
         }
 
         if (!$testCase) {

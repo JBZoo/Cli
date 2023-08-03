@@ -40,9 +40,8 @@ class ProgressBar extends AbstractSymfonyProgressBar
 
         $this->output = $outputMode->getOutput();
 
-        $isDecorated        = $this->output->isDecorated();
-        $this->progressIcon = Icons::getRandomIcon(Icons::GROUP_PROGRESS, $isDecorated);
-        $this->finishIcon   = Icons::getRandomIcon(Icons::GROUP_FINISH, $isDecorated);
+        $this->progressIcon = Icons::getRandomIcon(Icons::GROUP_PROGRESS, $this->output->isDecorated());
+        $this->finishIcon   = Icons::getRandomIcon(Icons::GROUP_FINISH, $this->output->isDecorated());
     }
 
     public function init(): bool
@@ -80,6 +79,10 @@ class ProgressBar extends AbstractSymfonyProgressBar
 
         $currentIndex = 0;
 
+        if ($this->callbackOnStart !== null) {
+            \call_user_func($this->callbackOnStart, $this);
+        }
+
         foreach ($this->list as $stepIndex => $stepValue) {
             $this->setStep($stepIndex, $currentIndex);
 
@@ -113,6 +116,10 @@ class ProgressBar extends AbstractSymfonyProgressBar
             } else {
                 $this->progressBar->finish();
             }
+        }
+
+        if ($this->callbackOnFinish !== null) {
+            \call_user_func($this->callbackOnFinish, $this);
         }
 
         self::showListOfExceptions($exceptionMessages);

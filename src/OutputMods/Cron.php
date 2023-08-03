@@ -28,17 +28,12 @@ class Cron extends Text
 
     public function __construct(InputInterface $input, OutputInterface $output, CliApplication $application)
     {
+        $output->getFormatter()->setDecorated(false);
+        if ($output->getVerbosity() < OutputInterface::VERBOSITY_VERY_VERBOSE) {
+            $output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
+        }
+
         parent::__construct($input, $output, $application);
-
-        $this->output->getFormatter()->setDecorated(false);
-        if ($this->output->getVerbosity() < OutputInterface::VERBOSITY_VERY_VERBOSE) {
-            $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
-        }
-
-        $this->errOutput->getFormatter()->setDecorated(false);
-        if ($this->errOutput->getVerbosity() < OutputInterface::VERBOSITY_VERY_VERBOSE) {
-            //$this->errOutput->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
-        }
     }
 
     public function isStdoutOnly(): bool

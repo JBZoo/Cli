@@ -16,25 +16,22 @@ declare(strict_types=1);
 
 namespace JBZoo\PHPUnit;
 
-use function JBZoo\Data\json;
-
 class CliMultiProcessTest extends PHPUnit
 {
     public function testAsRealExecution(): void
     {
         $start = \microtime(true);
 
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal(
+        $cmdResult = Helper::executeReal(
             'test:sleep-multi 123 " qwerty " -v',
             ['sleep' => 1, 'no-progress' => null, 'pm-max' => 50],
             'JBZOO_TEST_VAR=123456',
         );
 
-        $time       = \microtime(true) - $start;
-        $errMessage = \print_r([$exitCode, $stdOut, $errOut], true);
+        $time = \microtime(true) - $start;
 
-        isSame(0, $exitCode, $errMessage);
-        $outputAsArray = json($stdOut)->getArrayCopy();
+        isSame(0, $cmdResult->code, (string)$cmdResult);
+        $outputAsArray = $cmdResult->stdJson()->getArrayCopy();
 
         $expectecContent = \implode("\n", [
             'Sleep : 1',
@@ -50,19 +47,19 @@ class CliMultiProcessTest extends PHPUnit
             "Started: 3\n{$expectecContent}\nFinished: 3",
             "Started: 4\n{$expectecContent}\nFinished: 4",
             "Started: 5\n{$expectecContent}\nFinished: 5",
-        ], $outputAsArray, $errMessage);
-        isSame('', $errOut, $errMessage);
+        ], $outputAsArray, (string)$cmdResult);
+        isSame('', $cmdResult->err, (string)$cmdResult);
 
         isTrue($time < 5, "Total time: {$time}");
     }
 
     public function testAsVirtalExecution(): void
     {
-        $start  = \microtime(true);
-        $result = Helper::executeVirtaul('test:sleep-multi', ['sleep' => 1, 'no-progress' => null, 'pm-max' => 5]);
-        $time   = \microtime(true) - $start;
+        $start     = \microtime(true);
+        $cmdResult = Helper::executeVirtaul('test:sleep-multi', ['sleep' => 1, 'no-progress' => null, 'pm-max' => 5]);
+        $time      = \microtime(true) - $start;
 
-        $outputAsArray = json($result)->getArrayCopy();
+        $outputAsArray = $cmdResult->stdJson()->getArrayCopy();
 
         $expectecContent = \implode("\n", [
             'Sleep : 1',
@@ -87,15 +84,15 @@ class CliMultiProcessTest extends PHPUnit
     {
         $start = \microtime(true);
 
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal(
+        $cmdResult = Helper::executeReal(
             'test:sleep-multi 123 456 789',
             ['sleep' => 2, 'no-progress' => null, 'pm-max' => 5],
         );
         $time = \microtime(true) - $start;
 
-        $outputAsArray = json($stdOut)->getArrayCopy();
+        $outputAsArray = $cmdResult->stdJson()->getArrayCopy();
 
-        isSame(1, $exitCode);
+        isSame(1, $cmdResult->code);
 
         $expectecContent = \implode("\n", [
             'Sleep : 2',
@@ -112,23 +109,23 @@ class CliMultiProcessTest extends PHPUnit
             "Started: 4\n{$expectecContent}\nFinished: 4",
             "Started: 5\n{$expectecContent}\nFinished: 5",
         ], $outputAsArray);
-        isContain('Exception messsage', $errOut);
+        isContain('Exception messsage', $cmdResult->err);
 
         isTrue($time < 5, "Total time: {$time}");
     }
 
     public function testNumberOfCpuCores(): void
     {
-        $result = Helper::executeReal(
+        $cmdResult = Helper::executeReal(
             'test:sleep-multi 123 " qwerty "',
             ['sleep' => 1, 'no-progress' => null, 'pm-max' => 50, '-vvv' => null],
         );
 
-        isContain('Debug: Max number of sub-processes: 50', $result[1]);
+        isContain('Debug: Max number of sub-processes: 50', $cmdResult->std);
         isContain(
             'Warning: The specified number of processes (--pm-max=50) '
             . 'is more than the found number of CPU cores in the system',
-            $result[1],
+            $cmdResult->std,
         );
     }
 }

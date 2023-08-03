@@ -43,9 +43,6 @@ class TestSleepMulti extends CliCommandMultiProc
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeOneProcess(string $pmThreadId): int
     {
         $sleep = $this->getOptInt('sleep');

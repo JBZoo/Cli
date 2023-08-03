@@ -20,17 +20,15 @@ use JBZoo\Cli\OutputMods\AbstractOutputMode;
 
 abstract class AbstractProgressBar
 {
-    protected ?AbstractOutputMode $outputMode = null;
-
-    protected ?\Closure $callback = null;
-
-    protected bool $throwBatchException = true;
-
-    protected int $max = 0;
-
-    protected iterable $list = [];
-
-    protected string $title = '';
+    protected ?AbstractOutputMode $outputMode          = null;
+    protected ?\Closure           $callback            = null;
+    protected bool                $throwBatchException = true;
+    protected int                 $max                 = 0;
+    protected iterable            $list                = [];
+    protected string              $title               = '';
+    protected ?\Closure           $callbackOnStart     = null;
+    protected ?\Closure           $callbackOnFinish    = null;
+    protected int                 $nestedLevel         = 0;
 
     abstract public function execute(): bool;
 
@@ -79,5 +77,31 @@ abstract class AbstractProgressBar
         $this->list = \range(0, $max - 1);
 
         return $this;
+    }
+
+    public function onStart(\Closure $callback): self
+    {
+        $this->callbackOnStart = $callback;
+
+        return $this;
+    }
+
+    public function onFinish(\Closure $callback): self
+    {
+        $this->callbackOnFinish = $callback;
+
+        return $this;
+    }
+
+    public function setNextedLevel(int $nestedLevel): self
+    {
+        $this->nestedLevel = $nestedLevel;
+
+        return $this;
+    }
+
+    public function getNextedLevel(): int
+    {
+        return $this->nestedLevel;
     }
 }

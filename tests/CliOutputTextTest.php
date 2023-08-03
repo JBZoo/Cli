@@ -22,7 +22,7 @@ class CliOutputTextTest extends PHPUnit
 {
     public function testNormal(): void
     {
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output');
+        $cmdResult = Helper::executeReal('test:output');
         isSame(
             \implode(\PHP_EOL, [
                 'Error: Message',
@@ -30,9 +30,9 @@ class CliOutputTextTest extends PHPUnit
                 'Error: Error (error)',
                 'Muted Exception: Error (exception)',
             ]),
-            $errOut,
+            $cmdResult->err,
         );
-        isSame(0, $exitCode);
+        isSame(0, $cmdResult->code);
 
         isSame(
             \implode("\n", [
@@ -42,13 +42,13 @@ class CliOutputTextTest extends PHPUnit
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
             ]),
-            $stdOut,
+            $cmdResult->std,
         );
     }
 
     public function testInfo(): void
     {
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['v' => null]);
+        $cmdResult = Helper::executeReal('test:output', ['v' => null]);
         isSame(
             \implode(\PHP_EOL, [
                 'Error: Message',
@@ -56,9 +56,9 @@ class CliOutputTextTest extends PHPUnit
                 'Error: Error (error)',
                 'Muted Exception: Error (exception)',
             ]),
-            $errOut,
+            $cmdResult->err,
         );
-        isSame(0, $exitCode);
+        isSame(0, $cmdResult->code);
 
         isSame(
             \implode("\n", [
@@ -70,18 +70,18 @@ class CliOutputTextTest extends PHPUnit
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
             ]),
-            $stdOut,
+            $cmdResult->std,
         );
 
         isSame(
-            Helper::executeReal('test:output', ['v' => null])[1],
-            Helper::executeReal('test:output', ['verbose' => null])[1],
+            Helper::executeReal('test:output', ['v' => null])->std,
+            Helper::executeReal('test:output', ['verbose' => null])->std,
         );
     }
 
     public function testVerbose(): void
     {
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['-vv' => null]);
+        $cmdResult = Helper::executeReal('test:output', ['-vv' => null]);
         isSame(
             \implode(\PHP_EOL, [
                 'Error: Message',
@@ -89,9 +89,9 @@ class CliOutputTextTest extends PHPUnit
                 'Error: Error (error)',
                 'Muted Exception: Error (exception)',
             ]),
-            $errOut,
+            $cmdResult->err,
         );
-        isSame(0, $exitCode);
+        isSame(0, $cmdResult->code);
 
         isSame(
             \implode("\n", [
@@ -108,13 +108,13 @@ class CliOutputTextTest extends PHPUnit
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
             ]),
-            $stdOut,
+            $cmdResult->std,
         );
     }
 
     public function testDebug(): void
     {
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['-vvv' => null]);
+        $cmdResult = Helper::executeReal('test:output', ['-vvv' => null]);
         isSame(
             \implode(\PHP_EOL, [
                 'Error: Message',
@@ -122,11 +122,11 @@ class CliOutputTextTest extends PHPUnit
                 'Error: Error (error)',
                 'Muted Exception: Error (exception)',
             ]),
-            $errOut,
+            $cmdResult->err,
         );
-        isSame(0, $exitCode);
+        isSame(0, $cmdResult->code);
 
-        isContain('Debug: Working Directory is ', $stdOut);
+        isContain('Debug: Working Directory is ', $cmdResult->std);
         isContain(
             \implode("\n", [
                 'Normal 1',
@@ -146,22 +146,22 @@ class CliOutputTextTest extends PHPUnit
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
             ]),
-            $stdOut,
+            $cmdResult->std,
         );
 
-        isContain('Debug: Memory Usage/Peak:', $stdOut);
-        isContain('Debug: Exit Code is "0"', $stdOut);
+        isContain('Debug: Memory Usage/Peak:', $cmdResult->std);
+        isContain('Debug: Exit Code is "0"', $cmdResult->std);
     }
 
     public function testQuiet(): void
     {
-        isContain('Quiet -q', Helper::executeReal('test:output', ['q' => null])[1]);
-        isContain('Quiet -q', Helper::executeReal('test:output', ['quiet' => null])[1]);
+        isContain('Quiet -q', Helper::executeReal('test:output', ['q' => null])->std);
+        isContain('Quiet -q', Helper::executeReal('test:output', ['quiet' => null])->std);
     }
 
     public function testProfile(): void
     {
-        $output = Helper::executeReal('test:output', ['profile' => null])[1];
+        $output = Helper::executeReal('test:output', ['profile' => null])->std;
 
         isContain('B] Normal 1', $output);
         isContain('B] Normal 2', $output);
@@ -173,10 +173,10 @@ class CliOutputTextTest extends PHPUnit
     public function testStdoutOnly(): void
     {
         // Redirect common message
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['stdout-only' => null]);
+        $cmdResult = Helper::executeReal('test:output', ['stdout-only' => null]);
 
-        isSame('', $errOut);
-        isSame(0, $exitCode);
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
 
         isSame(
             \implode("\n", [
@@ -190,17 +190,14 @@ class CliOutputTextTest extends PHPUnit
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
             ]),
-            $stdOut,
+            $cmdResult->std,
         );
 
         // Redirect exception messsage
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', [
-            'stdout-only' => null,
-            'exception'   => 'Some message',
-        ]);
-        isSame('', $errOut);
-        isSame(1, $exitCode);
-        isContain('  Some message  ', $stdOut);
+        $cmdResult = Helper::executeReal('test:output', ['stdout-only' => null, 'exception' => 'Some message']);
+        isEmpty($cmdResult->err, $cmdResult->err);
+        isSame(1, $cmdResult->code);
+        isContain('  Some message  ', $cmdResult->std);
         isContain(
             \implode("\n", [
                 'Normal 1',
@@ -213,16 +210,14 @@ class CliOutputTextTest extends PHPUnit
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
             ]),
-            $stdOut,
+            $cmdResult->std,
         );
 
         // No redirect exception messsage
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', [
-            'exception' => 'Some message',
-        ]);
-        isContain('Error: Message', $errOut);
-        isContain('  Some message  ', $errOut);
-        isSame(1, $exitCode);
+        $cmdResult = Helper::executeReal('test:output', ['exception' => 'Some message']);
+        isContain('Error: Message', $cmdResult->err);
+        isContain('  Some message  ', $cmdResult->err);
+        isSame(1, $cmdResult->code);
 
         isContain(
             \implode("\n", [
@@ -232,14 +227,14 @@ class CliOutputTextTest extends PHPUnit
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
             ]),
-            $stdOut,
+            $cmdResult->std,
         );
     }
 
     public function testStrict(): void
     {
         // Redirect common message
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['non-zero-on-error' => null]);
+        $cmdResult = Helper::executeReal('test:output', ['non-zero-on-error' => null]);
         isSame(
             \implode(\PHP_EOL, [
                 'Error: Message',
@@ -247,9 +242,9 @@ class CliOutputTextTest extends PHPUnit
                 'Error: Error (error)',
                 'Muted Exception: Error (exception)',
             ]),
-            $errOut,
+            $cmdResult->err,
         );
-        isSame(1, $exitCode);
+        isSame(1, $cmdResult->code);
 
         isSame(
             \implode("\n", [
@@ -259,27 +254,27 @@ class CliOutputTextTest extends PHPUnit
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
             ]),
-            $stdOut,
+            $cmdResult->std,
         );
     }
 
     public function testTimestamp(): void
     {
         // Redirect common message
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['timestamp' => null]);
-        isContain('] Error: Message', $errOut);
-        isSame(0, $exitCode);
+        $cmdResult = Helper::executeReal('test:output', ['timestamp' => null]);
+        isContain('] Error: Message', $cmdResult->err);
+        isSame(0, $cmdResult->code);
 
-        isContain('] Normal 1', $stdOut);
-        isContain('] Normal 2', $stdOut);
-        isContain('] Quiet -q', $stdOut);
+        isContain('] Normal 1', $cmdResult->std);
+        isContain('] Normal 2', $cmdResult->std);
+        isContain('] Quiet -q', $cmdResult->std);
     }
 
     public function testTypeOfVars(): void
     {
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:output', ['type-of-vars' => null]);
-        isSame(0, $exitCode);
-        isSame('', $errOut);
+        $cmdResult = Helper::executeReal('test:output', ['type-of-vars' => null]);
+        isSame(0, $cmdResult->code);
+        isSame('', $cmdResult->err);
         isSame(
             \implode("\n", [
                 '0',
@@ -290,7 +285,7 @@ class CliOutputTextTest extends PHPUnit
                 '1',
                 '-0.001',
             ]),
-            $stdOut,
+            $cmdResult->std,
         );
     }
 
@@ -298,61 +293,53 @@ class CliOutputTextTest extends PHPUnit
     {
         $exceptionMessage = 'Some message ' . Str::random();
 
-        [$exitCode, , $errOut] = Helper::executeReal('test:output', ['exception' => $exceptionMessage]);
-        isSame(1, $exitCode);
-        isContain($exceptionMessage, $errOut);
+        $cmdResult = Helper::executeReal('test:output', ['exception' => $exceptionMessage]);
+        isSame(1, $cmdResult->code);
+        isContain($exceptionMessage, $cmdResult->err);
 
-        [$exitCode, , $errOut] = Helper::executeReal(
-            'test:output',
-            ['exception' => $exceptionMessage, 'mute-errors' => null],
-        );
-        isSame(0, $exitCode);
-        isContain($exceptionMessage, $errOut);
+        $cmdResult = Helper::executeReal('test:output', ['exception' => $exceptionMessage, 'mute-errors' => null]);
+        isSame(0, $cmdResult->code);
+        isContain($exceptionMessage, $cmdResult->err);
 
-        [$exitCode, , $errOut] = Helper::executeReal(
+        $cmdResult = Helper::executeReal(
             'test:output',
             ['exception' => $exceptionMessage, 'mute-errors' => null, 'non-zero-on-error' => null],
         );
-        isSame(0, $exitCode);
-        isContain($exceptionMessage, $errOut);
+        isSame(0, $cmdResult->code);
+        isContain($exceptionMessage, $cmdResult->err);
     }
 
     public function testCronMode(): void
     {
-        $result = Helper::executeReal(
-            'test:output',
-            ['cron' => null, 'exception' => 'Custom runtime error'],
-        );
+        $cmdResult = Helper::executeReal('test:output', ['cron' => null, 'exception' => 'Custom runtime error']);
 
-        [$exitCode, $stdOut, $errOut] = $result;
+        $message = (string)$cmdResult;
 
-        $message = \print_r($result, true);
+        isEmpty($cmdResult->err, $message);
+        isSame(1, $cmdResult->code, $message);
+        isSame('', $cmdResult->err, $message);
 
-        isEmpty($errOut);
-        isSame(1, $exitCode, $message);
-        isSame('', $errOut, $message);
+        isContain('] Normal 1', $cmdResult->std, false, $message);
+        isContain('] Normal 2', $cmdResult->std, false, $message);
+        isContain('] Error: Message', $cmdResult->std, false, $message);
+        isContain('] Info1 -v', $cmdResult->std, false, $message);
+        isContain('] Info: Info2 -v', $cmdResult->std, false, $message);
+        isContain('] Verbose1 -vv', $cmdResult->std, false, $message);
+        isContain('] Warning: Verbose2 -vv', $cmdResult->std, false, $message);
+        isContain('] Error (e)', $cmdResult->std, false, $message);
+        isContain('] Error: Error (error)', $cmdResult->std, false, $message);
+        isContain('] Muted Exception: Error (exception)', $cmdResult->std, false, $message);
+        isContain('] Quiet -q', $cmdResult->std, false, $message);
+        isContain('] Legacy Output: Legacy', $cmdResult->std, false, $message);
+        isContain('] Legacy Output:    Message', $cmdResult->std, false, $message);
+        isContain('] Memory Usage/Peak:', $cmdResult->std, false, $message);
 
-        isContain('] Normal 1', $stdOut, false, $message);
-        isContain('] Normal 2', $stdOut, false, $message);
-        isContain('] Error: Message', $stdOut, false, $message);
-        isContain('] Info1 -v', $stdOut, false, $message);
-        isContain('] Info: Info2 -v', $stdOut, false, $message);
-        isContain('] Verbose1 -vv', $stdOut, false, $message);
-        isContain('] Warning: Verbose2 -vv', $stdOut, false, $message);
-        isContain('] Error (e)', $stdOut, false, $message);
-        isContain('] Error: Error (error)', $stdOut, false, $message);
-        isContain('] Muted Exception: Error (exception)', $stdOut, false, $message);
-        isContain('] Quiet -q', $stdOut, false, $message);
-        isContain('] Legacy Output: Legacy', $stdOut, false, $message);
-        isContain('] Legacy Output:    Message', $stdOut, false, $message);
-        isContain('] Memory Usage/Peak:', $stdOut, false, $message);
+        isContain('[JBZoo\Cli\Exception]', $cmdResult->std, false, $message);
+        isContain('Custom runtime error', $cmdResult->std, false, $message);
+        isContain('Exception trace:', $cmdResult->std, false, $message);
 
-        isContain('[JBZoo\Cli\Exception]', $stdOut, false, $message);
-        isContain('Custom runtime error', $stdOut, false, $message);
-        isContain('Exception trace:', $stdOut, false, $message);
-
-        isNotContain('Debug1 -vvv', $stdOut, false, $message);
-        isNotContain('Message #1 -vvv', $stdOut, false, $message);
-        isNotContain('Message #2 -vvv', $stdOut, false, $message);
+        isNotContain('Debug1 -vvv', $cmdResult->std, false, $message);
+        isNotContain('Message #1 -vvv', $cmdResult->std, false, $message);
+        isNotContain('Message #2 -vvv', $cmdResult->std, false, $message);
     }
 }

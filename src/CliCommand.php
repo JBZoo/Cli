@@ -43,6 +43,43 @@ abstract class CliCommand extends Command
 
     abstract protected function executeAction(): int;
 
+    public function progressBar(
+        iterable|int $listOrMax,
+        \Closure $callback,
+        string $title = '',
+        bool $throwBatchException = true,
+        ?AbstractOutputMode $outputMode = null,
+    ): AbstractProgressBar {
+        static $nestedLevel = 0;
+
+        $outputMode ??= $this->outputMode;
+
+        $progressBar = $outputMode->createProgressBar()
+            ->setTitle($title)
+            ->setCallback($callback)
+            ->setThrowBatchException($throwBatchException);
+
+        if (\is_iterable($listOrMax)) {
+            $progressBar->setList($listOrMax);
+        } else {
+            $progressBar->setMax($listOrMax);
+        }
+
+        $progressBar->execute();
+
+        $progressBar
+            ->onStart(static function (AbstractProgressBar $bar) use (&$nestedLevel): void {
+                $nestedLevel++;
+                $bar->setNextedLevel($nestedLevel);
+                dump(1);
+            })
+            ->onFinish(static function () use (&$nestedLevel): void {
+                $nestedLevel--;
+            });
+
+        return $progressBar;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -359,31 +396,6 @@ abstract class CliCommand extends Command
             $this->outputMode->getOutput(),
             $questionObj,
         );
-    }
-
-    public function progressBar(
-        iterable|int $listOrMax,
-        \Closure $callback,
-        string $title = '',
-        bool $throwBatchException = true,
-        ?AbstractOutputMode $outputMode = null,
-    ): AbstractProgressBar {
-        $outputMode ??= $this->outputMode;
-
-        $progressBar = $outputMode->createProgressBar()
-            ->setTitle($title)
-            ->setCallback($callback)
-            ->setThrowBatchException($throwBatchException);
-
-        if (\is_iterable($listOrMax)) {
-            $progressBar->setList($listOrMax);
-        } else {
-            $progressBar->setMax($listOrMax);
-        }
-
-        $progressBar->execute();
-
-        return $progressBar;
     }
 
     protected static function getStdIn(): ?string

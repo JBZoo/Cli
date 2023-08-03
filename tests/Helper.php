@@ -28,14 +28,14 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 
-class Helper extends PHPUnit
+class Helper
 {
     public static function executeReal(
         string $command,
         array $options = [],
         string $preAction = '',
         string $postAction = '',
-    ): array {
+    ): CmdResult {
         $cwd = __DIR__ . '/TestApp';
 
         $options['no-ansi'] = null;
@@ -53,15 +53,15 @@ class Helper extends PHPUnit
         $process = Process::fromShellCommandline($realCommand, $cwd, null, null, 3600);
         $process->run();
 
-        return [
+        return new CmdResult(
             $process->getExitCode(),
             \trim($process->getOutput()),
             \trim($process->getErrorOutput()),
             $realCommand,
-        ];
+        );
     }
 
-    public static function executeVirtaul(string $command, array $options = []): string
+    public static function executeVirtaul(string $command, array $options = []): CmdResult
     {
         $rootPath = \dirname(__DIR__);
 
@@ -84,6 +84,6 @@ class Helper extends PHPUnit
             throw new Exception($buffer->fetch());
         }
 
-        return $buffer->fetch();
+        return new CmdResult(0, $buffer->fetch(), '', (string)$inputString);
     }
 }

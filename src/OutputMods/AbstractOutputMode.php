@@ -30,18 +30,18 @@ abstract class AbstractOutputMode
 {
     protected static self $instance;
 
-    protected CliApplication  $application;
-    protected InputInterface  $input;
-    protected OutputInterface $output;
-    protected OutputInterface $errOutput;
-
-    protected bool $outputHasErrors = false;
+    protected CliApplication $application;
 
     protected float $startTimer;
     protected float $prevTime;
     protected int   $prevMemory;
 
     protected string $timestampFormat = 'Y-m-d\TH:i:s.uP';
+
+    protected InputInterface  $input;
+    protected OutputInterface $output;
+
+    private bool $outputHasErrors = false;
 
     abstract public function createProgressBar(): AbstractProgressBar;
 
@@ -59,9 +59,8 @@ abstract class AbstractOutputMode
 
         $this->application = $application;
 
-        $this->input     = $input;
-        $this->output    = $output;
-        $this->errOutput = $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
+        $this->input  = $input;
+        $this->output = $output;
 
         self::$instance = $this;
     }
@@ -83,30 +82,11 @@ abstract class AbstractOutputMode
 
     public function getErrOutput(): OutputInterface
     {
-        return $this->errOutput;
-    }
+        if ($this->isStdoutOnly()) {
+            return $this->output;
+        }
 
-    public function getProfileInfo(): array
-    {
-        $currentTime   = \microtime(true);
-        $currentMemory = \memory_get_usage(false);
-
-        $result = [
-            'memory_usage_real' => \memory_get_usage(true),
-            'memory_usage'      => $currentMemory,
-            'memory_usage_diff' => $currentMemory - $this->prevMemory,
-
-            'memory_pick_real' => \memory_get_peak_usage(true),
-            'memory_pick'      => \memory_get_peak_usage(false),
-
-            'time_total_ms' => \round(1000 * ($currentTime - $_SERVER['REQUEST_TIME_FLOAT']), 3),
-            'time_diff_ms'  => \round(1000 * ($currentTime - $this->prevTime), 3),
-        ];
-
-        $this->prevTime   = $currentTime;
-        $this->prevMemory = $currentMemory;
-
-        return $result;
+        return $this->output instanceof ConsoleOutputInterface ? $this->output->getErrorOutput() : $this->output;
     }
 
     /**
@@ -190,6 +170,29 @@ abstract class AbstractOutputMode
         return self::$instance;
     }
 
+    protected function getProfileInfo(): array
+    {
+        $currentTime   = \microtime(true);
+        $currentMemory = \memory_get_usage(false);
+
+        $result = [
+            'memory_usage_real' => \memory_get_usage(true),
+            'memory_usage'      => $currentMemory,
+            'memory_usage_diff' => $currentMemory - $this->prevMemory,
+
+            'memory_pick_real' => \memory_get_peak_usage(true),
+            'memory_pick'      => \memory_get_peak_usage(false),
+
+            'time_total_ms' => \round(1000 * ($currentTime - $_SERVER['REQUEST_TIME_FLOAT']), 3),
+            'time_diff_ms'  => \round(1000 * ($currentTime - $this->prevTime), 3),
+        ];
+
+        $this->prevTime   = $currentTime;
+        $this->prevMemory = $currentMemory;
+
+        return $result;
+    }
+
     protected function prepareMessages(iterable|float|int|bool|string|null $messages, string $verboseLevel): ?string
     {
         $verboseLevel = \strtolower(\trim($verboseLevel));
@@ -226,5 +229,10 @@ abstract class AbstractOutputMode
     protected function prepareContext(array $context): array
     {
         return (new NormalizerFormatter())->normalizeValue($context);
+    }
+
+    protected function markOutputHasErrors(bool $hasError = true): void
+    {
+        $this->outputHasErrors = $hasError;
     }
 }

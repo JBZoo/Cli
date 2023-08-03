@@ -22,7 +22,7 @@ class CliStdInTest extends PHPUnit
 {
     public function testStdInEmpty(): void
     {
-        isSame('', Helper::executeReal('test:cli-stdin')[1]);
+        isSame('', Helper::executeReal('test:cli-stdin')->std);
     }
 
     public function testStdInNotEmpty(): void
@@ -30,7 +30,7 @@ class CliStdInTest extends PHPUnit
         $ramdom = Str::random();
         isSame(
             "string(11) \"{$ramdom}\n\"",
-            Helper::executeReal('test:cli-stdin', ['var-dump' => null], "echo \"{$ramdom}\" | ")[1],
+            Helper::executeReal('test:cli-stdin', ['var-dump' => null], "echo \"{$ramdom}\" | ")->std,
         );
     }
 
@@ -39,7 +39,7 @@ class CliStdInTest extends PHPUnit
         $file = __FILE__;
         isSame(
             \trim(\file_get_contents($file)),
-            Helper::executeReal('test:cli-stdin', [], "cat \"{$file}\" | ")[1],
+            Helper::executeReal('test:cli-stdin', [], "cat \"{$file}\" | ")->std,
         );
     }
 
@@ -47,7 +47,7 @@ class CliStdInTest extends PHPUnit
     {
         isSame(
             "string(2) \" \n\"",
-            Helper::executeReal('test:cli-stdin', ['var-dump' => null], 'echo " " | ')[1],
+            Helper::executeReal('test:cli-stdin', ['var-dump' => null], 'echo " " | ')->std,
         );
     }
 }
