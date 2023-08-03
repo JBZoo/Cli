@@ -36,9 +36,6 @@ class TestOutput extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         if ($this->getOptBool('type-of-vars')) {

@@ -54,9 +54,6 @@ class TestCliOptions extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         $options = [

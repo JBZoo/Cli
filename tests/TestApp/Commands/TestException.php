@@ -30,9 +30,6 @@ class TestException extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         throw new Exception('Error message');

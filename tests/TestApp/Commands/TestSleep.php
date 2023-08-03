@@ -34,9 +34,6 @@ class TestSleep extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         $this->_('Started');

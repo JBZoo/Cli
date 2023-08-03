@@ -32,9 +32,6 @@ class TestCliStdIn extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         if ($this->getOptBool('var-dump')) {
