@@ -27,6 +27,8 @@ use Monolog\Logger;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function JBZoo\Utils\bool;
+
 class Logstash extends AbstractOutputMode
 {
     public const NAME        = 'logstash';
@@ -76,7 +78,7 @@ class Logstash extends AbstractOutputMode
 
     public function onExecAfter(int $exitCode): void
     {
-        $this->_('Command Finish: ' . $exitCode, OutLvl::INFO, [
+        $this->_('Command Finish: ExitCode=' . $exitCode, OutLvl::INFO, [
             'process' => ['exit_code' => $exitCode],
         ]);
     }
@@ -95,7 +97,14 @@ class Logstash extends AbstractOutputMode
         string $verboseLevel = OutLvl::DEFAULT,
         array $context = [],
     ): void {
-        $this->logger->log(OutLvl::mapToPsrLevel($verboseLevel), $message, $context);
+        $nonZeroOnError = bool($this->getInput()->getOption('non-zero-on-error'));
+        $psrErrorLevel  = OutLvl::mapToPsrLevel($verboseLevel);
+
+        if ($nonZeroOnError && OutLvl::isPsrErrorLevel($psrErrorLevel)) {
+            $this->markOutputHasErrors(true);
+        }
+
+        $this->logger->log($psrErrorLevel, $message, $context);
     }
 
     protected function prepareContext(array $context): array

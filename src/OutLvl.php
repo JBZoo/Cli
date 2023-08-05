@@ -65,4 +65,14 @@ class OutLvl
 
         return $map[$level] ?? LogLevel::INFO;
     }
+
+    public static function isPsrErrorLevel($psrLevel): bool
+    {
+        return \in_array($psrLevel, [
+            LogLevel::EMERGENCY,
+            LogLevel::ALERT,
+            LogLevel::CRITICAL,
+            LogLevel::ERROR,
+        ], true);
+    }
 }

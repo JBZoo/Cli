@@ -23,17 +23,8 @@ class CliOutputTextTest extends PHPUnit
     public function testNormal(): void
     {
         $cmdResult = Helper::executeReal('test:output');
-        isSame(
-            \implode(\PHP_EOL, [
-                'Error: Message',
-                'Error (e)',
-                'Error: Error (error)',
-                'Muted Exception: Error (exception)',
-            ]),
-            $cmdResult->err,
-        );
-        isSame(0, $cmdResult->code);
 
+        isSame(0, $cmdResult->code);
         isSame(
             \implode("\n", [
                 'Normal 1',
@@ -43,6 +34,16 @@ class CliOutputTextTest extends PHPUnit
                 'Legacy Output:    Message',
             ]),
             $cmdResult->std,
+        );
+
+        isSame(
+            \implode(\PHP_EOL, [
+                'Error: Message',
+                'Error (e)',
+                'Error: Error (error)',
+                'Muted Exception: Error (exception)',
+            ]),
+            $cmdResult->err,
         );
     }
 
@@ -161,13 +162,18 @@ class CliOutputTextTest extends PHPUnit
 
     public function testProfile(): void
     {
-        $output = Helper::executeReal('test:output', ['profile' => null])->std;
+        $cmdResult = Helper::executeReal('test:output', ['profile' => null]);
 
-        isContain('B] Normal 1', $output);
-        isContain('B] Normal 2', $output);
-        isContain('B] Quiet -q', $output);
-        isContain('B] Memory Usage/Peak:', $output);
-        isContain('Execution Time:', $output);
+        isContain('B] Normal 1', $cmdResult->std);
+        isContain('B] Normal 2', $cmdResult->std);
+        isContain('B] Quiet -q', $cmdResult->std);
+        isContain('B] Memory Usage/Peak:', $cmdResult->std);
+        isContain('Execution Time:', $cmdResult->std);
+
+        $firstLine = \explode("\n", $cmdResult->std)[0];
+        $lineParts = \explode('] ', $firstLine);
+
+        isTrue(Helper::validateProfilerFormat($lineParts[0] . ']'), $firstLine);
     }
 
     public function testStdoutOnly(): void
@@ -268,6 +274,11 @@ class CliOutputTextTest extends PHPUnit
         isContain('] Normal 1', $cmdResult->std);
         isContain('] Normal 2', $cmdResult->std);
         isContain('] Quiet -q', $cmdResult->std);
+
+        $firstLine = \explode("\n", $cmdResult->std)[0];
+        $lineParts = \explode(' ', $firstLine);
+
+        isTrue(Helper::validateDateFormat($lineParts[0]), $firstLine);
     }
 
     public function testTypeOfVars(): void
@@ -341,5 +352,20 @@ class CliOutputTextTest extends PHPUnit
         isNotContain('Debug1 -vvv', $cmdResult->std, false, $message);
         isNotContain('Message #1 -vvv', $cmdResult->std, false, $message);
         isNotContain('Message #2 -vvv', $cmdResult->std, false, $message);
+    }
+
+    public function testCronModeAlias(): void
+    {
+        $errMessage = 'Custom runtime error';
+
+        $cmdResultAlias = Helper::executeReal('test:output', ['cron' => null, 'exception' => $errMessage]);
+        $cmdResult      = Helper::executeReal('test:output', ['output-mode' => 'cron', 'exception' => $errMessage]);
+
+        isSame(1, $cmdResultAlias->code);
+        isSame(1, $cmdResult->code);
+
+        isSame($cmdResultAlias->err, $cmdResult->err);
+        isSame(\str_word_count($cmdResultAlias->std), \str_word_count($cmdResult->std));
+        isSame(\count(\explode("\n", $cmdResultAlias->std)), \count(\explode("\n", $cmdResult->std)));
     }
 }

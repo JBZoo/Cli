@@ -86,4 +86,22 @@ class Helper
 
         return new CmdResult(0, $buffer->fetch(), '', (string)$inputString);
     }
+
+    public static function validateDateFormat(string $logMessage): bool
+    {
+        // Example: [2023-08-05T17:31:57.421918+04:00]
+        $pattern = '/\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+\+\d{2}:\d{2}\]/';
+        \preg_match($pattern, $logMessage, $matches);
+
+        return \count($matches) === 1;
+    }
+
+    public static function validateProfilerFormat(string $logMessage): bool
+    {
+        // Example: [+0.057s/  15.44 KB]
+        $pattern = '/\[\+\d+\.\d+s\/\s+\d+\.\d+ KB\]/';
+        \preg_match($pattern, $logMessage, $matches);
+
+        return \count($matches) === 1;
+    }
 }
