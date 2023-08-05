@@ -108,7 +108,6 @@ class CliProgressLogstashTest extends PHPUnit
         Helper::assertLogstash(['NOTICE', 'Working on "exception". Number of steps: 3.'], $stdOutput[0]);
         Helper::assertLogstash(['NOTICE', '(Step=1/Max=3): Empty Output'], $stdOutput[1]);
         Helper::assertLogstash(['CRITICAL', 'Command Exception: Exception #1'], $stdOutput[2]);
-
         isSame('Exception', $stdOutput[2]->find('context.error.type'));
         isSame(0, $stdOutput[2]->find('context.error.code'));
         isSame('Exception #1', $stdOutput[2]->find('context.error.message'));
@@ -122,7 +121,6 @@ class CliProgressLogstashTest extends PHPUnit
         isCount(2, $stdOutput);
         Helper::assertLogstash(['NOTICE', 'Working on "exception-list". Number of steps: 10.'], $stdOutput[0]);
         Helper::assertLogstash(['CRITICAL', 'Command Exception: Exception #0'], $stdOutput[1]);
-
         isSame('RuntimeException', $stdOutput[1]->find('context.error.type'));
         isSame(0, $stdOutput[1]->find('context.error.code'));
         isSame('Exception #0', $stdOutput[1]->find('context.error.message'));
@@ -134,7 +132,6 @@ class CliProgressLogstashTest extends PHPUnit
     {
         $stdOutput = $this->exec('exception', ['batch-exception' => null], 1);
         isCount(5, $stdOutput);
-
         Helper::assertLogstash(['NOTICE', 'Working on "exception". Number of steps: 3.'], $stdOutput[0]);
         Helper::assertLogstash(['NOTICE', '(Step=1/Max=3): Empty Output'], $stdOutput[1]);
         Helper::assertLogstash(['NOTICE', '(Step=2/Max=3): Exception: Exception #1'], $stdOutput[2]);
@@ -149,7 +146,6 @@ class CliProgressLogstashTest extends PHPUnit
     {
         $stdOutput = $this->exec('exception-list', ['batch-exception' => null], 1);
         isCount(12, $stdOutput);
-
         Helper::assertLogstash(['NOTICE', 'Working on "exception-list". Number of steps: 10.'], $stdOutput[0]);
         Helper::assertLogstash(['NOTICE', '(Step=1/Max=10): Exception: Exception #0'], $stdOutput[1]);
         Helper::assertLogstash(['NOTICE', '(Step=2/Max=10): Empty Output'], $stdOutput[2]);
@@ -178,7 +174,6 @@ class CliProgressLogstashTest extends PHPUnit
     {
         $stdOutput = $this->exec('nested', ['-b' => null, '-vv' => null]);
         isCount(21, $stdOutput);
-
         Helper::assertLogstash(['INFO', 'Command Start: test:progress'], $stdOutput[0]);
         Helper::assertLogstash(['NOTICE', 'Working on "nested_parent". Number of steps: 3.'], $stdOutput[1]);
         Helper::assertLogstash(['NOTICE', 'Working on "nested_child_0". Number of steps: 4.'], $stdOutput[2]);
@@ -207,11 +202,9 @@ class CliProgressLogstashTest extends PHPUnit
      */
     private function exec(string $testCase, array $addOptions = [], int $excpectedExitCode = 0): array
     {
-        $options = \array_merge(['output-mode' => 'logstash', 'case' => $testCase], $addOptions);
-
+        $options   = \array_merge(['output-mode' => 'logstash', 'case' => $testCase], $addOptions);
         $cmdResult = Helper::executeReal('test:progress', $options);
-
-        $message = \print_r($cmdResult, true);
+        $message   = \print_r($cmdResult, true);
 
         isSame($excpectedExitCode, $cmdResult->code, $message);
         isSame('', $cmdResult->err, $message);

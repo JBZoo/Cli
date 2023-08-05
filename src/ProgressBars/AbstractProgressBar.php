@@ -20,15 +20,19 @@ use JBZoo\Cli\OutputMods\AbstractOutputMode;
 
 abstract class AbstractProgressBar
 {
-    protected ?AbstractOutputMode $outputMode          = null;
-    protected ?\Closure           $callback            = null;
-    protected bool                $throwBatchException = true;
-    protected int                 $max                 = 0;
-    protected iterable            $list                = [];
-    protected string              $title               = '';
-    protected ?\Closure           $callbackOnStart     = null;
-    protected ?\Closure           $callbackOnFinish    = null;
-    protected int                 $nestedLevel         = 0;
+    protected AbstractOutputMode $outputMode;
+
+    protected ?\Closure $callback = null;
+
+    protected bool $throwBatchException = true;
+
+    protected int      $max         = 0;
+    protected iterable $list        = [];
+    protected string   $title       = '';
+    protected int      $nestedLevel = 0;
+
+    protected ?\Closure $callbackOnStart  = null;
+    protected ?\Closure $callbackOnFinish = null;
 
     abstract public function execute(): bool;
 

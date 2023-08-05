@@ -39,7 +39,7 @@ use function JBZoo\Utils\int;
 
 abstract class CliCommand extends Command
 {
-    protected ?AbstractOutputMode $outputMode = null;
+    protected AbstractOutputMode $outputMode;
 
     abstract protected function executeAction(): int;
 
@@ -68,13 +68,13 @@ abstract class CliCommand extends Command
         $progressBar->execute();
 
         $progressBar
-            ->onStart(static function (AbstractProgressBar $bar) use (&$nestedLevel): void {
+            ->onStart(static function (AbstractProgressBar $progressBar) use (&$nestedLevel): void {
                 $nestedLevel++;
-                $bar->setNextedLevel($nestedLevel);
-                dump(1);
+                $progressBar->setNextedLevel($nestedLevel);
             })
-            ->onFinish(static function () use (&$nestedLevel): void {
+            ->onFinish(static function (AbstractProgressBar $progressBar) use (&$nestedLevel): void {
                 $nestedLevel--;
+                $progressBar->setNextedLevel($nestedLevel);
             });
 
         return $progressBar;
@@ -300,11 +300,6 @@ abstract class CliCommand extends Command
         return $this->outputMode->isDisplayProfiling();
     }
 
-    protected function getOutputFormat1(): bool
-    {
-        return $this->outputMode::NAME;
-    }
-
     protected function trigger(string $eventName, array $arguments = [], ?callable $continueCallback = null): int
     {
         $application = $this->getApplication();
@@ -439,7 +434,7 @@ abstract class CliCommand extends Command
 
     private function getOutputFormat(InputInterface $input): string
     {
-        if ($input->getOption('cron')) { // TODO: Must be deprecated in future
+        if (bool($input->getOption('cron'))) { // TODO: Must be deprecated in the future
             return Cron::NAME;
         }
 

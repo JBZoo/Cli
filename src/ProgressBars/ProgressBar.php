@@ -129,16 +129,17 @@ class ProgressBar extends AbstractSymfonyProgressBar
     }
 
     public static function run(
-        $listOrMax,
+        iterable|int $listOrMax,
         \Closure $callback,
         string $title = '',
         bool $throwBatchException = true,
-        ?OutputInterface $output = null,
     ): void {
         // get object of parent object where we call the static method
-        $command = \debug_backtrace(\DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[1]['object'];
+        $backtrace = \debug_backtrace(\DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+        $command   = $backtrace[1]['object'] ?? null;
+
         if ($command instanceof CliCommand) {
-            $command->progressBar($listOrMax, $callback, $title, $throwBatchException, $output);
+            $command->progressBar($listOrMax, $callback, $title, $throwBatchException);
         }
     }
 

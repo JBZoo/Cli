@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
+use Monolog\Level;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -66,7 +67,7 @@ class OutLvl
         return $map[$level] ?? LogLevel::INFO;
     }
 
-    public static function isPsrErrorLevel($psrLevel): bool
+    public static function isPsrErrorLevel(string $psrLevel): bool
     {
         return \in_array($psrLevel, [
             LogLevel::EMERGENCY,

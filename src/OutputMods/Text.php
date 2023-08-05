@@ -49,7 +49,7 @@ class Text extends AbstractOutputMode
         $this->_('Working Directory is <i>' . \getcwd() . '</i>', OutLvl::DEBUG);
     }
 
-    public function onExecAfter(int $exitCode, $outputLevel = null): void
+    public function onExecAfter(int $exitCode, ?string $outputLevel = null): void
     {
         $outputLevel ??= OutLvl::DEBUG;
         if ($this->isDisplayProfiling()) {

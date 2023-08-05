@@ -94,10 +94,10 @@ class CliApplication extends Application
         return $this;
     }
 
-    public function renderThrowable(\Throwable $e, OutputInterface $output): void
+    public function renderThrowable(\Throwable $exception, OutputInterface $output): void
     {
         if ($this->outputMode === null || $this->outputMode instanceof Text) {
-            parent::renderThrowable($e, $output);
+            parent::renderThrowable($exception, $output);
         }
     }
 

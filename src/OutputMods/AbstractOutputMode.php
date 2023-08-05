@@ -91,6 +91,7 @@ abstract class AbstractOutputMode
 
     /**
      * Alias to write new line in std output.
+     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
     public function _(
         iterable|float|int|bool|string|null $messages = '',
@@ -154,12 +155,17 @@ abstract class AbstractOutputMode
 
     public function onExecException(\Exception $exception): void
     {
-        // empty
+        $this->_($exception->getMessage(), OutLvl::ERROR);
     }
 
-    public function onExecAfter(int $exitCode): void
+    public function onExecAfter(int $exitCode, ?string $outputLevel = null): void
     {
-        // empty
+        $outputLevel ??= OutLvl::DEBUG;
+        if ($this->isDisplayProfiling()) {
+            $outputLevel = OutLvl::DEFAULT;
+        }
+
+        $this->_('Exit code: ' . $exitCode, $outputLevel);
     }
 
     /**
@@ -170,6 +176,9 @@ abstract class AbstractOutputMode
         return self::$instance;
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
     protected function getProfileInfo(): array
     {
         $currentTime   = \microtime(true);
@@ -198,7 +207,7 @@ abstract class AbstractOutputMode
         $verboseLevel = \strtolower(\trim($verboseLevel));
 
         if (\is_array($messages) || \is_iterable($messages)) {
-            if (\count($messages) === 0) {
+            if ($messages instanceof \Countable && \count($messages) === 0) {
                 return null;
             }
 
@@ -228,7 +237,7 @@ abstract class AbstractOutputMode
 
     protected function prepareContext(array $context): array
     {
-        return (new NormalizerFormatter())->normalizeValue($context);
+        return (array)(new NormalizerFormatter())->normalizeValue($context);
     }
 
     protected function markOutputHasErrors(bool $hasError = true): void
