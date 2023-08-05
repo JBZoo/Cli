@@ -82,7 +82,7 @@ class Logstash extends AbstractOutputMode
 
     public function onExecAfter(int $exitCode, ?string $outputLevel = null): void
     {
-        $outputLevel ??= OutLvl::DEBUG;
+        $outputLevel ??= OutLvl::INFO;
         $this->_('Command Finish: ExitCode=' . $exitCode, $outputLevel, [
             'process' => ['exit_code' => $exitCode],
         ]);

@@ -537,6 +537,10 @@ class CliOutputLogstashTest extends PHPUnit
                 $stdOutput[18]->find('context.trace.id'),
             ]),
         );
+
+        $cmdResult2 = Helper::executeReal('test:output', ['output-mode' => 'logstash']);
+        $stdOutput2 = Helper::prepareLogstash($cmdResult2->std);
+        isNotSame($stdOutput[0]->find('context.trace.id'), $stdOutput2[0]->find('context.trace.id'));
     }
 
     /**
