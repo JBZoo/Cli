@@ -22,6 +22,7 @@ use JBZoo\Cli\OutputMods\AbstractOutputMode;
  * Shortcut method.
  * @param mixed $messages
  * @psalm-suppress DeprecatedMethod
+ * @suppress PhanDeprecatedFunction
  */
 function cli($messages = '', string $verboseLevel = OutLvl::DEFAULT): void
 {

@@ -144,9 +144,9 @@ abstract class CliCommand extends Command
                 $definedShortcuts ? 'O' : null,
                 InputOption::VALUE_REQUIRED,
                 "Output format. Available options:\n" . CliHelper::renderListForHelpDescription([
-                    Text::NAME     => Text::DESCRIPTION,
-                    Cron::NAME     => Cron::DESCRIPTION,
-                    Logstash::NAME => Logstash::DESCRIPTION,
+                    Text::getName()     => Text::getDescription(),
+                    Cron::getName()     => Cron::getDescription(),
+                    Logstash::getName() => Logstash::getDescription(),
                 ]),
                 Text::NAME,
             );
@@ -159,7 +159,7 @@ abstract class CliCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->outputMode = $this->createOutputMode($input, $output, $this->getOutputFormat($input));
+        $this->outputMode = $this->createOutputMode($input, $output, static::getOutputFormat($input));
         $this->getCliApplication()->setOutputMode($this->outputMode);
 
         $exitCode = Codes::OK;
@@ -432,15 +432,6 @@ abstract class CliCommand extends Command
         throw new Exception('Symfony QuestionHelper not found');
     }
 
-    private function getOutputFormat(InputInterface $input): string
-    {
-        if (bool($input->getOption('cron'))) { // TODO: Must be deprecated in the future
-            return Cron::NAME;
-        }
-
-        return $input->getOption('output-mode') ?? Text::NAME;
-    }
-
     private function createOutputMode(
         InputInterface $input,
         OutputInterface $output,
@@ -448,15 +439,15 @@ abstract class CliCommand extends Command
     ): AbstractOutputMode {
         $application = $this->getCliApplication();
 
-        if ($outputFormat === Text::NAME) {
+        if ($outputFormat === Text::getName()) {
             return new Text($input, $output, $application);
         }
 
-        if ($outputFormat === Cron::NAME) {
+        if ($outputFormat === Cron::getName()) {
             return new Cron($input, $output, $application);
         }
 
-        if ($outputFormat === Logstash::NAME) {
+        if ($outputFormat === Logstash::getName()) {
             return new Logstash($input, $output, $application);
         }
 
@@ -475,5 +466,14 @@ abstract class CliCommand extends Command
         }
 
         throw new Exception('Application must be instance of "\JBZoo\Cli\CliApplication"');
+    }
+
+    private static function getOutputFormat(InputInterface $input): string
+    {
+        if (bool($input->getOption('cron'))) { // TODO: Must be deprecated in the future
+            return Cron::getName();
+        }
+
+        return $input->getOption('output-mode') ?? Text::getName();
     }
 }

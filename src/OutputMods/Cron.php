@@ -22,11 +22,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Cron extends Text
 {
-    public const NAME = 'cron';
-
-    public const DESCRIPTION = "Shortcut for crontab. It's basically focused on logs output.\n"
-    . " It's combination of <info>--timestamp --profile --stdout-only --no-progress -vv</info>.";
-
     public function __construct(InputInterface $input, OutputInterface $output, CliApplication $application)
     {
         $output->getFormatter()->setDecorated(false);
@@ -65,5 +60,16 @@ class Cron extends Text
     public function isProgressBarDisabled(): bool
     {
         return true;
+    }
+
+    public static function getName(): string
+    {
+        return 'cron';
+    }
+
+    public static function getDescription(): string
+    {
+        return "Shortcut for crontab. It's basically focused on logs output.\n"
+            . " It's combination of <info>--timestamp --profile --stdout-only --no-progress -vv</info>.";
     }
 }

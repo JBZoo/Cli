@@ -29,10 +29,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Text extends AbstractOutputMode
 {
-    public const NAME = 'text';
-
-    public const DESCRIPTION = 'Default text output format, userfriendly and easy to read.';
-
     public function __construct(InputInterface $input, OutputInterface $output, CliApplication $application)
     {
         parent::__construct($input, $output, $application);
@@ -80,6 +76,16 @@ class Text extends AbstractOutputMode
     public function createProgressBar(): AbstractProgressBar
     {
         return new ProgressBar($this);
+    }
+
+    public static function getName(): string
+    {
+        return 'text';
+    }
+
+    public static function getDescription(): string
+    {
+        return 'Default text output format, userfriendly and easy to read.';
     }
 
     public static function addOutputStyles(OutputInterface $output): void

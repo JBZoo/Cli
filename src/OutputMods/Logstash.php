@@ -32,10 +32,6 @@ use function JBZoo\Utils\bool;
 
 class Logstash extends AbstractOutputMode
 {
-    public const NAME = 'logstash';
-
-    public const DESCRIPTION = 'Logstash output format, for integration with ELK stack.';
-
     private Logger $logger;
 
     public function __construct(InputInterface $input, OutputInterface $output, CliApplication $application)
@@ -97,6 +93,16 @@ class Logstash extends AbstractOutputMode
     public function createProgressBar(): AbstractProgressBar
     {
         return new ProgressBarLight($this);
+    }
+
+    public static function getName(): string
+    {
+        return 'logstash';
+    }
+
+    public static function getDescription(): string
+    {
+        return 'Logstash output format, for integration with ELK stack.';
     }
 
     protected function printMessage(
