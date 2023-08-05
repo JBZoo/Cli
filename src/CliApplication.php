@@ -94,10 +94,13 @@ class CliApplication extends Application
         return $this;
     }
 
-    public function renderThrowable(\Throwable $exception, OutputInterface $output): void
+    /**
+     * @SuppressWarnings(PHPMD.ShortVariable)
+     */
+    public function renderThrowable(\Throwable $e, OutputInterface $output): void
     {
         if ($this->outputMode === null || $this->outputMode instanceof Text) {
-            parent::renderThrowable($exception, $output);
+            parent::renderThrowable($e, $output);
         }
     }
 

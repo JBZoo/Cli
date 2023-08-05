@@ -29,7 +29,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Text extends AbstractOutputMode
 {
-    public const NAME        = 'text';
+    public const NAME = 'text';
+
     public const DESCRIPTION = 'Default text output format, userfriendly and easy to read.';
 
     public function __construct(InputInterface $input, OutputInterface $output, CliApplication $application)

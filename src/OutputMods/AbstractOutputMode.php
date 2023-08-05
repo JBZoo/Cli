@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli\OutputMods;
 
+use iterable;
 use JBZoo\Cli\CliApplication;
 use JBZoo\Cli\OutLvl;
 use JBZoo\Cli\ProgressBars\AbstractProgressBar;
@@ -184,16 +185,16 @@ abstract class AbstractOutputMode
         $currentTime   = \microtime(true);
         $currentMemory = \memory_get_usage(false);
 
+        $startTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? 0.0;
+
         $result = [
             'memory_usage_real' => \memory_get_usage(true),
             'memory_usage'      => $currentMemory,
             'memory_usage_diff' => $currentMemory - $this->prevMemory,
-
-            'memory_pick_real' => \memory_get_peak_usage(true),
-            'memory_pick'      => \memory_get_peak_usage(false),
-
-            'time_total_ms' => \round(1000 * ($currentTime - $_SERVER['REQUEST_TIME_FLOAT']), 3),
-            'time_diff_ms'  => \round(1000 * ($currentTime - $this->prevTime), 3),
+            'memory_pick_real'  => \memory_get_peak_usage(true),
+            'memory_pick'       => \memory_get_peak_usage(false),
+            'time_total_ms'     => \round(1000 * ($currentTime - $startTime), 3),
+            'time_diff_ms'      => \round(1000 * ($currentTime - $this->prevTime), 3),
         ];
 
         $this->prevTime   = $currentTime;
@@ -206,11 +207,7 @@ abstract class AbstractOutputMode
     {
         $verboseLevel = \strtolower(\trim($verboseLevel));
 
-        if (\is_array($messages) || \is_iterable($messages)) {
-            if ($messages instanceof \Countable && \count($messages) === 0) {
-                return null;
-            }
-
+        if (\is_iterable($messages)) {
             foreach ($messages as $message) {
                 $this->_($message, $verboseLevel);
             }

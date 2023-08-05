@@ -22,7 +22,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Cron extends Text
 {
-    public const NAME        = 'cron';
+    public const NAME = 'cron';
+
     public const DESCRIPTION = "Shortcut for crontab. It's basically focused on logs output.\n"
     . " It's combination of <info>--timestamp --profile --stdout-only --no-progress -vv</info>.";
 

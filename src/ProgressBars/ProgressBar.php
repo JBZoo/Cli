@@ -44,30 +44,6 @@ class ProgressBar extends AbstractSymfonyProgressBar
         $this->finishIcon   = Icons::getRandomIcon(Icons::GROUP_FINISH, $this->output->isDecorated());
     }
 
-    public function init(): bool
-    {
-        if ($this->max <= 0) {
-            $this->outputMode->_(
-                !isStrEmpty($this->title)
-                    ? "{$this->title}. Number of items is 0 or less"
-                    : 'Number of items is 0 or less',
-            );
-
-            return false;
-        }
-
-        $this->progressBar = $this->createProgressBar();
-        if ($this->progressBar === null) {
-            $this->outputMode->_(
-                !isStrEmpty($this->title)
-                    ? "Working on \"<blue>{$this->title}</blue>\". Number of steps: <blue>{$this->max}</blue>."
-                    : "Number of steps: <blue>{$this->max}</blue>.",
-            );
-        }
-
-        return true;
-    }
-
     public function execute(): bool
     {
         if (!$this->init()) {
@@ -206,6 +182,30 @@ class ProgressBar extends AbstractSymfonyProgressBar
         $footerLine['Last Step Message'] = '%message%';
 
         return \implode("\n", $progressBarLines) . "\n" . CliRender::list($footerLine) . "\n";
+    }
+
+    private function init(): bool
+    {
+        if ($this->max <= 0) {
+            $this->outputMode->_(
+                !isStrEmpty($this->title)
+                    ? "{$this->title}. Number of items is 0 or less"
+                    : 'Number of items is 0 or less',
+            );
+
+            return false;
+        }
+
+        $this->progressBar = $this->createProgressBar();
+        if ($this->progressBar === null) {
+            $this->outputMode->_(
+                !isStrEmpty($this->title)
+                    ? "Working on \"<blue>{$this->title}</blue>\". Number of steps: <blue>{$this->max}</blue>."
+                    : "Number of steps: <blue>{$this->max}</blue>.",
+            );
+        }
+
+        return true;
     }
 
     private function setStep(int|float|string $stepIndex, int $currentIndex): void

@@ -20,7 +20,39 @@ use function JBZoo\Utils\isStrEmpty;
 
 class ProgressBarLight extends AbstractSymfonyProgressBar
 {
-    public function init(): bool
+    public function execute(): bool
+    {
+        if (!$this->init()) {
+            return false;
+        }
+
+        $exceptionMessages = [];
+        $currentIndex      = 0;
+
+        foreach ($this->list as $stepIndex => $stepValue) {
+            [$stepResult, $exceptionMessage] = $this->handleOneStep($stepValue, $stepIndex, $currentIndex);
+
+            $exceptionMessages = \array_merge($exceptionMessages, (array)$exceptionMessage);
+
+            $this->outputMode->_($stepResult);
+
+            if (\str_contains((string)$stepResult, self::BREAK)) {
+                break;
+            }
+
+            $currentIndex++;
+        }
+
+        if ($this->callbackOnFinish !== null) {
+            \call_user_func($this->callbackOnFinish, $this);
+        }
+
+        self::showListOfExceptions($exceptionMessages);
+
+        return true;
+    }
+
+    private function init(): bool
     {
         if ($this->callbackOnStart !== null) {
             \call_user_func($this->callbackOnStart, $this);
@@ -45,38 +77,6 @@ class ProgressBarLight extends AbstractSymfonyProgressBar
             ? "Working on \"{$this->title}\". Number of steps: {$this->max}.{$levelPostfix}"
             : "Number of steps: {$this->max}.{$levelPostfix}";
         $this->outputMode->_($message);
-
-        return true;
-    }
-
-    public function execute(): bool
-    {
-        if (!$this->init()) {
-            return false;
-        }
-
-        $exceptionMessages = [];
-        $currentIndex      = 0;
-
-        foreach ($this->list as $stepIndex => $stepValue) {
-            [$stepResult, $exceptionMessage] = $this->handleOneStep($stepValue, $stepIndex, $currentIndex);
-
-            $exceptionMessages = \array_merge($exceptionMessages, (array)$exceptionMessage);
-
-            $this->outputMode->_($stepResult);
-
-            if (\str_contains($stepResult, self::BREAK)) {
-                break;
-            }
-
-            $currentIndex++;
-        }
-
-        if ($this->callbackOnFinish !== null) {
-            \call_user_func($this->callbackOnFinish, $this);
-        }
-
-        self::showListOfExceptions($exceptionMessages);
 
         return true;
     }

@@ -32,7 +32,8 @@ use function JBZoo\Utils\bool;
 
 class Logstash extends AbstractOutputMode
 {
-    public const NAME        = 'logstash';
+    public const NAME = 'logstash';
+
     public const DESCRIPTION = 'Logstash output format, for integration with ELK stack.';
 
     private Logger $logger;
@@ -55,7 +56,7 @@ class Logstash extends AbstractOutputMode
      */
     public function onExecBefore(): void
     {
-        $this->_('Command Start: ' . $this->input->getFirstArgument(), OutLvl::INFO, [
+        $this->_('Command Start: ' . (string)$this->input->getFirstArgument(), OutLvl::INFO, [
             'service' => [
                 'name'    => $this->application->getName(),
                 'version' => $this->application->getVersion(),
