@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli\OutputMods;
 
-use iterable;
 use JBZoo\Cli\CliApplication;
 use JBZoo\Cli\OutLvl;
 use JBZoo\Cli\ProgressBars\AbstractProgressBar;
