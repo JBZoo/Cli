@@ -230,7 +230,7 @@ class ProgressBar extends AbstractSymfonyProgressBar
             $callbackResults = (array)($this->callback)($stepValue, $stepIndex, $currentIndex);
         } catch (\Exception $exception) {
             if ($this->throwBatchException) {
-                $errorMessage      = '<error>Error.</error> ' . $exception->getMessage();
+                $errorMessage      = '<error>Exception:</error> ' . $exception->getMessage();
                 $callbackResults[] = $errorMessage;
                 $exceptionMessage  = " * ({$prefixMessage}): {$errorMessage}";
             } else {
@@ -291,7 +291,7 @@ class ProgressBar extends AbstractSymfonyProgressBar
     {
         if (\count($exceptionMessages) > 0) {
             $listOfErrors = \implode("\n", $exceptionMessages) . "\n";
-            $listOfErrors = \str_replace('<error>Error.</error> ', '', $listOfErrors);
+            $listOfErrors = \str_replace('<error>Exception:</error> ', '', $listOfErrors);
 
             throw new Exception("\n Error list:\n" . $listOfErrors);
         }

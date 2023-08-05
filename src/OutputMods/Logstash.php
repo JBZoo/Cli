@@ -20,6 +20,7 @@ use JBZoo\Cli\CliApplication;
 use JBZoo\Cli\CliHelper;
 use JBZoo\Cli\OutLvl;
 use JBZoo\Cli\ProgressBars\AbstractProgressBar;
+use JBZoo\Cli\ProgressBars\ProgressBarLight;
 use JBZoo\Utils\Slug;
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
@@ -90,6 +91,7 @@ class Logstash extends AbstractOutputMode
 
     public function createProgressBar(): AbstractProgressBar
     {
+        return new ProgressBarLight($this);
     }
 
     protected function printMessage(

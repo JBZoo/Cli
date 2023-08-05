@@ -211,7 +211,7 @@ class CliProgressTest extends PHPUnit
             \implode("\n", [
                 'Working on "exception". Number of steps: 3.',
                 ' * (0): n/a',
-                ' * (1): Error. Exception #1',
+                ' * (1): Exception: Exception #1',
                 ' * (2): n/a',
             ]),
             $cmdResult->std,
@@ -227,16 +227,16 @@ class CliProgressTest extends PHPUnit
         isSame(
             \implode("\n", [
                 'Working on "exception-list". Number of steps: 10.',
-                ' * (0): Error. Exception #0',
+                ' * (0): Exception: Exception #0',
                 ' * (1): n/a',
                 ' * (2): n/a',
-                ' * (3): Error. Exception #3',
+                ' * (3): Exception: Exception #3',
                 ' * (4): n/a',
                 ' * (5): n/a',
-                ' * (6): Error. Exception #6',
+                ' * (6): Exception: Exception #6',
                 ' * (7): n/a',
                 ' * (8): n/a',
-                ' * (9): Error. Exception #9',
+                ' * (9): Exception: Exception #9',
             ]),
             $cmdResult->std,
         );
@@ -250,7 +250,7 @@ class CliProgressTest extends PHPUnit
         isContain('* (6): Exception #6', $cmdResult->err);
         isContain('* (9): Exception #9', $cmdResult->err);
         isContain('Caught exceptions                : 4', $cmdResult->err);
-        isContain('Last Step Message                : Error. Exception #9', $cmdResult->err);
+        isContain('Last Step Message                : Exception: Exception #9', $cmdResult->err);
         isContain('Exception trace:', $cmdResult->err);
         isEmpty($cmdResult->std, $cmdResult->std);
     }

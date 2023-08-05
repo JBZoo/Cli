@@ -26,7 +26,7 @@ use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 
 abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
 {
-    public const BREAK = '<yellow>Progress stopped</yellow>';
+    public const BREAK = 'Progress stopped';
 
     public const MAX_LINE_LENGTH = 80;
 
@@ -35,8 +35,6 @@ abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
 
     /** @var float[] */
     protected array $stepTimers = [];
-
-    abstract protected function buildTemplate(): string;
 
     public static function setPlaceholder(string $name, callable $callable): void
     {

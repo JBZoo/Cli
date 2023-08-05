@@ -16,10 +16,6 @@ declare(strict_types=1);
 
 namespace JBZoo\PHPUnit;
 
-use JBZoo\Data\JSON;
-
-use function JBZoo\Data\json;
-
 class CliOutputLogstashTest extends PHPUnit
 {
     public function testFormatOfMessage(): void
@@ -28,7 +24,7 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $lines        = self::prepareOutput($cmdResult->std);
+        $lines        = Helper::prepareLogstash($cmdResult->std);
         $lineAsArray  = $lines[0]->getArrayCopy();
         $lineStruture = self::replaceValues($lineAsArray);
 
@@ -63,7 +59,7 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $lines        = self::prepareOutput($cmdResult->std);
+        $lines        = Helper::prepareLogstash($cmdResult->std);
         $lineAsArray  = $lines[0]->getArrayCopy();
         $lineStruture = self::replaceValues($lineAsArray);
 
@@ -96,15 +92,9 @@ class CliOutputLogstashTest extends PHPUnit
                     'type'    => 'string',
                 ],
                 'process' => [
-                    'pid'        => 'integer',
-                    'executable' => 'string',
-                    'args_count' => [
-                        0 => 'string',
-                        1 => 'string',
-                        2 => 'string',
-                        3 => 'string',
-                        4 => 'string',
-                    ],
+                    'pid'             => 'integer',
+                    'executable'      => 'string',
+                    'args_count'      => ['string', 'string', 'string', 'string', 'string'],
                     'command_line'    => 'string',
                     'process_command' => 'string',
                     'args'            => [
@@ -136,7 +126,7 @@ class CliOutputLogstashTest extends PHPUnit
     public function testFormatOfMessageVerboseLast(): void
     {
         $cmdResult    = Helper::executeReal('test:output', ['output-mode' => 'logstash', '-vvv' => null]);
-        $lineAsArray  = self::prepareOutput($cmdResult->std)[17]->getArrayCopy();
+        $lineAsArray  = Helper::prepareLogstash($cmdResult->std)[17]->getArrayCopy();
         $lineStruture = self::replaceValues($lineAsArray);
 
         isSame([
@@ -168,7 +158,7 @@ class CliOutputLogstashTest extends PHPUnit
     {
         $cmdResult = Helper::executeReal('test:output', ['output-mode' => 'logstash', 'exception' => 'Some message']);
 
-        $lineAsArray  = self::prepareOutput($cmdResult->std)[9]->getArrayCopy();
+        $lineAsArray  = Helper::prepareLogstash($cmdResult->std)[9]->getArrayCopy();
         $lineStruture = self::replaceValues($lineAsArray);
 
         isSame([
@@ -209,17 +199,17 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(9, $stdOutput);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[1]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[2]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[4]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[5]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[7]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[8]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[1]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[2]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[4]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[5]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[7]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[8]);
     }
 
     public function testInfo(): void
@@ -228,23 +218,23 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(15, $stdOutput);
-        self::assertLog(['INFO', 'Command Start: test:output'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[1]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[2]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[3]);
-        self::assertLog(['INFO', 'Info1 -v'], $stdOutput[4]);
-        self::assertLog(['INFO', 'Info2 -v'], $stdOutput[5]);
-        self::assertLog(['INFO', 'Verbose1 -vv'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[7]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[8]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[9]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[10]);
-        self::assertLog(['INFO', 'Quiet -q'], $stdOutput[11]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[12]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[13]);
-        self::assertLog(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[14]);
+        Helper::assertLogstash(['INFO', 'Command Start: test:output'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[1]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[2]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[3]);
+        Helper::assertLogstash(['INFO', 'Info1 -v'], $stdOutput[4]);
+        Helper::assertLogstash(['INFO', 'Info2 -v'], $stdOutput[5]);
+        Helper::assertLogstash(['INFO', 'Verbose1 -vv'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[7]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[8]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[9]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[10]);
+        Helper::assertLogstash(['INFO', 'Quiet -q'], $stdOutput[11]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[12]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[13]);
+        Helper::assertLogstash(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[14]);
 
         isSame(
             Helper::executeReal('test:output', ['v' => null])->std,
@@ -258,23 +248,23 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(15, $stdOutput);
-        self::assertLog(['INFO', 'Command Start: test:output'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[1]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[2]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[3]);
-        self::assertLog(['INFO', 'Info1 -v'], $stdOutput[4]);
-        self::assertLog(['INFO', 'Info2 -v'], $stdOutput[5]);
-        self::assertLog(['INFO', 'Verbose1 -vv'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[7]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[8]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[9]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[10]);
-        self::assertLog(['INFO', 'Quiet -q'], $stdOutput[11]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[12]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[13]);
-        self::assertLog(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[14]);
+        Helper::assertLogstash(['INFO', 'Command Start: test:output'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[1]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[2]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[3]);
+        Helper::assertLogstash(['INFO', 'Info1 -v'], $stdOutput[4]);
+        Helper::assertLogstash(['INFO', 'Info2 -v'], $stdOutput[5]);
+        Helper::assertLogstash(['INFO', 'Verbose1 -vv'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[7]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[8]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[9]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[10]);
+        Helper::assertLogstash(['INFO', 'Quiet -q'], $stdOutput[11]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[12]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[13]);
+        Helper::assertLogstash(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[14]);
     }
 
     public function testDebug(): void
@@ -283,26 +273,26 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(18, $stdOutput);
-        self::assertLog(['INFO', 'Command Start: test:output'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[1]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[2]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[3]);
-        self::assertLog(['INFO', 'Info1 -v'], $stdOutput[4]);
-        self::assertLog(['INFO', 'Info2 -v'], $stdOutput[5]);
-        self::assertLog(['INFO', 'Verbose1 -vv'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[7]);
-        self::assertLog(['DEBUG', 'Debug1 -vvv'], $stdOutput[8]);
-        self::assertLog(['DEBUG', 'Message #1 -vvv'], $stdOutput[9]);
-        self::assertLog(['DEBUG', 'Message #2 -vvv'], $stdOutput[10]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[11]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[12]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[13]);
-        self::assertLog(['INFO', 'Quiet -q'], $stdOutput[14]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[15]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[16]);
-        self::assertLog(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[17]);
+        Helper::assertLogstash(['INFO', 'Command Start: test:output'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[1]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[2]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[3]);
+        Helper::assertLogstash(['INFO', 'Info1 -v'], $stdOutput[4]);
+        Helper::assertLogstash(['INFO', 'Info2 -v'], $stdOutput[5]);
+        Helper::assertLogstash(['INFO', 'Verbose1 -vv'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[7]);
+        Helper::assertLogstash(['DEBUG', 'Debug1 -vvv'], $stdOutput[8]);
+        Helper::assertLogstash(['DEBUG', 'Message #1 -vvv'], $stdOutput[9]);
+        Helper::assertLogstash(['DEBUG', 'Message #2 -vvv'], $stdOutput[10]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[11]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[12]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[13]);
+        Helper::assertLogstash(['INFO', 'Quiet -q'], $stdOutput[14]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[15]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[16]);
+        Helper::assertLogstash(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[17]);
     }
 
     public function testQuite(): void
@@ -311,23 +301,23 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(15, $stdOutput);
-        self::assertLog(['INFO', 'Command Start: test:output'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[1]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[2]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[3]);
-        self::assertLog(['INFO', 'Info1 -v'], $stdOutput[4]);
-        self::assertLog(['INFO', 'Info2 -v'], $stdOutput[5]);
-        self::assertLog(['INFO', 'Verbose1 -vv'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[7]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[8]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[9]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[10]);
-        self::assertLog(['INFO', 'Quiet -q'], $stdOutput[11]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[12]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[13]);
-        self::assertLog(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[14]);
+        Helper::assertLogstash(['INFO', 'Command Start: test:output'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[1]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[2]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[3]);
+        Helper::assertLogstash(['INFO', 'Info1 -v'], $stdOutput[4]);
+        Helper::assertLogstash(['INFO', 'Info2 -v'], $stdOutput[5]);
+        Helper::assertLogstash(['INFO', 'Verbose1 -vv'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[7]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[8]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[9]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[10]);
+        Helper::assertLogstash(['INFO', 'Quiet -q'], $stdOutput[11]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[12]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[13]);
+        Helper::assertLogstash(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[14]);
     }
 
     public function testProfile(): void
@@ -336,17 +326,17 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(9, $stdOutput);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[1]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[2]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[4]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[5]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[7]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[8]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[1]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[2]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[4]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[5]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[7]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[8]);
     }
 
     public function testStdoutOnly(): void
@@ -355,17 +345,17 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(9, $stdOutput);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[1]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[2]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[4]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[5]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[7]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[8]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[1]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[2]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[4]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[5]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[7]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[8]);
     }
 
     public function testNonZeroOnError(): void
@@ -374,17 +364,17 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(1, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(9, $stdOutput);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[1]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[2]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[4]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[5]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[7]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[8]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[1]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[2]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[4]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[5]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[7]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[8]);
     }
 
     public function testException(): void
@@ -393,18 +383,18 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(1, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(10, $stdOutput);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[1]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[2]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[4]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[5]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[7]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[8]);
-        self::assertLog(['CRITICAL', 'Command Exception: Some message'], $stdOutput[9]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[1]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[2]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[4]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[5]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[7]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[8]);
+        Helper::assertLogstash(['CRITICAL', 'Command Exception: Some message'], $stdOutput[9]);
     }
 
     public function testTimestamp(): void
@@ -413,17 +403,17 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(9, $stdOutput);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[1]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[2]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[4]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[5]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[7]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[8]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[1]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[2]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[4]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[5]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[7]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[8]);
     }
 
     public function testTypeOfVars(): void
@@ -432,16 +422,16 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(8, $stdOutput);
-        self::assertLog(['NOTICE', ' '], $stdOutput[0]);
-        self::assertLog(['NOTICE', '0'], $stdOutput[1]);
-        self::assertLog(['NOTICE', 'true'], $stdOutput[2]);
-        self::assertLog(['NOTICE', 'false'], $stdOutput[3]);
-        self::assertLog(['NOTICE', 'null'], $stdOutput[4]);
-        self::assertLog(['NOTICE', '1'], $stdOutput[5]);
-        self::assertLog(['NOTICE', '1'], $stdOutput[6]);
-        self::assertLog(['NOTICE', '-0.001'], $stdOutput[7]);
+        Helper::assertLogstash(['NOTICE', ' '], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', '0'], $stdOutput[1]);
+        Helper::assertLogstash(['NOTICE', 'true'], $stdOutput[2]);
+        Helper::assertLogstash(['NOTICE', 'false'], $stdOutput[3]);
+        Helper::assertLogstash(['NOTICE', 'null'], $stdOutput[4]);
+        Helper::assertLogstash(['NOTICE', '1'], $stdOutput[5]);
+        Helper::assertLogstash(['NOTICE', '1'], $stdOutput[6]);
+        Helper::assertLogstash(['NOTICE', '-0.001'], $stdOutput[7]);
     }
 
     public function testMuteErrors(): void
@@ -453,18 +443,18 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(10, $stdOutput);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[1]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[2]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[4]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[5]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[7]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[8]);
-        self::assertLog(['CRITICAL', 'Command Exception: Some message'], $stdOutput[9]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[1]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[2]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[4]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[5]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[7]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[8]);
+        Helper::assertLogstash(['CRITICAL', 'Command Exception: Some message'], $stdOutput[9]);
     }
 
     public function testMuteErrorsAndNonZeroOnError(): void
@@ -478,18 +468,18 @@ class CliOutputLogstashTest extends PHPUnit
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
 
-        $stdOutput = self::prepareOutput($cmdResult->std);
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
         isCount(10, $stdOutput);
-        self::assertLog(['NOTICE', 'Normal 1'], $stdOutput[0]);
-        self::assertLog(['NOTICE', 'Normal 2'], $stdOutput[1]);
-        self::assertLog(['ERROR', 'Message'], $stdOutput[2]);
-        self::assertLog(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
-        self::assertLog(['ERROR', 'Error (e)'], $stdOutput[4]);
-        self::assertLog(['ERROR', 'Error (error)'], $stdOutput[5]);
-        self::assertLog(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
-        self::assertLog(['WARNING', 'Legacy'], $stdOutput[7]);
-        self::assertLog(['WARNING', '   Message'], $stdOutput[8]);
-        self::assertLog(['CRITICAL', 'Command Exception: Some message'], $stdOutput[9]);
+        Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[1]);
+        Helper::assertLogstash(['ERROR', 'Message'], $stdOutput[2]);
+        Helper::assertLogstash(['WARNING', 'Verbose2 -vv'], $stdOutput[3]);
+        Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[4]);
+        Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[5]);
+        Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[6]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[7]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[8]);
+        Helper::assertLogstash(['CRITICAL', 'Command Exception: Some message'], $stdOutput[9]);
     }
 
     public function testCronAlias(): void
@@ -507,30 +497,50 @@ class CliOutputLogstashTest extends PHPUnit
         isContain('] Normal 1', $cmdResult->std);
     }
 
-    private static function prepareOutput(string $output): array
+    public function testTraceId(): void
     {
-        $lines = \explode("\n", $output);
+        $cmdResult = Helper::executeReal(
+            'test:output',
+            ['output-mode' => 'logstash', 'exception' => 'Some message', '-vvv' => null],
+        );
+        isSame(1, $cmdResult->code);
+        isSame('', $cmdResult->err);
 
-        $result = [];
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
+        isCount(19, $stdOutput);
 
-        foreach ($lines as $line) {
-            $result[] = json($line);
-        }
+        // Trace id is UUID v4
+        $pattern = '/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/';
+        isSame(1, \preg_match($pattern, $stdOutput[0]->find('context.trace.id')));
 
-        return $result;
-    }
-
-    private static function assertLog(array $expected, JSON $stdOutput): void
-    {
-        isSame(
-            $expected,
-            [$stdOutput->get('level'), $stdOutput->get('message')],
-            "['{$stdOutput->get('level')}', '{$stdOutput->get('message')}']",
+        isCount(
+            1,
+            \array_unique([
+                $stdOutput[0]->find('context.trace.id'),
+                $stdOutput[1]->find('context.trace.id'),
+                $stdOutput[2]->find('context.trace.id'),
+                $stdOutput[3]->find('context.trace.id'),
+                $stdOutput[4]->find('context.trace.id'),
+                $stdOutput[5]->find('context.trace.id'),
+                $stdOutput[6]->find('context.trace.id'),
+                $stdOutput[7]->find('context.trace.id'),
+                $stdOutput[8]->find('context.trace.id'),
+                $stdOutput[9]->find('context.trace.id'),
+                $stdOutput[10]->find('context.trace.id'),
+                $stdOutput[11]->find('context.trace.id'),
+                $stdOutput[12]->find('context.trace.id'),
+                $stdOutput[13]->find('context.trace.id'),
+                $stdOutput[14]->find('context.trace.id'),
+                $stdOutput[15]->find('context.trace.id'),
+                $stdOutput[16]->find('context.trace.id'),
+                $stdOutput[17]->find('context.trace.id'),
+                $stdOutput[18]->find('context.trace.id'),
+            ]),
         );
     }
 
     /**
-     * Remove values and keep keys from nested array.
+     * Recursively replaces the values in the given array with their corresponding data types.
      */
     private static function replaceValues(array &$array): array
     {

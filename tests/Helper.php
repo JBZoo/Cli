@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace JBZoo\PHPUnit;
 
 use JBZoo\Cli\CliApplication;
+use JBZoo\Data\JSON;
 use JBZoo\PHPUnit\TestApp\Commands\TestCliOptions;
 use JBZoo\PHPUnit\TestApp\Commands\TestCliStdIn;
 use JBZoo\PHPUnit\TestApp\Commands\TestProgress;
@@ -27,6 +28,8 @@ use JBZoo\Utils\Env;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
+
+use function JBZoo\Data\json;
 
 class Helper
 {
@@ -103,5 +106,30 @@ class Helper
         \preg_match($pattern, $logMessage, $matches);
 
         return \count($matches) === 1;
+    }
+
+    public static function assertLogstash(array $expected, JSON $stdOutput): void
+    {
+        isSame(
+            $expected,
+            [$stdOutput->get('level'), $stdOutput->get('message')],
+            "Expected: ['{$stdOutput->get('level')}', '{$stdOutput->get('message')}']",
+        );
+    }
+
+    /**
+     * @return JSON[]
+     */
+    public static function prepareLogstash(string $output): array
+    {
+        $lines = \explode("\n", $output);
+
+        $result = [];
+
+        foreach ($lines as $line) {
+            $result[] = json($line);
+        }
+
+        return $result;
     }
 }

@@ -43,6 +43,29 @@ class TestProgress extends CliCommand
     {
         $testCase = $this->getOptString('case');
 
+        if ($testCase === 'minimal') {
+            $this->progressBar(2, function (): void {
+                \sleep($this->getOptInt('sleep'));
+            });
+        }
+
+        if ($testCase === 'one-message') {
+            $this->progressBar(3, static function ($stepValue, $stepIndex, $currentStep) {
+                if ($stepValue === 1) {
+                    return "{$stepValue}, {$stepIndex}, {$currentStep}";
+                }
+            }, $testCase);
+        }
+
+        if ($testCase === 'array-assoc') {
+            $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
+            $this->progressBar(
+                $list,
+                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                $testCase,
+            );
+        }
+
         if ($testCase === 'no-items-int') {
             // Static call as backwards capability
             ProgressBar::run(0, static function (): void {
@@ -59,22 +82,10 @@ class TestProgress extends CliCommand
             }, $testCase);
         }
 
-        if ($testCase === 'minimal') {
-            $this->progressBar(2, function (): void {
-                \sleep($this->getOptInt('sleep'));
-            });
-        }
+        // // old tests
 
         if ($testCase === 'no-messages') {
             $this->progressBar(3, static function ($stepValue, $stepIndex, $currentStep): void {
-            }, $testCase);
-        }
-
-        if ($testCase === 'one-message') {
-            $this->progressBar(3, static function ($stepValue, $stepIndex, $currentStep) {
-                if ($stepValue === 1) {
-                    return "{$stepValue}, {$stepIndex}, {$currentStep}";
-                }
             }, $testCase);
         }
 
@@ -106,15 +117,6 @@ class TestProgress extends CliCommand
         if ($testCase === 'array-string') {
             $this->progressBar(
                 ['qwerty', 'asdfgh'],
-                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
-                $testCase,
-            );
-        }
-
-        if ($testCase === 'array-assoc') {
-            $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
-            $this->progressBar(
-                $list,
                 static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
                 $testCase,
             );
