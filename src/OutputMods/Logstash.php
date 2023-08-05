@@ -117,10 +117,10 @@ class Logstash extends AbstractOutputMode
 
     protected function prepareContext(array $context): array
     {
-        $newContext = CliHelper::arrayMergeRecursiveOverwrite([
+        $newContext = [
             'trace'   => ['id' => CliHelper::createOrGetTraceId()],
             'profile' => $this->getProfileInfo(),
-        ], $context);
+        ] + $context;
 
         return parent::prepareContext($newContext);
     }

@@ -74,9 +74,7 @@ class CliOutputLogstashTest extends PHPUnit
             'level'         => 'string',
             'monolog_level' => 'integer',
             'context'       => [
-                'trace' => [
-                    'id' => 'string',
-                ],
+                'trace'   => ['id' => 'string'],
                 'profile' => [
                     'memory_usage_real' => 'integer',
                     'memory_usage'      => 'integer',
