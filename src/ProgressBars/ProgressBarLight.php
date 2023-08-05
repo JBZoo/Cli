@@ -36,7 +36,7 @@ class ProgressBarLight extends AbstractSymfonyProgressBar
 
             $this->outputMode->_($stepResult);
 
-            if (\str_contains((string)$stepResult, self::BREAK)) {
+            if (\is_string($stepResult) && \str_contains($stepResult, self::BREAK)) {
                 break;
             }
 

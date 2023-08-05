@@ -26,5 +26,7 @@ return \array_merge($default, [
         'vendor/symfony/console',
         'vendor/symfony/process',
         'vendor/bluepsyduck/symfony-process-manager/src',
+        'vendor/psr/log',
+        'vendor/monolog/monolog',
     ],
 ]);
