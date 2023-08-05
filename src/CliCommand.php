@@ -93,7 +93,7 @@ abstract class CliCommand extends Command
                 $definedShortcuts ? 'P' : null,
                 InputOption::VALUE_NONE,
                 'Disable progress bar animation for logs. '
-                . 'It will be used only for <info>' . Text::NAME . '</info> output format.',
+                . 'It will be used only for <info>' . Text::getName() . '</info> output format.',
             )
             ->addOption(
                 'mute-errors',
@@ -125,7 +125,7 @@ abstract class CliCommand extends Command
                 $definedShortcuts ? 'T' : null,
                 InputOption::VALUE_NONE,
                 'Show timestamp at the beginning of each message.'
-                . 'It will be used only for <info>' . Text::NAME . '</info> output format.',
+                . 'It will be used only for <info>' . Text::getName() . '</info> output format.',
             )
             ->addOption(
                 'profile',
@@ -148,7 +148,7 @@ abstract class CliCommand extends Command
                     Cron::getName()     => Cron::getDescription(),
                     Logstash::getName() => Logstash::getDescription(),
                 ]),
-                Text::NAME,
+                Text::getName(),
             );
 
         parent::configure();
@@ -159,7 +159,7 @@ abstract class CliCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->outputMode = $this->createOutputMode($input, $output, static::getOutputFormat($input));
+        $this->outputMode = $this->createOutputMode($input, $output, self::getOutputFormat($input));
         $this->getCliApplication()->setOutputMode($this->outputMode);
 
         $exitCode = Codes::OK;
