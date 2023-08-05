@@ -39,10 +39,8 @@ class Text extends AbstractOutputMode
         self::addOutputStyles($this->getOutput());
         self::addOutputStyles($this->getErrOutput());
 
-        if ($this->isStdoutOnly()) {
-            if ($this->output instanceof ConsoleOutput) {
-                $this->output->setErrorOutput($this->output);
-            }
+        if ($this->output instanceof ConsoleOutput && $this->isStdoutOnly()) {
+            $this->output->setErrorOutput($this->output);
         }
     }
 

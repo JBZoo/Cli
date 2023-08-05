@@ -36,16 +36,15 @@ class Logstash extends AbstractOutputMode
 
     public function __construct(InputInterface $input, OutputInterface $output, CliApplication $application)
     {
-        parent::__construct($input, $output, $application);
-
-        $this->output->getFormatter()->setDecorated(false);
-        $this->errOutput->getFormatter()->setDecorated(false);
+        $output->getFormatter()->setDecorated(false);
 
         $handler = new StreamHandler('php://stdout', OutLvl::mapToPsrLevel($output->getVerbosity()));
         $handler->setFormatter(new LogstashFormatter('cli'));
 
-        $this->logger = new Logger(Slug::filter($this->application->getName()));
+        $this->logger = new Logger(Slug::filter($application->getName()));
         $this->logger->pushHandler($handler);
+
+        parent::__construct($input, $output, $application);
     }
 
     public function onExecBefore(): void
