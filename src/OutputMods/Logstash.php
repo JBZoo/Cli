@@ -41,7 +41,7 @@ class Logstash extends AbstractOutputMode
     {
         $output->getFormatter()->setDecorated(false);
 
-        $handler = new StreamHandler('php://stdout', OutLvl::mapToPsrLevel($output->getVerbosity()));
+        $handler = new StreamHandler('php://stdout', OutLvl::mapToMonologLevel($output->getVerbosity()));
         $handler->setFormatter(new LogstashFormatter('cli'));
 
         $this->logger = new Logger(Slug::filter($application->getName()));
@@ -104,13 +104,15 @@ class Logstash extends AbstractOutputMode
         array $context = [],
     ): void {
         $nonZeroOnError = bool($this->getInput()->getOption('non-zero-on-error'));
-        $psrErrorLevel  = OutLvl::mapToPsrLevel($verboseLevel);
+        $psrErrorLevel  = OutLvl::mapToMonologLevel($verboseLevel);
 
         if ($nonZeroOnError && OutLvl::isPsrErrorLevel($psrErrorLevel)) {
             $this->markOutputHasErrors(true);
         }
 
-        $this->logger->log($psrErrorLevel, $message, $context);
+        if ($message !== null) {
+            $this->logger->log($psrErrorLevel, $message, $context);
+        }
     }
 
     protected function prepareContext(array $context): array

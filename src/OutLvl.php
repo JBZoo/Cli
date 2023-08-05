@@ -36,7 +36,7 @@ class OutLvl
     public const EXCEPTION = 'exception';
     public const LEGACY    = 'legacy';
 
-    public static function mapToPsrLevel(int|string $level): string
+    public static function mapToMonologLevel(int|string $level): Level
     {
         $map = [
             // -vvv
@@ -64,16 +64,16 @@ class OutLvl
             self::EXCEPTION => LogLevel::CRITICAL,
         ];
 
-        return $map[$level] ?? LogLevel::INFO;
+        return Level::fromName($map[$level] ?? LogLevel::INFO);
     }
 
-    public static function isPsrErrorLevel(string $psrLevel): bool
+    public static function isPsrErrorLevel(Level $monologLevel): bool
     {
-        return \in_array($psrLevel, [
-            LogLevel::EMERGENCY,
-            LogLevel::ALERT,
-            LogLevel::CRITICAL,
-            LogLevel::ERROR,
+        return \in_array($monologLevel, [
+            Level::Emergency,
+            Level::Alert,
+            Level::Critical,
+            Level::Error,
         ], true);
     }
 }
