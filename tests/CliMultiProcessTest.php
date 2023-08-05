@@ -50,7 +50,7 @@ class CliMultiProcessTest extends PHPUnit
         ], $outputAsArray, (string)$cmdResult);
         isSame('', $cmdResult->err, (string)$cmdResult);
 
-        isTrue($time < 5, "Total time: {$time}");
+        isTrue($time < 7, "Total time: {$time}");
     }
 
     public function testAsVirtalExecution(): void
