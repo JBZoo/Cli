@@ -79,6 +79,8 @@ class TestOutput extends CliCommand
         $this->_('Error (error)', OutLvl::ERROR);
         $this->_('Error (exception)', OutLvl::EXCEPTION);
 
+        $this->_('Message with context', OutLvl::DEBUG, ['foo' => 'bar']);
+
         $this->_('Quiet -q', OutLvl::Q);
 
         if ($exception = $this->getOptString('exception')) {

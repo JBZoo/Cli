@@ -63,7 +63,7 @@ class CliOutputLogstashTest extends PHPUnit
         $lineAsArray  = $lines[0]->getArrayCopy();
         $lineStruture = self::replaceValues($lineAsArray);
 
-        isCount(18, $lines);
+        isCount(19, $lines);
         isSame([
             '@timestamp'    => 'string',
             '@version'      => 'integer',
@@ -123,7 +123,7 @@ class CliOutputLogstashTest extends PHPUnit
     public function testFormatOfMessageVerboseLast(): void
     {
         $cmdResult    = Helper::executeReal('test:output', ['output-mode' => 'logstash', '-vvv' => null]);
-        $lineAsArray  = Helper::prepareLogstash($cmdResult->std)[17]->getArrayCopy();
+        $lineAsArray  = Helper::prepareLogstash($cmdResult->std)[18]->getArrayCopy();
         $lineStruture = self::replaceValues($lineAsArray);
 
         isSame([
@@ -271,7 +271,7 @@ class CliOutputLogstashTest extends PHPUnit
         isSame('', $cmdResult->err);
 
         $stdOutput = Helper::prepareLogstash($cmdResult->std);
-        isCount(18, $stdOutput);
+        isCount(19, $stdOutput);
         Helper::assertLogstash(['INFO', 'Command Start: test:output'], $stdOutput[0]);
         Helper::assertLogstash(['NOTICE', 'Normal 1'], $stdOutput[1]);
         Helper::assertLogstash(['NOTICE', 'Normal 2'], $stdOutput[2]);
@@ -286,10 +286,11 @@ class CliOutputLogstashTest extends PHPUnit
         Helper::assertLogstash(['ERROR', 'Error (e)'], $stdOutput[11]);
         Helper::assertLogstash(['ERROR', 'Error (error)'], $stdOutput[12]);
         Helper::assertLogstash(['CRITICAL', 'Error (exception)'], $stdOutput[13]);
-        Helper::assertLogstash(['INFO', 'Quiet -q'], $stdOutput[14]);
-        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[15]);
-        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[16]);
-        Helper::assertLogstash(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[17]);
+        Helper::assertLogstash(['DEBUG', 'Message with context'], $stdOutput[14]);
+        Helper::assertLogstash(['INFO', 'Quiet -q'], $stdOutput[15]);
+        Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[16]);
+        Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[17]);
+        Helper::assertLogstash(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[18]);
     }
 
     public function testQuite(): void
@@ -504,36 +505,19 @@ class CliOutputLogstashTest extends PHPUnit
         isSame('', $cmdResult->err);
 
         $stdOutput = Helper::prepareLogstash($cmdResult->std);
-        isCount(19, $stdOutput);
+        isCount(20, $stdOutput);
 
         // Trace id is UUID v4
         $pattern = '/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/';
         isSame(1, \preg_match($pattern, $stdOutput[0]->find('context.trace.id')));
 
-        isCount(
-            1,
-            \array_unique([
-                $stdOutput[0]->find('context.trace.id'),
-                $stdOutput[1]->find('context.trace.id'),
-                $stdOutput[2]->find('context.trace.id'),
-                $stdOutput[3]->find('context.trace.id'),
-                $stdOutput[4]->find('context.trace.id'),
-                $stdOutput[5]->find('context.trace.id'),
-                $stdOutput[6]->find('context.trace.id'),
-                $stdOutput[7]->find('context.trace.id'),
-                $stdOutput[8]->find('context.trace.id'),
-                $stdOutput[9]->find('context.trace.id'),
-                $stdOutput[10]->find('context.trace.id'),
-                $stdOutput[11]->find('context.trace.id'),
-                $stdOutput[12]->find('context.trace.id'),
-                $stdOutput[13]->find('context.trace.id'),
-                $stdOutput[14]->find('context.trace.id'),
-                $stdOutput[15]->find('context.trace.id'),
-                $stdOutput[16]->find('context.trace.id'),
-                $stdOutput[17]->find('context.trace.id'),
-                $stdOutput[18]->find('context.trace.id'),
-            ]),
-        );
+        $traces = [];
+
+        foreach ($stdOutput as $log) {
+            $traces[] = $log->find('context.trace.id');
+        }
+
+        isCount(1, \array_unique($traces));
 
         $cmdResult2 = Helper::executeReal('test:output', ['output-mode' => 'logstash']);
         $stdOutput2 = Helper::prepareLogstash($cmdResult2->std);

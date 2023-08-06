@@ -142,6 +142,7 @@ class CliOutputTextTest extends PHPUnit
                 'Debug1 -vvv',
                 'Debug: Message #1 -vvv',
                 'Debug: Message #2 -vvv',
+                'Debug: Message with context {"foo":"bar"}',
 
                 'Quiet -q',
                 'Legacy Output: Legacy',
