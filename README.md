@@ -87,45 +87,43 @@ Binary file: [demo/my-app](demo/my-app)
 
   ```php
   #!/usr/bin/env php
-  <?php declare(strict_types=1);
-  
-  namespace DemoApp;
-  
-  use JBZoo\Cli\CliApplication;
-  
-  // Init composer autoloader
-  if (file_exists(__DIR__ . '/vendor/autoload.php')) {
-      require_once __DIR__ . '/vendor/autoload.php';
-  } else {
-      require_once dirname(__DIR__) . '/vendor/autoload.php';
-  }
-  
-  // Set your application name and version.
-  $application = new CliApplication('My Console Application', 'v1.0.0');
-  
-  // Looks at the online generator of ASCII logos
-  // https://patorjk.com/software/taag/#p=testall&f=Epic&t=My%20Console%20App
-  $application->setLogo(implode(PHP_EOL, [
-      "  __  __          _____                      _                             ",
-      " |  \/  |        / ____|                    | |          /\                ",
-      " | \  / |_   _  | |     ___  _ __  ___  ___ | | ___     /  \   _ __  _ __  ",
-      " | |\/| | | | | | |    / _ \| '_ \/ __|/ _ \| |/ _ \   / /\ \ | '_ \| '_ \ ",
-      " | |  | | |_| | | |___| (_) | | | \__ \ (_) | |  __/  / ____ \| |_) | |_) |",
-      " |_|  |_|\__, |  \_____\___/|_| |_|___/\___/|_|\___| /_/    \_\ .__/| .__/ ",
-      "          __/ |                                               | |   | |    ",
-      "         |___/                                                |_|   |_|    ",
-  ]));
-  
-  // Scan directory to find commands.
-  //  * It doesn't work recursively!
-  //  * They must be inherited from the class \JBZoo\Cli\CliCommand
-  $application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);
-  
-  // Action name by default (if there is no arguments)
-  $application->setDefaultCommand('list');
-  
-  // Run application
-  $application->run();
+<?php declare(strict_types=1);
+
+namespace DemoApp;
+
+use JBZoo\Cli\CliApplication;
+
+// Init composer autoloader
+require_once __DIR__ . '/vendor/autoload.php';
+
+// Optional. Set your application name and version.
+$application = new CliApplication('My Console Application', 'v1.0.0');
+
+// Optional. Looks at the online generator of ASCII logos
+// https://patorjk.com/software/taag/#p=testall&f=Epic&t=My%20Console%20App
+$application->setLogo(
+    <<<'EOF'
+          __  __          _____                      _
+         |  \/  |        / ____|                    | |          /\
+         | \  / |_   _  | |     ___  _ __  ___  ___ | | ___     /  \   _ __  _ __
+         | |\/| | | | | | |    / _ \| '_ \/ __|/ _ \| |/ _ \   / /\ \ | '_ \| '_ \
+         | |  | | |_| | | |___| (_) | | | \__ \ (_) | |  __/  / ____ \| |_) | |_) |
+         |_|  |_|\__, |  \_____\___/|_| |_|___/\___/|_|\___| /_/    \_\ .__/| .__/
+                  __/ |                                               | |   | |
+                 |___/                                                |_|   |_|
+        EOF,
+);
+
+// Scan directory to find commands.
+//  * It doesn't work recursively!
+//  * They must be inherited from the class \JBZoo\Cli\CliCommand
+$application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);
+
+// Optional. Action name by default (if there is no arguments)
+$application->setDefaultCommand('list');
+
+// Run application
+$application->run();
   
   ```
 
