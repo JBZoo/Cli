@@ -65,17 +65,13 @@ abstract class CliCommand extends Command
             $progressBar->setMax($listOrMax);
         }
 
+        $nestedLevel++;
+        $progressBar->setNextedLevel($nestedLevel);
+
         $progressBar->execute();
 
-        $progressBar
-            ->onStart(static function (AbstractProgressBar $progressBar) use (&$nestedLevel): void {
-                $nestedLevel++;
-                $progressBar->setNextedLevel($nestedLevel);
-            })
-            ->onFinish(static function (AbstractProgressBar $progressBar) use (&$nestedLevel): void {
-                $nestedLevel--;
-                $progressBar->setNextedLevel($nestedLevel);
-            });
+        $nestedLevel--;
+        $progressBar->setNextedLevel($nestedLevel);
 
         return $progressBar;
     }

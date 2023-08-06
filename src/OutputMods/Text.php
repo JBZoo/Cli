@@ -20,7 +20,7 @@ use JBZoo\Cli\CliApplication;
 use JBZoo\Cli\Exception;
 use JBZoo\Cli\OutLvl;
 use JBZoo\Cli\ProgressBars\AbstractProgressBar;
-use JBZoo\Cli\ProgressBars\ProgressBar;
+use JBZoo\Cli\ProgressBars\ProgressBarSymfony;
 use JBZoo\Utils\FS;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
@@ -75,7 +75,7 @@ class Text extends AbstractOutputMode
 
     public function createProgressBar(): AbstractProgressBar
     {
-        return new ProgressBar($this);
+        return new ProgressBarSymfony($this);
     }
 
     public static function getName(): string

@@ -19,6 +19,7 @@ namespace JBZoo\PHPUnit\TestApp\Commands;
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\Exception;
 use JBZoo\Cli\ProgressBars\ProgressBar;
+use JBZoo\Cli\ProgressBars\ProgressBarSymfony;
 use Symfony\Component\Console\Input\InputOption;
 
 use function JBZoo\Data\json;
@@ -44,7 +45,8 @@ class TestProgress extends CliCommand
         $testCase = $this->getOptString('case');
 
         if ($testCase === 'minimal') {
-            $this->progressBar(2, function (): void {
+            // Static call as backwards capability
+            ProgressBar::run(2, function (): void {
                 \sleep($this->getOptInt('sleep'));
             });
         }
@@ -67,19 +69,15 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'no-items-int') {
-            // Static call as backwards capability
-            ProgressBar::run(0, static function (): void {
-            }, $testCase);
+            $this->progressBar(0, static function (): void { }, $testCase);
         }
 
         if ($testCase === 'no-items-array') {
-            $this->progressBar([], static function (): void {
-            }, $testCase);
+            $this->progressBar([], static function (): void { }, $testCase);
         }
 
         if ($testCase === 'no-items-data') {
-            $this->progressBar(json(), static function (): void {
-            }, $testCase);
+            $this->progressBar(json(), static function (): void { }, $testCase);
         }
 
         // // old tests
@@ -134,7 +132,7 @@ class TestProgress extends CliCommand
         if ($testCase === 'break') {
             $this->progressBar(3, static function ($stepValue) {
                 if ($stepValue === 1) {
-                    return ProgressBar::BREAK;
+                    return ProgressBarSymfony::BREAK;
                 }
 
                 return $stepValue;
@@ -173,8 +171,6 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'nested') {
-            $array = [];
-
             $this->progressBar(3, function ($parentId) use ($testCase) {
                 \sleep($this->getOptInt('sleep'));
 

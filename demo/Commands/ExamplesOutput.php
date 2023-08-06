@@ -34,9 +34,6 @@ class ExamplesOutput extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         $code = static fn (string $flag): string => "<black-b>`cli(\$text, {$flag})`</black-b>";

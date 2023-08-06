@@ -31,9 +31,6 @@ class ExamplesHelpers extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         $yourName = $this->ask("What's your name?", 'idk');

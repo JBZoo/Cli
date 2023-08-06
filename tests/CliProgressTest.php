@@ -54,17 +54,17 @@ class CliProgressTest extends PHPUnit
         $cmdResult = Helper::executeReal('test:progress', ['case' => 'no-items-int']);
         isSame('', $cmdResult->err);
         isSame(0, $cmdResult->code);
-        isSame('no-items-int. Number of items is 0 or less', $cmdResult->std);
+        isSame('no-items-int. Number of items is 0 or less.', $cmdResult->std);
 
         $cmdResult = Helper::executeReal('test:progress', ['case' => 'no-items-array']);
         isSame('', $cmdResult->err);
         isSame(0, $cmdResult->code);
-        isSame('no-items-array. Number of items is 0 or less', $cmdResult->std);
+        isSame('no-items-array. Number of items is 0 or less.', $cmdResult->std);
 
         $cmdResult = Helper::executeReal('test:progress', ['case' => 'no-items-data']);
         isSame('', $cmdResult->err);
         isSame(0, $cmdResult->code);
-        isSame('no-items-data. Number of items is 0 or less', $cmdResult->std);
+        isSame('no-items-data. Number of items is 0 or less.a', $cmdResult->std);
     }
 
     public function testProgressMessages(): void
@@ -264,21 +264,21 @@ class CliProgressTest extends PHPUnit
         isSame(
             \implode("\n", [
                 'Working on "nested_parent". Number of steps: 3.',
-                'Working on "nested_child_0". Number of steps: 4.',
+                'Working on "nested_child_0". Number of steps: 4. Level: 2.',
                 ' * (0): out_child_0_0',
                 ' * (1): out_child_0_1',
                 ' * (2): out_child_0_2',
                 ' * (3): out_child_0_3',
                 '',
                 ' * (0): out_parent_0',
-                'Working on "nested_child_1". Number of steps: 4.',
+                'Working on "nested_child_1". Number of steps: 4. Level: 2.',
                 ' * (0): out_child_1_0',
                 ' * (1): out_child_1_1',
                 ' * (2): out_child_1_2',
                 ' * (3): out_child_1_3',
                 '',
                 ' * (1): out_parent_1',
-                'Working on "nested_child_2". Number of steps: 4.',
+                'Working on "nested_child_2". Number of steps: 4. Level: 2.',
                 ' * (0): out_child_2_0',
                 ' * (1): out_child_2_1',
                 ' * (2): out_child_2_2',

@@ -28,9 +28,6 @@ class Simple extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         // Your code here

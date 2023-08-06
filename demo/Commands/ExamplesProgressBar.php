@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
-use JBZoo\Cli\ProgressBars\ProgressBar;
+use JBZoo\Cli\ProgressBars\ProgressBarSymfony;
 use Symfony\Component\Console\Input\InputOption;
 
 class ExamplesProgressBar extends CliCommand
@@ -33,13 +33,10 @@ class ExamplesProgressBar extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         // ////////////////////////////////////////////////////////////////////// Just 3 steps
-        ProgressBar::run(2, static function ($stepValue, $stepIndex, $currentStep) {
+        $this->progressBar(2, static function ($stepValue, $stepIndex, $currentStep) {
             \sleep(1);
 
             return "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}";
@@ -52,7 +49,7 @@ class ExamplesProgressBar extends CliCommand
             'key_3' => 'value_3',
         ];
 
-        ProgressBar::run(
+        $this->progressBar(
             $list,
             static fn (
                 $stepValue,
@@ -63,9 +60,9 @@ class ExamplesProgressBar extends CliCommand
         );
 
         // ////////////////////////////////////////////////////////////////////// Exit from the cycle
-        ProgressBar::run(3, static function ($stepValue, $stepIndex, $currentStep) {
+        $this->progressBar(3, static function ($stepValue, $stepIndex, $currentStep) {
             if ($stepValue === 1) {
-                return ProgressBar::BREAK;
+                return ProgressBarSymfony::BREAK;
             }
 
             return "Step info: \$stepValue={$stepValue}, \$stepIndex={$stepIndex}, \$currentStep={$currentStep}";
@@ -73,7 +70,7 @@ class ExamplesProgressBar extends CliCommand
 
         // ////////////////////////////////////////////////////////////////////// Exception
         if ($this->getOptBool('exception')) {
-            ProgressBar::run(3, static function ($stepValue) {
+            $this->progressBar(3, static function ($stepValue) {
                 if ($stepValue === 1) {
                     throw new Exception("Exception #{$stepValue}");
                 }
@@ -84,7 +81,7 @@ class ExamplesProgressBar extends CliCommand
 
         // ////////////////////////////////////////////////////////////////////// List of Exceptions
         if ($this->getOptBool('exception-list')) {
-            ProgressBar::run(10, static function ($stepValue) {
+            $this->progressBar(10, static function ($stepValue) {
                 if ($stepValue % 3 === 0) {
                     throw new Exception("Exception #{$stepValue}");
                 }

@@ -32,9 +32,6 @@ class ExamplesStyles extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         // Render list of values

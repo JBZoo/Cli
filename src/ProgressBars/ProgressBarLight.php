@@ -26,6 +26,10 @@ class ProgressBarLight extends AbstractSymfonyProgressBar
             return false;
         }
 
+        if ($this->callbackOnStart !== null) {
+            \call_user_func($this->callbackOnStart, $this);
+        }
+
         $exceptionMessages = [];
         $currentIndex      = 0;
 
@@ -54,29 +58,24 @@ class ProgressBarLight extends AbstractSymfonyProgressBar
 
     private function init(): bool
     {
-        if ($this->callbackOnStart !== null) {
-            \call_user_func($this->callbackOnStart, $this);
-        }
-
         $progresBarLevel = $this->getNextedLevel();
-        $levelPostfix    = '';
-        if ($progresBarLevel > 0) {
-            $levelPostfix = " Child level: {$progresBarLevel}.";
-        }
+        $levelPostfix    = $progresBarLevel > 1 ? " Level: {$progresBarLevel}." : '';
 
         if ($this->max <= 0) {
-            $message = !isStrEmpty($this->title)
-                ? "{$this->title}. Number of items is 0 or less"
-                : "Number of items is 0 or less.{$levelPostfix}";
-            $this->outputMode->_($message);
+            if (isStrEmpty($this->title)) {
+                $this->outputMode->_("Number of items is 0 or less.{$levelPostfix}");
+            } else {
+                $this->outputMode->_("{$this->title}. Number of items is 0 or less.{$levelPostfix}");
+            }
 
             return false;
         }
 
-        $message = !isStrEmpty($this->title)
-            ? "Working on \"{$this->title}\". Number of steps: {$this->max}.{$levelPostfix}"
-            : "Number of steps: {$this->max}.{$levelPostfix}";
-        $this->outputMode->_($message);
+        if (isStrEmpty($this->title)) {
+            $this->outputMode->_("Number of steps: {$this->max}.{$levelPostfix}");
+        } else {
+            $this->outputMode->_("Working on \"{$this->title}\". Number of steps: {$this->max}.{$levelPostfix}");
+        }
 
         return true;
     }

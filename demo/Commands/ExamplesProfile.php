@@ -31,9 +31,6 @@ class ExamplesProfile extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         cli('Start cycles');

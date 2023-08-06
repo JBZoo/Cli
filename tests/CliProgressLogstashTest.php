@@ -90,15 +90,15 @@ class CliProgressLogstashTest extends PHPUnit
     {
         $stdOutput = $this->exec('no-items-int');
         isCount(1, $stdOutput);
-        Helper::assertLogstash(['NOTICE', 'no-items-int. Number of items is 0 or less'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'no-items-int. Number of items is 0 or less.'], $stdOutput[0]);
 
         $stdOutput = $this->exec('no-items-array');
         isCount(1, $stdOutput);
-        Helper::assertLogstash(['NOTICE', 'no-items-array. Number of items is 0 or less'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'no-items-array. Number of items is 0 or less.'], $stdOutput[0]);
 
         $stdOutput = $this->exec('no-items-data');
         isCount(1, $stdOutput);
-        Helper::assertLogstash(['NOTICE', 'no-items-data. Number of items is 0 or less'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', 'no-items-data. Number of items is 0 or less.'], $stdOutput[0]);
     }
 
     public function testException(): void
@@ -176,19 +176,28 @@ class CliProgressLogstashTest extends PHPUnit
         isCount(21, $stdOutput);
         Helper::assertLogstash(['INFO', 'Command Start: test:progress'], $stdOutput[0]);
         Helper::assertLogstash(['NOTICE', 'Working on "nested_parent". Number of steps: 3.'], $stdOutput[1]);
-        Helper::assertLogstash(['NOTICE', 'Working on "nested_child_0". Number of steps: 4.'], $stdOutput[2]);
+        Helper::assertLogstash(
+            ['NOTICE', 'Working on "nested_child_0". Number of steps: 4. Level: 2.'],
+            $stdOutput[2],
+        );
         Helper::assertLogstash(['NOTICE', '(Step=1/Max=4): out_child_0_0'], $stdOutput[3]);
         Helper::assertLogstash(['NOTICE', '(Step=2/Max=4): out_child_0_1'], $stdOutput[4]);
         Helper::assertLogstash(['NOTICE', '(Step=3/Max=4): out_child_0_2'], $stdOutput[5]);
         Helper::assertLogstash(['NOTICE', '(Step=4/Max=4): out_child_0_3'], $stdOutput[6]);
         Helper::assertLogstash(['NOTICE', '(Step=1/Max=3): out_parent_0'], $stdOutput[7]);
-        Helper::assertLogstash(['NOTICE', 'Working on "nested_child_1". Number of steps: 4.'], $stdOutput[8]);
+        Helper::assertLogstash(
+            ['NOTICE', 'Working on "nested_child_1". Number of steps: 4. Level: 2.'],
+            $stdOutput[8],
+        );
         Helper::assertLogstash(['NOTICE', '(Step=1/Max=4): out_child_1_0'], $stdOutput[9]);
         Helper::assertLogstash(['NOTICE', '(Step=2/Max=4): out_child_1_1'], $stdOutput[10]);
         Helper::assertLogstash(['NOTICE', '(Step=3/Max=4): out_child_1_2'], $stdOutput[11]);
         Helper::assertLogstash(['NOTICE', '(Step=4/Max=4): out_child_1_3'], $stdOutput[12]);
         Helper::assertLogstash(['NOTICE', '(Step=2/Max=3): out_parent_1'], $stdOutput[13]);
-        Helper::assertLogstash(['NOTICE', 'Working on "nested_child_2". Number of steps: 4.'], $stdOutput[14]);
+        Helper::assertLogstash(
+            ['NOTICE', 'Working on "nested_child_2". Number of steps: 4. Level: 2.'],
+            $stdOutput[14],
+        );
         Helper::assertLogstash(['NOTICE', '(Step=1/Max=4): out_child_2_0'], $stdOutput[15]);
         Helper::assertLogstash(['NOTICE', '(Step=2/Max=4): out_child_2_1'], $stdOutput[16]);
         Helper::assertLogstash(['NOTICE', '(Step=3/Max=4): out_child_2_2'], $stdOutput[17]);
