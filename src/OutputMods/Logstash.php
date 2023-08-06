@@ -24,6 +24,7 @@ use JBZoo\Cli\ProgressBars\ProgressBarLight;
 use JBZoo\Utils\Slug;
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
+use Monolog\Level;
 use Monolog\Logger;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -72,9 +73,11 @@ class Logstash extends AbstractOutputMode
 
     public function onExecException(\Exception $exception): void
     {
-        $this->_('Command Exception: ' . $exception->getMessage(), OutLvl::EXCEPTION, [
-            'error' => self::exceptionToLog($exception),
-        ]);
+        $this->logger->log(
+            Level::Critical,
+            'Command Exception: ' . $exception->getMessage(),
+            $this->prepareContext(['error' => self::exceptionToLog($exception)]),
+        );
     }
 
     public function onExecAfter(int $exitCode, ?string $outputLevel = null): void
