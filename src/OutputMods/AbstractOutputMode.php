@@ -114,7 +114,7 @@ abstract class AbstractOutputMode
 
         if (
             $this->catchMode
-            && \preg_match('/^Working on ".*"\./', $message) === false // hack for system messages
+            && !bool(\preg_match('/^Working on ".*"\./', $message)) // hack for system messages
         ) {
             $this->caughtMessages[] = $message;
 
