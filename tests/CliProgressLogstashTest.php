@@ -206,6 +206,16 @@ class CliProgressLogstashTest extends PHPUnit
         Helper::assertLogstash(['INFO', 'Command Finish: ExitCode=0'], $stdOutput[20]);
     }
 
+    public function testCatchMode(): void
+    {
+        $stdOutput = $this->exec('catch-mode');
+        isCount(4, $stdOutput);
+        Helper::assertLogstash(['NOTICE', 'Working on "catch-mode". Number of steps: 3.'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', '(Step=1/Max=3): Regular return 0; _(); cli(); echo'], $stdOutput[1]);
+        Helper::assertLogstash(['NOTICE', '(Step=2/Max=3): Regular return 1; _(); cli(); echo'], $stdOutput[2]);
+        Helper::assertLogstash(['NOTICE', '(Step=3/Max=3): Regular return 2; _(); cli(); echo'], $stdOutput[3]);
+    }
+
     /**
      * @return JSON[]
      */

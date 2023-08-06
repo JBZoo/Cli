@@ -95,6 +95,8 @@ class ProgressBarLight extends AbstractSymfonyProgressBar
 
         $callbackResults = [];
 
+        $this->outputMode->catchModeStart();
+
         try {
             $callbackResults = (array)($this->callback)($stepValue, $stepIndex, $currentIndex);
         } catch (\Exception $exception) {
@@ -105,6 +107,11 @@ class ProgressBarLight extends AbstractSymfonyProgressBar
             } else {
                 throw $exception;
             }
+        }
+
+        $cathedMessages = $this->outputMode->catchModeFinish();
+        if (\count($cathedMessages) > 0) {
+            $callbackResults = \array_merge($callbackResults, $cathedMessages);
         }
 
         // Handle status messages

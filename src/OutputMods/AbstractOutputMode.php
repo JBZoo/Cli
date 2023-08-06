@@ -25,6 +25,7 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\bool;
+use function JBZoo\Utils\isStrEmpty;
 
 abstract class AbstractOutputMode
 {
@@ -40,6 +41,8 @@ abstract class AbstractOutputMode
 
     protected InputInterface  $input;
     protected OutputInterface $output;
+    protected bool            $catchMode      = false;
+    protected array           $caughtMessages = [];
 
     private bool $outputHasErrors = false;
 
@@ -109,6 +112,12 @@ abstract class AbstractOutputMode
             return;
         }
 
+        if ($this->catchMode) {
+            $this->caughtMessages[] = $message;
+
+            return;
+        }
+
         $this->printMessage($message, $verboseLevel, $context);
     }
 
@@ -170,6 +179,28 @@ abstract class AbstractOutputMode
         }
 
         $this->_('Exit code: ' . $exitCode, $outputLevel);
+    }
+
+    public function catchModeStart(): void
+    {
+        \ob_start();
+        $this->catchMode = true;
+    }
+
+    public function catchModeFinish(): array
+    {
+        $echoOutput = \ob_get_clean();
+        if (!isStrEmpty($echoOutput)) {
+            $this->caughtMessages[] = $echoOutput;
+        }
+
+        $this->catchMode = false;
+
+        $caughtMessages = $this->caughtMessages;
+
+        $this->caughtMessages = [];
+
+        return $caughtMessages;
     }
 
     /**

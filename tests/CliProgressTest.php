@@ -290,6 +290,23 @@ class CliProgressTest extends PHPUnit
         );
     }
 
+    public function testCatchMode(): void
+    {
+        $cmdResult = $this->exec('catch-mode');
+
+        isSame(0, $cmdResult->code);
+        isSame('', $cmdResult->err);
+        isSame(
+            \implode("\n", [
+                'Working on "catch-mode". Number of steps: 3.',
+                ' * (0): Regular return 0; _(); cli(); echo',
+                ' * (1): Regular return 1; _(); cli(); echo',
+                ' * (2): Regular return 2; _(); cli(); echo',
+            ]),
+            $cmdResult->std,
+        );
+    }
+
     private function exec(string $testCase, array $addOptions = [], bool $noProgress = true): CmdResult
     {
         if ($noProgress) {

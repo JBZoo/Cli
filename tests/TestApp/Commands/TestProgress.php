@@ -185,14 +185,14 @@ class TestProgress extends CliCommand
             }, "{$testCase}_parent", false);
         }
 
-        if ($testCase === 'catch-output') {
+        if ($testCase === 'catch-mode') {
             $this->progressBar(3, function ($index) {
-                echo 1;
-                $this->_('2');
-                cli(3);
+                echo 'echo';
+                $this->_('_()');
+                cli('cli()');
                 \sleep($this->getOptInt('sleep'));
 
-                return "Regular {$index}";
+                return "Regular return {$index}";
             }, $testCase, false);
         }
 

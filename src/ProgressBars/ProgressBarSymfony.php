@@ -215,6 +215,8 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         $prefixMessage    = $stepIndex === $currentIndex ? $currentIndex : "{$stepIndex}/{$currentIndex}";
         $callbackResults  = [];
 
+        $this->outputMode->catchModeStart();
+
         // Executing callback
         try {
             $callbackResults = (array)($this->callback)($stepValue, $stepIndex, $currentIndex);
@@ -226,6 +228,10 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
             } else {
                 throw $exception;
             }
+        }
+        $cathedMessages = $this->outputMode->catchModeFinish();
+        if (\count($cathedMessages) > 0) {
+            $callbackResults = \array_merge($callbackResults, $cathedMessages);
         }
 
         // Handle status messages
