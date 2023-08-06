@@ -138,13 +138,7 @@ abstract class CliCommand extends Command
                 'cron',
                 null,
                 InputOption::VALUE_NONE,
-                'Alias for <info>--output-mode=cron</info>.',
-            )
-            ->addOption(
-                'logstash',
-                null,
-                InputOption::VALUE_NONE,
-                'Alias for <info>--output-mode=logstash</info>.',
+                'Alias for <info>--output-mode=cron</info>. <comment>Deprecated!</comment>',
             );
 
         parent::configure();
@@ -466,12 +460,8 @@ abstract class CliCommand extends Command
 
     private static function getOutputFormat(InputInterface $input): string
     {
-        if (bool($input->getOption('cron'))) {
+        if (bool($input->getOption('cron'))) { // TODO: Must be deprecated in the future
             return Cron::getName();
-        }
-
-        if (bool($input->getOption('logstash'))) {
-            return Logstash::getName();
         }
 
         return $input->getOption('output-mode') ?? Text::getName();
