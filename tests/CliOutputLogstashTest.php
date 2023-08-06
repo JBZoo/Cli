@@ -102,7 +102,6 @@ class CliOutputLogstashTest extends PHPUnit
                         'no-progress'       => 'boolean',
                         'mute-errors'       => 'boolean',
                         'stdout-only'       => 'boolean',
-                        'stderr-only'       => 'boolean',
                         'non-zero-on-error' => 'boolean',
                         'timestamp'         => 'boolean',
                         'profile'           => 'boolean',

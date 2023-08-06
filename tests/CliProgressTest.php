@@ -64,7 +64,7 @@ class CliProgressTest extends PHPUnit
         $cmdResult = Helper::executeReal('test:progress', ['case' => 'no-items-data']);
         isSame('', $cmdResult->err);
         isSame(0, $cmdResult->code);
-        isSame('no-items-data. Number of items is 0 or less.a', $cmdResult->std);
+        isSame('no-items-data. Number of items is 0 or less.', $cmdResult->std);
     }
 
     public function testProgressMessages(): void
