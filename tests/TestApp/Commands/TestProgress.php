@@ -22,6 +22,7 @@ use JBZoo\Cli\ProgressBars\ProgressBar;
 use JBZoo\Cli\ProgressBars\ProgressBarSymfony;
 use Symfony\Component\Console\Input\InputOption;
 
+use function JBZoo\Cli\cli;
 use function JBZoo\Data\json;
 
 class TestProgress extends CliCommand
@@ -182,6 +183,17 @@ class TestProgress extends CliCommand
 
                 return "out_parent_{$parentId}";
             }, "{$testCase}_parent", false);
+        }
+
+        if ($testCase === 'catch-output') {
+            $this->progressBar(3, function ($index) {
+                echo 1;
+                $this->_('2');
+                cli(3);
+                \sleep($this->getOptInt('sleep'));
+
+                return "Regular {$index}";
+            }, $testCase, false);
         }
 
         if (!$testCase) {

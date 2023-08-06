@@ -141,7 +141,7 @@ class Text extends AbstractOutputMode
         if ($this->isDisplayProfiling()) {
             $profile    = $this->getProfileInfo();
             $memoryDiff = FS::format($profile['memory_usage_diff']);
-            $totalTime  = \round($profile['time_total_ms'] / 1000, 3);
+            $totalTime  = \number_format($profile['time_diff_ms'] / 1000, 3);
             $curMemory  = \str_pad($memoryDiff, 10, ' ', \STR_PAD_LEFT);
 
             $profilePrefix .= "<green>[</green>+{$totalTime}s<green>/</green>{$curMemory}<green>]</green> ";

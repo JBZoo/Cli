@@ -18,11 +18,11 @@ namespace JBZoo\Cli\ProgressBars;
 
 use JBZoo\Cli\CliCommand;
 
+/**
+ * @deprecated Use `$this->progressBar()` instead of ProgressBar::run()
+ */
 class ProgressBar extends ProgressBarSymfony
 {
-    /**
-     * @deprecated use `$this->progressBar()` instead of ProgressBar::run()
-     */
     public static function run(
         iterable|int $listOrMax,
         \Closure $callback,

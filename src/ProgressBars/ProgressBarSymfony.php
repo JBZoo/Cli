@@ -98,7 +98,6 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         }
 
         self::showListOfExceptions($exceptionMessages);
-        $this->outputMode->_('');
 
         return true;
     }
