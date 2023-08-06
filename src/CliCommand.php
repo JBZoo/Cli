@@ -105,12 +105,6 @@ abstract class CliCommand extends Command
                 "For any errors messages application will use StdOut instead of StdErr. It's on your own risk!",
             )
             ->addOption(
-                'stderr-only',
-                $definedShortcuts ? '2' : null,
-                InputOption::VALUE_NONE,
-                "For any output messages application will use StdErr instead of StdOut. It's on your own risk!",
-            )
-            ->addOption(
                 'non-zero-on-error',
                 $definedShortcuts ? 'Z' : null,
                 InputOption::VALUE_NONE,

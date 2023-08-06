@@ -69,7 +69,7 @@ class Cron extends Text
 
     public static function getDescription(): string
     {
-        return "Shortcut for crontab. It's basically focused on logs output.\n"
+        return "Shortcut for crontab. It's basically focused on human-readable logs output.\n"
             . " It's combination of <info>--timestamp --profile --stdout-only --no-progress -vv</info>.";
     }
 }
