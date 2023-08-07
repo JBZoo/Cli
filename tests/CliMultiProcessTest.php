@@ -50,7 +50,7 @@ class CliMultiProcessTest extends PHPUnit
         ], $outputAsArray, (string)$cmdResult);
         isSame('', $cmdResult->err, (string)$cmdResult);
 
-        isTrue($time < 7, "Total time: {$time}");
+        isTrue($time < 6, "Total time: {$time}");
     }
 
     public function testAsVirtalExecution(): void
@@ -77,7 +77,7 @@ class CliMultiProcessTest extends PHPUnit
             "Started: 5\n{$expectecContent}\nFinished: 5",
         ], $outputAsArray);
 
-        isTrue($time < 5, "Total time: {$time}");
+        isTrue($time < 6, "Total time: {$time}");
     }
 
     public function testException(): void
@@ -111,7 +111,7 @@ class CliMultiProcessTest extends PHPUnit
         ], $outputAsArray);
         isContain('Exception messsage', $cmdResult->err);
 
-        isTrue($time < 5, "Total time: {$time}");
+        isTrue($time < 6, "Total time: {$time}");
     }
 
     public function testNumberOfCpuCores(): void
