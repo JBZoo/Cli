@@ -88,15 +88,15 @@ abstract class CliCommand extends Command
                 'no-progress',
                 $definedShortcuts ? 'P' : null,
                 InputOption::VALUE_NONE,
-                'Disable progress bar animation for logs. '
-                . 'It will be used only for <info>' . Text::getName() . '</info> output format.',
+                'Disable progress bar animation for logs. ' .
+                'It will be used only for <info>' . Text::getName() . '</info> output format.',
             )
             ->addOption(
                 'mute-errors',
                 $definedShortcuts ? 'M' : null,
                 InputOption::VALUE_NONE,
-                "Mute any sort of errors. So exit code will be always \"0\" (if it's possible).\n"
-                . "It has major priority then <info>--non-zero-on-error</info>. It's on your own risk!",
+                "Mute any sort of errors. So exit code will be always \"0\" (if it's possible).\n" .
+                "It has major priority then <info>--non-zero-on-error</info>. It's on your own risk!",
             )
             ->addOption(
                 'stdout-only',
@@ -114,8 +114,8 @@ abstract class CliCommand extends Command
                 'timestamp',
                 $definedShortcuts ? 'T' : null,
                 InputOption::VALUE_NONE,
-                'Show timestamp at the beginning of each message.'
-                . 'It will be used only for <info>' . Text::getName() . '</info> output format.',
+                'Show timestamp at the beginning of each message.' .
+                'It will be used only for <info>' . Text::getName() . '</info> output format.',
             )
             ->addOption(
                 'profile',
@@ -135,10 +135,10 @@ abstract class CliCommand extends Command
                 Text::getName(),
             )
             ->addOption(
-                'cron',
+                Cron::getName(),
                 null,
                 InputOption::VALUE_NONE,
-                'Alias for <info>--output-mode=cron</info>. <comment>Deprecated!</comment>',
+                'Alias for <info>--output-mode=' . Cron::getName() . '</info>. <comment>Deprecated!</comment>',
             );
 
         parent::configure();
@@ -402,7 +402,6 @@ abstract class CliCommand extends Command
     {
         $lines = \explode("\n", $echoContent);
         $lines = \array_map(static fn ($line) => \rtrim($line), $lines);
-
         $lines = \array_filter($lines, static fn ($line): bool => $line !== '');
 
         if (\count($lines) > 1) {
