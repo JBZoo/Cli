@@ -126,14 +126,14 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
                 '%jbzoo_time_elapsed:9s%',
                 '<info>%jbzoo_time_remaining:8s%</info>',
                 '<comment>%jbzoo_time_estimated:8s%</comment>',
-                '%jbzoo_time_step_avg%',
+                '%jbzoo_time_step_median%',
                 '%jbzoo_time_step_last%',
             ]);
             $footerLine['Memory (cur/peak/limit/leak/last)'] = \implode(' / ', [
                 '%jbzoo_memory_current:8s%',
                 '<comment>%jbzoo_memory_peak%</comment>',
                 '%jbzoo_memory_limit%',
-                '%jbzoo_memory_step_avg%',
+                '%jbzoo_memory_step_median%',
                 '%jbzoo_memory_step_last%',
             ]);
             $footerLine['Caught exceptions'] = '%jbzoo_caught_exceptions%';

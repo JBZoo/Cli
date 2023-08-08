@@ -59,7 +59,7 @@ abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
 
         self::setPlaceholder('jbzoo_memory_limit', static fn (): string => Sys::iniGet('memory_limit'));
 
-        self::setPlaceholder('jbzoo_memory_step_avg', function (SymfonyProgressBar $bar): string {
+        self::setPlaceholder('jbzoo_memory_step_median', function (SymfonyProgressBar $bar): string {
             if (
                 $bar->getMaxSteps() === 0
                 || $bar->getProgress() === 0
@@ -68,7 +68,7 @@ abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
                 return 'n/a';
             }
 
-            return FS::format((int)Stats::mean($this->stepMemoryDiff));
+            return FS::format((int)Stats::median($this->stepMemoryDiff));
         });
 
         self::setPlaceholder('jbzoo_memory_step_last', function (SymfonyProgressBar $bar): string {
@@ -125,7 +125,7 @@ abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
             return Dates::formatTime($estimated);
         });
 
-        self::setPlaceholder('jbzoo_time_step_avg', function (SymfonyProgressBar $bar): string {
+        self::setPlaceholder('jbzoo_time_step_median', function (SymfonyProgressBar $bar): string {
             if (
                 $bar->getMaxSteps() === 0
                 || $bar->getProgress() === 0
@@ -134,7 +134,7 @@ abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
                 return 'n/a';
             }
 
-            return \str_replace('±', '<blue>±</blue>', Stats::renderAverage($this->stepTimers)) . ' sec';
+            return \str_replace('±', '<blue>±</blue>', Stats::renderMedian($this->stepTimers)) . ' sec';
         });
 
         self::setPlaceholder('jbzoo_time_step_last', function (SymfonyProgressBar $bar): string {
