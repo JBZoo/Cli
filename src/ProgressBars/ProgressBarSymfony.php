@@ -83,7 +83,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
                 $this->progressBar->setMessage($errMessage, 'jbzoo_caught_exceptions');
             }
 
-            if (\str_contains($stepResult, self::BREAK)) {
+            if (\str_contains($stepResult, ExceptionBreak::MESSAGE)) {
                 $isSkipped = true;
                 break;
             }

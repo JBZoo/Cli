@@ -71,7 +71,7 @@ abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
             static fn (): string => SymfonyHelper::formatMemory(\memory_get_usage(false)),
         );
 
-        // Time optimizations
+        // Memory/Time optimizations
         if ($optimizeMode) {
             return;
         }
