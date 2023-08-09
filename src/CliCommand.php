@@ -219,26 +219,59 @@ abstract class CliCommand extends Command
         return bool($value);
     }
 
-    protected function getOptInt(string $optionName): int
+    /**
+     * @param float[] $onlyExpectedOptions
+     */
+    protected function getOptInt(string $optionName, array $onlyExpectedOptions = []): int
     {
-        $value = $this->getOpt($optionName) ?? 0;
+        $value  = $this->getOpt($optionName) ?? 0;
+        $result = int($value);
+
+        if (\count($onlyExpectedOptions) > 0 && !\in_array($result, $onlyExpectedOptions, true)) {
+            throw new Exception(
+                "Passed invalid value of option \"--{$optionName}={$result}\".\n" .
+                'Strict expected int-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
+            );
+        }
 
         return int($value);
     }
 
-    protected function getOptFloat(string $optionName): float
+    /**
+     * @param float[] $onlyExpectedOptions
+     */
+    protected function getOptFloat(string $optionName, array $onlyExpectedOptions = []): float
     {
-        $value = $this->getOpt($optionName) ?? 0.0;
+        $value  = $this->getOpt($optionName) ?? 0.0;
+        $result = float($value);
 
-        return float($value);
+        if (\count($onlyExpectedOptions) > 0 && !\in_array($result, $onlyExpectedOptions, true)) {
+            throw new Exception(
+                "Passed invalid value of option \"--{$optionName}={$result}\".\n" .
+                'Strict expected float-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
+            );
+        }
+
+        return $result;
     }
 
-    protected function getOptString(string $optionName, string $default = ''): string
+    /**
+     * @param string[] $onlyExpectedOptions
+     */
+    protected function getOptString(string $optionName, string $default = '', array $onlyExpectedOptions = []): string
     {
         $value  = \trim((string)$this->getOpt($optionName));
         $length = \strlen($value);
+        $result = $length > 0 ? $value : $default;
 
-        return $length > 0 ? $value : $default;
+        if (\count($onlyExpectedOptions) > 0 && !\in_array($result, $onlyExpectedOptions, true)) {
+            throw new Exception(
+                "Passed invalid value of option \"--{$optionName}={$result}\".\n" .
+                'Strict expected string-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
+            );
+        }
+
+        return $result;
     }
 
     protected function getOptArray(string $optionName): array
@@ -248,14 +281,25 @@ abstract class CliCommand extends Command
         return (array)$list;
     }
 
+    /**
+     * @param string[] $onlyExpectedOptions
+     */
     protected function getOptDatetime(
         string $optionName,
         string $defaultDatetime = '1970-01-01 00:00:00',
+        array $onlyExpectedOptions = [],
     ): \DateTimeImmutable {
-        $value        = $this->getOptString($optionName);
-        $dateAsString = $value === '' ? $defaultDatetime : $value;
+        $value  = $this->getOptString($optionName);
+        $result = $value === '' ? $defaultDatetime : $value;
 
-        return new \DateTimeImmutable($dateAsString);
+        if (\count($onlyExpectedOptions) > 0 && !\in_array($result, $onlyExpectedOptions, true)) {
+            throw new Exception(
+                "Passed invalid value of option {$optionName}={$result}. " .
+                'Strict expected string-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
+            );
+        }
+
+        return new \DateTimeImmutable($result);
     }
 
     /**

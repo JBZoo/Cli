@@ -116,4 +116,15 @@ class CliHelper
 
         return $traceId;
     }
+
+    public static function renderExpectedValues(array $values): string
+    {
+        $result = '';
+
+        foreach ($values as $value) {
+            $result .= "\"{$value}\", ";
+        }
+
+        return \rtrim($result);
+    }
 }

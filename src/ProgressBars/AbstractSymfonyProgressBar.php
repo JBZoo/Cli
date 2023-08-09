@@ -26,9 +26,10 @@ use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 
 abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
 {
-    public const BREAK = 'Progress stopped';
+    /** @deprecated Use `throw new ExceptionBreak("Reason.")` */
+    public const BREAK = ExceptionBreak::MESSAGE;
 
-    public const MAX_LINE_LENGTH = 80;
+    public const MAX_LINE_LENGTH = 120;
 
     /** @var int[] */
     protected array $stepMemoryDiff = [];
@@ -44,13 +45,36 @@ abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    protected function configureProgressBar(): void
+    protected function configureProgressBar(bool $optimizeMode = true): void
     {
-        // Memory
+        self::setPlaceholder(
+            'jbzoo_time_elapsed',
+            static fn (SymfonyProgressBar $bar): string => Dates::formatTime(\time() - $bar->getStartTime()),
+        );
+
+        self::setPlaceholder('jbzoo_time_estimated', static function (SymfonyProgressBar $bar): string {
+            if ($bar->getMaxSteps() === 0) {
+                return 'n/a';
+            }
+
+            if ($bar->getProgress() === 0) {
+                $estimated = 0;
+            } else {
+                $estimated = \round((\time() - $bar->getStartTime()) / $bar->getProgress() * $bar->getMaxSteps());
+            }
+
+            return Dates::formatTime($estimated);
+        });
+
         self::setPlaceholder(
             'jbzoo_memory_current',
             static fn (): string => SymfonyHelper::formatMemory(\memory_get_usage(false)),
         );
+
+        // Time optimizations
+        if ($optimizeMode) {
+            return;
+        }
 
         self::setPlaceholder(
             'jbzoo_memory_peak',
@@ -83,12 +107,6 @@ abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
             return FS::format(Arr::last($this->stepMemoryDiff));
         });
 
-        // Timers
-        self::setPlaceholder(
-            'jbzoo_time_elapsed',
-            static fn (SymfonyProgressBar $bar): string => Dates::formatTime(\time() - $bar->getStartTime()),
-        );
-
         self::setPlaceholder('jbzoo_time_remaining', static function (SymfonyProgressBar $bar): string {
             if ($bar->getMaxSteps() === 0) {
                 return 'n/a';
@@ -105,24 +123,6 @@ abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
             }
 
             return Dates::formatTime($remaining);
-        });
-
-        self::setPlaceholder('jbzoo_time_estimated', static function (SymfonyProgressBar $bar): string {
-            if ($bar->getMaxSteps() === 0) {
-                return 'n/a';
-            }
-
-            if ($bar->getProgress() === 0) {
-                $estimated = 0;
-            } else {
-                $estimated = \round(
-                    (\time() - $bar->getStartTime())
-                    / $bar->getProgress()
-                    * $bar->getMaxSteps(),
-                );
-            }
-
-            return Dates::formatTime($estimated);
         });
 
         self::setPlaceholder('jbzoo_time_step_median', function (SymfonyProgressBar $bar): string {

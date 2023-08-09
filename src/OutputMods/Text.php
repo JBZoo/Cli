@@ -27,6 +27,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function JBZoo\Utils\bool;
+
 class Text extends AbstractOutputMode
 {
     public function __construct(InputInterface $input, OutputInterface $output, CliApplication $application)
@@ -70,7 +72,9 @@ class Text extends AbstractOutputMode
 
     public function onExecException(\Exception $exception): void
     {
-        $this->_($exception->getMessage(), OutLvl::EXCEPTION);
+        if (bool($this->getInput()->getOption('mute-errors'))) {
+            $this->_($exception->getMessage(), OutLvl::EXCEPTION);
+        }
     }
 
     public function createProgressBar(): AbstractProgressBar

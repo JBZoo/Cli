@@ -18,7 +18,7 @@ namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 
-class Simple extends CliCommand
+class DemoSimple extends CliCommand
 {
     protected function configure(): void
     {

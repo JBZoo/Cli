@@ -99,6 +99,8 @@ class ProgressBarLight extends AbstractSymfonyProgressBar
 
         try {
             $callbackResults = (array)($this->callback)($stepValue, $stepIndex, $currentIndex);
+        } catch (ExceptionBreak $exception) {
+            $callbackResults[] = static::BREAK . ' ' . $exception->getMessage();
         } catch (\Exception $exception) {
             if ($this->throwBatchException) {
                 $errorMessage      = 'Exception: ' . $exception->getMessage();

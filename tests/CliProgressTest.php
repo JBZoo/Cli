@@ -27,7 +27,7 @@ class CliProgressTest extends PHPUnit
         isContain('0% (0 / 2) [>', $cmdResult->err);
         isContain('50% (1 / 2) [•', $cmdResult->err);
         isContain('100% (2 / 2) [•', $cmdResult->err);
-        isContain('Last Step Message: n/a', $cmdResult->err);
+        isContain('Last Message: n/a', $cmdResult->err);
 
         $cmdResult = Helper::executeReal('test:progress', ['case' => 'minimal', 'stdout-only' => null, 'sleep' => 1]);
         isSame(0, $cmdResult->code);
@@ -35,18 +35,18 @@ class CliProgressTest extends PHPUnit
         isContain('0% (0 / 2) [>', $cmdResult->std);
         isContain('50% (1 / 2) [•', $cmdResult->std);
         isContain('100% (2 / 2) [•', $cmdResult->std);
-        isContain('Last Step Message: n/a', $cmdResult->std);
+        isContain('Last Message: n/a', $cmdResult->std);
     }
 
     public function testMinimalVirtual(): void
     {
         $cmdResult = Helper::executeVirtaul('test:progress', ['case' => 'one-message', 'ansi' => null]);
         isContain('Progress of one-message', $cmdResult->std);
-        isContain('Last Step Message: 1, 1, 1', $cmdResult->std);
+        isContain('Last Message: 1, 1, 1', $cmdResult->std);
 
         $cmdResult = Helper::executeVirtaul('test:progress', ['case' => 'array-assoc']);
         isContain('Progress of array-assoc', $cmdResult->std);
-        isContain('Last Step Message: value_2, key_2, 1', $cmdResult->std);
+        isContain('Last Message: value_2, key_2, 1', $cmdResult->std);
     }
 
     public function testNoItems(): void
@@ -67,7 +67,7 @@ class CliProgressTest extends PHPUnit
         isSame('no-items-data. Number of items is 0 or less.', $cmdResult->std);
     }
 
-    public function testProgressMessages(): void
+    public function testProgressMessagesLegacy(): void
     {
         $cmdResult = $this->exec('no-messages');
         isSame('', $cmdResult->err);
@@ -157,18 +157,6 @@ class CliProgressTest extends PHPUnit
             $cmdResult->std,
         );
 
-        $cmdResult = $this->exec('break');
-        isSame('', $cmdResult->err);
-        isSame(0, $cmdResult->code);
-        isSame(
-            \implode("\n", [
-                'Working on "break". Number of steps: 3.',
-                ' * (0): 0',
-                ' * (1): Progress stopped',
-            ]),
-            $cmdResult->std,
-        );
-
         $cmdResult = $this->exec('output-as-array');
         isSame('', $cmdResult->err);
         isSame(0, $cmdResult->code);
@@ -177,6 +165,36 @@ class CliProgressTest extends PHPUnit
                 'Working on "output-as-array". Number of steps: 2.',
                 ' * (key_1/0): value_1; key_1; 0',
                 ' * (key_2/1): value_2; key_2; 1',
+            ]),
+            $cmdResult->std,
+        );
+    }
+
+    public function testProgressBreakLegacyReturnMessage(): void
+    {
+        $cmdResult = $this->exec('break');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "break". Number of steps: 3.',
+                ' * (0): 0',
+                ' * (1): Progress aborted.',
+            ]),
+            $cmdResult->std,
+        );
+    }
+
+    public function testProgressBreakWithException(): void
+    {
+        $cmdResult = $this->exec('break-exception');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "break-exception". Number of steps: 3.',
+                ' * (0): 0',
+                ' * (1): Progress aborted. Something went wrong with $listValue=1',
             ]),
             $cmdResult->std,
         );
@@ -249,8 +267,8 @@ class CliProgressTest extends PHPUnit
         isContain('* (3): Exception #3', $cmdResult->err);
         isContain('* (6): Exception #6', $cmdResult->err);
         isContain('* (9): Exception #9', $cmdResult->err);
-        isContain('Caught exceptions                : 4', $cmdResult->err);
-        isContain('Last Step Message                : Exception: Exception #9', $cmdResult->err);
+        isContain('Caught exceptions               : 4', $cmdResult->err);
+        isContain('Last Message                    : Exception: Exception #9', $cmdResult->err);
         isContain('Exception trace:', $cmdResult->err);
         isEmpty($cmdResult->std, $cmdResult->std);
     }

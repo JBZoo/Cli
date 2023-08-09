@@ -24,13 +24,13 @@
 ###############################################################################
 
 # the speed to "type" the text
-TYPE_SPEED=25
+TYPE_SPEED=100
 
 # no wait after "p" or "pe"
 NO_WAIT=false
 
 # if > 0, will pause for this amount of seconds before automatically proceeding with any p or pe
-PROMPT_TIMEOUT=3
+PROMPT_TIMEOUT=1
 
 # don't show command number unless user specifies it
 SHOW_CMD_NUMS=false
@@ -114,16 +114,15 @@ function p() {
   fi
 
   if [[ -z $TYPE_SPEED ]]; then
-    echo -en "$cmd"
+    echo "$cmd"
   else
-    echo -en "$cmd" | pv -qL $[$TYPE_SPEED+(-2 + RANDOM%5)];
+    echo "$cmd" | pv -qL $[$TYPE_SPEED+(-2 + RANDOM%5)];
   fi
 
   # wait for the user to press a key before moving on
   if [ $NO_WAIT = false ]; then
     wait
   fi
-  echo ""
 }
 
 ##

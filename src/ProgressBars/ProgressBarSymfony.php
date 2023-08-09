@@ -61,13 +61,19 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         foreach ($this->list as $stepIndex => $stepValue) {
             $this->setStep($stepIndex, $currentIndex);
 
-            $startTime   = \microtime(true);
-            $startMemory = \memory_get_usage(false);
+            $startTime   = 0;
+            $startMemory = 0;
+            if (!$this->isOptimizeMode()) {
+                $startTime   = \microtime(true);
+                $startMemory = \memory_get_usage(false);
+            }
 
             [$stepResult, $exceptionMessage] = $this->handleOneStep($stepValue, $stepIndex, $currentIndex);
 
-            $this->stepMemoryDiff[] = \memory_get_usage(false) - $startMemory;
-            $this->stepTimers[]     = \microtime(true) - $startTime;
+            if (!$this->isOptimizeMode()) {
+                $this->stepMemoryDiff[] = \memory_get_usage(false) - $startMemory;
+                $this->stepTimers[]     = \microtime(true) - $startTime;
+            }
 
             $exceptionMessages = \array_merge($exceptionMessages, (array)$exceptionMessage);
 
@@ -116,26 +122,24 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         }
 
         if ($this->output->isVeryVerbose()) {
-            $progressBarLines[] = \implode(' ', [
-                $percent,
-                $steps,
-                $bar,
-                $this->finishIcon,
-            ]);
-            $footerLine['Time (pass/left/est/avg/last)'] = \implode(' / ', [
+            $progressBarLines[] = \implode(' ', [$percent, $steps, $bar, $this->finishIcon]);
+
+            $footerLine['Time (pass/left/est/median/last)'] = \implode(' / ', [
                 '%jbzoo_time_elapsed:9s%',
                 '<info>%jbzoo_time_remaining:8s%</info>',
                 '<comment>%jbzoo_time_estimated:8s%</comment>',
                 '%jbzoo_time_step_median%',
                 '%jbzoo_time_step_last%',
             ]);
-            $footerLine['Memory (cur/peak/limit/leak/last)'] = \implode(' / ', [
+
+            $footerLine['Mem (cur/peak/limit/leak/last)'] = \implode(' / ', [
                 '%jbzoo_memory_current:8s%',
                 '<comment>%jbzoo_memory_peak%</comment>',
                 '%jbzoo_memory_limit%',
                 '%jbzoo_memory_step_median%',
                 '%jbzoo_memory_step_last%',
             ]);
+
             $footerLine['Caught exceptions'] = '%jbzoo_caught_exceptions%';
         } elseif ($this->output->isVerbose()) {
             $progressBarLines[] = \implode(' ', [
@@ -151,6 +155,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
                 '<info>%jbzoo_time_remaining:8s%</info>',
                 '%jbzoo_time_estimated%',
             ]);
+
             $footerLine['Caught exceptions'] = '%jbzoo_caught_exceptions%';
         } else {
             $progressBarLines[] = \implode(' ', [
@@ -162,7 +167,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
             ]);
         }
 
-        $footerLine['Last Step Message'] = '%message%';
+        $footerLine['Last Message'] = '%message%';
 
         return \implode("\n", $progressBarLines) . "\n" . CliRender::list($footerLine) . "\n";
     }
@@ -220,6 +225,8 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         // Executing callback
         try {
             $callbackResults = (array)($this->callback)($stepValue, $stepIndex, $currentIndex);
+        } catch (ExceptionBreak $exception) {
+            $callbackResults[] = '<yellow>' . ExceptionBreak::MESSAGE . '</yellow> ' . $exception->getMessage();
         } catch (\Exception $exception) {
             if ($this->throwBatchException) {
                 $errorMessage      = '<error>Exception:</error> ' . $exception->getMessage();
@@ -229,6 +236,8 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
                 throw $exception;
             }
         }
+
+        // Collect eventual output
         $cathedMessages = $this->outputMode->catchModeFinish();
         if (\count($cathedMessages) > 0) {
             $callbackResults = \array_merge($callbackResults, $cathedMessages);
@@ -261,7 +270,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
             return null;
         }
 
-        $this->configureProgressBar();
+        $this->configureProgressBar($this->isOptimizeMode());
 
         $progressBar = new SymfonyProgressBar($this->output, $this->max);
 
@@ -276,11 +285,18 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         $progressBar->setProgress(0);
         $progressBar->setOverwrite(true);
 
-        $progressBar->setRedrawFrequency(1);
-        $progressBar->minSecondsBetweenRedraws(0.5);
-        $progressBar->maxSecondsBetweenRedraws(1.5);
+        if (!$this->isOptimizeMode()) {
+            $progressBar->setRedrawFrequency(1);
+            $progressBar->minSecondsBetweenRedraws(0.5);
+            $progressBar->maxSecondsBetweenRedraws(1.5);
+        }
 
         return $progressBar;
+    }
+
+    private function isOptimizeMode(): bool
+    {
+        return $this->outputMode->getOutput()->getVerbosity() < OutputInterface::OUTPUT_NORMAL;
     }
 
     private static function showListOfExceptions(array $exceptionMessages): void

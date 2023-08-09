@@ -22,12 +22,12 @@ use Symfony\Component\Console\Input\InputOption;
 
 use function JBZoo\Cli\cli;
 
-class ExamplesOutput extends CliCommand
+class DemoOutput extends CliCommand
 {
     protected function configure(): void
     {
         $this
-            ->setName('examples:output')
+            ->setName('output')
             ->setDescription('Examples of output and error reporting')
             ->addOption('throw-custom-exception', 'e', InputOption::VALUE_NONE, 'Throw the exception');
 

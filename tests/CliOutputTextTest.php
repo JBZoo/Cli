@@ -321,6 +321,22 @@ class CliOutputTextTest extends PHPUnit
         isContain($exceptionMessage, $cmdResult->err);
     }
 
+    public function testException(): void
+    {
+        $errMessage = 'Something went wrong';
+
+        $cmdResult = Helper::executeReal('test:output', ['exception' => $errMessage]);
+
+        isSame(1, $cmdResult->code);
+
+        isNotContain('Muted Exception: Something went wrong', $cmdResult->std);
+        isNotContain('Muted Exception: Something went wrong', $cmdResult->err);
+        isNotContain('Something went wrong', $cmdResult->std);
+        isContain('Something went wrong', $cmdResult->err);
+
+        isContain('In TestOutput.php line', $cmdResult->err);
+    }
+
     public function testCronMode(): void
     {
         $cmdResult = Helper::executeReal('test:output', ['cron' => null, 'exception' => 'Custom runtime error']);

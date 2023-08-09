@@ -21,12 +21,12 @@ use JBZoo\Cli\CliRender;
 
 use function JBZoo\Cli\cli;
 
-class ExamplesStyles extends CliCommand
+class DemoStyles extends CliCommand
 {
     protected function configure(): void
     {
         $this
-            ->setName('examples:styles')
+            ->setName('styles')
             ->setDescription('Examples of new CLI colors and styles');
 
         parent::configure();
@@ -36,11 +36,13 @@ class ExamplesStyles extends CliCommand
     {
         // Render list of values
         cli('Render list of values');
-        cli(CliRender::list([
-            'Like a title',
-            'Key'    => 'Value',
-            'Key #2' => 123,
-        ], '-'));
+        cli(
+            CliRender::list([
+                'Like a title',
+                'Key'    => 'Value',
+                'Key #2' => 123,
+            ], '-'),
+        );
 
         /**
          * Literally you can use the tags:
@@ -68,21 +70,25 @@ class ExamplesStyles extends CliCommand
         cli(CliRender::list($listOfExamples, '*'));
 
         cli('Shortcuts:');
-        cli(CliRender::list([
-            '\<bl\>' => '<bl>Blink</bl>',
-            '\<b\>'  => '<b>Bold</b>',
-            '\<u\>'  => '<u>Underscore</u>',
-            '\<r\>'  => '<r>Reverse</r>',
-            '\<bg\>' => '<bg>Background</bg>',
-        ], '*'));
+        cli(
+            CliRender::list([
+                '\<bl\>' => '<bl>Blink</bl>',
+                '\<b\>'  => '<b>Bold</b>',
+                '\<u\>'  => '<u>Underscore</u>',
+                '\<r\>'  => '<r>Reverse</r>',
+                '\<bg\>' => '<bg>Background</bg>',
+            ], '*'),
+        );
 
         cli('Aliases:');
-        cli(CliRender::list([
-            '\<i\>' => '<i>Alias for \<info\></i>',
-            '\<c\>' => '<c>Alias for \<commnet\></c>',
-            '\<q\>' => '<q>Alias for \<question\></q>',
-            '\<e\>' => '<e>Alias for \<error\></e>',
-        ], '*'));
+        cli(
+            CliRender::list([
+                '\<i\>' => '<i>Alias for \<info\></i>',
+                '\<c\>' => '<c>Alias for \<commnet\></c>',
+                '\<q\>' => '<q>Alias for \<question\></q>',
+                '\<e\>' => '<e>Alias for \<error\></e>',
+            ], '*'),
+        );
 
         // Default success exist code is "0". Max value is 255.
         return self::SUCCESS;

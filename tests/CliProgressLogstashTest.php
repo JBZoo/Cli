@@ -77,13 +77,28 @@ class CliProgressLogstashTest extends PHPUnit
         Helper::assertLogstash(['NOTICE', '(Key=1/Step=2/Max=2): value_2; key_2; 1'], $stdOutput[2]);
     }
 
-    public function testBreak(): void
+    public function testBreakWithLegactyReturnMessage(): void
     {
         $stdOutput = $this->exec('break');
         isCount(3, $stdOutput);
         Helper::assertLogstash(['NOTICE', 'Working on "break". Number of steps: 3.'], $stdOutput[0]);
         Helper::assertLogstash(['NOTICE', '(Step=1/Max=3): 0'], $stdOutput[1]);
-        Helper::assertLogstash(['NOTICE', '(Step=2/Max=3): Progress stopped'], $stdOutput[2]);
+        Helper::assertLogstash(['NOTICE', '(Step=2/Max=3): Progress aborted.'], $stdOutput[2]);
+    }
+
+    public function testBreakWithException(): void
+    {
+        $stdOutput = $this->exec('break-exception');
+        isCount(3, $stdOutput);
+        Helper::assertLogstash(['NOTICE', 'Working on "break-exception". Number of steps: 3.'], $stdOutput[0]);
+        Helper::assertLogstash(['NOTICE', '(Step=1/Max=3): 0'], $stdOutput[1]);
+        Helper::assertLogstash(
+            [
+                'NOTICE',
+                '(Step=2/Max=3): Progress aborted. Something went wrong with $listValue=1',
+            ],
+            $stdOutput[2],
+        );
     }
 
     public function testNoItems(): void

@@ -30,74 +30,74 @@ wait
 
 
 pei "# At first, let me show you the output of the command by default."
-pei "./my-app examples:output"
+pei "./my-app output"
 wait
 pei "clear"
 
 
 pei "# There are several lines that written in Standard Error output (stderr)."
-pei "./my-app examples:output > /dev/null"
+pei "./my-app output > /dev/null"
 wait
 pei "clear"
 
 
 pei "# There is a special level to show a messge forever."
-pei "./my-app examples:output --quiet"
+pei "./my-app output --quiet"
 wait
 pei "clear"
 
 
 pei "# And pay attentin on old school style output."
-pei "./my-app examples:output --stdout-only | grep 'Legacy Output'"
+pei "./my-app output --stdout-only | grep 'Legacy Output'"
 wait
 pei "clear"
 
 
 pei "# Let's increase the output level. Just add the flag '-v'. Look at 'Info:'"
-pei "./my-app examples:output -v"
+pei "./my-app output -v"
 wait
 pei "clear"
 
 
 pei "# Next, let's look at more detailed logs (-vv). Look at 'Warning:'"
-pei "./my-app examples:output -vv"
+pei "./my-app output -vv"
 wait
 pei "clear"
 
 
 pei "# And messages that are only useful to developers during application debugging (-vvv). Look at 'Debug:'"
-pei "./my-app examples:output -vvv"
+pei "./my-app output -vvv"
 wait
 pei "clear"
 
 
 pei "# There is an easy way to find memory leaks and performance issues. Just add '--profile' flag."
-pei "./my-app examples:output --profile"
+pei "./my-app output --profile"
 wait
 pei "clear"
 
 
 pei "# Also, we can use the output as logs. It's pretty useful for cron jobs."
-pei "./my-app examples:output --profile --timestamp"
+pei "./my-app output --profile --timestamp"
 wait
 pei "clear"
 
 
 pei "# Let's simulate a fatal error."
-pei "./my-app examples:output --throw-custom-exception"
+pei "./my-app output --throw-custom-exception"
 wait
 pei "clear"
 
 
 pei "# Sometimes we have to ignore exception not to break the pipeline."
-pei "./my-app examples:output --throw-custom-exception --mute-errors -vvv"
+pei "./my-app output --throw-custom-exception --mute-errors -vvv"
 pei "# Look at the last lines."
 wait
 pei "clear"
 
 
 pei "# In rare cases we can use the flag '--non-zero-on-error' to return ExitCode=1 if any stderr happend."
-pei "./my-app examples:output --non-zero-on-error -vvv"
+pei "./my-app output --non-zero-on-error -vvv"
 pei "# Look at the last lines."
 wait
 pei "clear"

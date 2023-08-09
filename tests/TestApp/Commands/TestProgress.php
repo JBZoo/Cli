@@ -18,6 +18,7 @@ namespace JBZoo\PHPUnit\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\Exception;
+use JBZoo\Cli\ProgressBars\ExceptionBreak;
 use JBZoo\Cli\ProgressBars\ProgressBar;
 use JBZoo\Cli\ProgressBars\ProgressBarSymfony;
 use Symfony\Component\Console\Input\InputOption;
@@ -53,9 +54,9 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'one-message') {
-            $this->progressBar(3, static function ($stepValue, $stepIndex, $currentStep) {
-                if ($stepValue === 1) {
-                    return "{$stepValue}, {$stepIndex}, {$currentStep}";
+            $this->progressBar(3, static function ($listValue, $listKey, $stepIndex) {
+                if ($listValue === 1) {
+                    return "{$listValue}, {$listKey}, {$stepIndex}";
                 }
             }, $testCase);
         }
@@ -64,7 +65,7 @@ class TestProgress extends CliCommand
             $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
             $this->progressBar(
                 $list,
-                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
                 $testCase,
             );
         }
@@ -84,14 +85,14 @@ class TestProgress extends CliCommand
         // // old tests
 
         if ($testCase === 'no-messages') {
-            $this->progressBar(3, static function ($stepValue, $stepIndex, $currentStep): void {
+            $this->progressBar(3, static function ($listValue, $listKey, $stepIndex): void {
             }, $testCase);
         }
 
         if ($testCase === 'simple-message-all') {
             $this->progressBar(
                 3,
-                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
                 $testCase,
             );
         }
@@ -100,7 +101,7 @@ class TestProgress extends CliCommand
             $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
             $this->progressBar(
                 $list,
-                static fn ($stepValue, $stepIndex, $currentStep) => [$stepValue, $stepIndex, $currentStep],
+                static fn ($listValue, $listKey, $stepIndex) => [$listValue, $listKey, $stepIndex],
                 $testCase,
             );
         }
@@ -108,7 +109,7 @@ class TestProgress extends CliCommand
         if ($testCase === 'array-int') {
             $this->progressBar(
                 [4, 5, 6],
-                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
                 $testCase,
             );
         }
@@ -116,7 +117,7 @@ class TestProgress extends CliCommand
         if ($testCase === 'array-string') {
             $this->progressBar(
                 ['qwerty', 'asdfgh'],
-                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
                 $testCase,
             );
         }
@@ -125,39 +126,49 @@ class TestProgress extends CliCommand
             $list = json(['key_1' => 'value_1', 'key_2' => 'value_2']);
             $this->progressBar(
                 $list,
-                static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}",
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
                 $testCase,
             );
         }
 
         if ($testCase === 'break') {
-            $this->progressBar(3, static function ($stepValue) {
-                if ($stepValue === 1) {
+            $this->progressBar(3, static function ($listValue) {
+                if ($listValue === 1) {
                     return ProgressBarSymfony::BREAK;
                 }
 
-                return $stepValue;
+                return $listValue;
+            }, $testCase);
+        }
+
+        if ($testCase === 'break-exception') {
+            $this->progressBar(3, static function ($listValue) {
+                if ($listValue === 1) {
+                    throw new ExceptionBreak("Something went wrong with \$listValue={$listValue}");
+                }
+
+                return $listValue;
             }, $testCase);
         }
 
         if ($testCase === 'exception') {
-            $this->progressBar(3, static function ($stepValue): void {
-                if ($stepValue === 1) {
-                    throw new \Exception("Exception #{$stepValue}");
+            $this->progressBar(3, static function ($listValue): void {
+                if ($listValue === 1) {
+                    throw new \Exception("Exception #{$listValue}");
                 }
             }, $testCase, $this->getOptBool('batch-exception'));
         }
 
         if ($testCase === 'exception-list') {
-            $this->progressBar(10, static function ($stepValue): void {
-                if ($stepValue % 3 === 0) {
-                    throw new \RuntimeException("Exception #{$stepValue}");
+            $this->progressBar(10, static function ($listValue): void {
+                if ($listValue % 3 === 0) {
+                    throw new \RuntimeException("Exception #{$listValue}");
                 }
             }, $testCase, $this->getOptBool('batch-exception'));
         }
 
         if ($testCase === 'million-items') {
-            $this->progressBar(100000, static fn ($stepValue) => $stepValue, $testCase);
+            $this->progressBar(100000, static fn ($listValue) => $listValue, $testCase);
         }
 
         if ($testCase === 'memory-leak') {

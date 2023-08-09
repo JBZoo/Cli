@@ -19,12 +19,12 @@ namespace DemoApp\Commands;
 use JBZoo\Cli\CliCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-class ExamplesOptionsStrictTypes extends CliCommand
+class DemoOptionsStrictTypes extends CliCommand
 {
     protected function configure(): void
     {
         $this
-            ->setName('examples:options-strict-types')
+            ->setName('options-strict-types')
             ->setDescription('Show description of command.')
             ->setHelp("Full description and usage of command.\nYou can use severla lines.")
 
