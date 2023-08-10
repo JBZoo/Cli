@@ -167,7 +167,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
             ]);
         }
 
-        $footerLine['Last Message'] = '%message%';
+        $footerLine['Last Step Message'] = '%message%';
 
         return \implode("\n", $progressBarLines) . "\n" . CliRender::list($footerLine) . "\n";
     }
@@ -226,7 +226,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         try {
             $callbackResults = (array)($this->callback)($stepValue, $stepIndex, $currentIndex);
         } catch (ExceptionBreak $exception) {
-            $callbackResults[] = '<yellow>' . ExceptionBreak::MESSAGE . '</yellow> ' . $exception->getMessage();
+            $callbackResults[] = '<yellow-bl>' . ExceptionBreak::MESSAGE . '</yellow-bl> ' . $exception->getMessage();
         } catch (\Exception $exception) {
             if ($this->throwBatchException) {
                 $errorMessage      = '<error>Exception:</error> ' . $exception->getMessage();
@@ -296,7 +296,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
 
     private function isOptimizeMode(): bool
     {
-        return $this->outputMode->getOutput()->getVerbosity() < OutputInterface::OUTPUT_NORMAL;
+        return $this->outputMode->getOutput()->getVerbosity() <= OutputInterface::VERBOSITY_NORMAL;
     }
 
     private static function showListOfExceptions(array $exceptionMessages): void

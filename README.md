@@ -20,7 +20,11 @@ The library greatly extends the functionality of [Symfony/Console](https://symfo
 
 ## Live Demo
 
-[![asciicast](https://asciinema.org/a/486674.svg)](https://asciinema.org/a/486674)
+### Output regular messages
+[![asciicast](https://asciinema.org/a/601633.svg)](https://asciinema.org/a/601633?autoplay=1&startAt=4)
+
+### Progress Bar
+[![asciicast](https://asciinema.org/a/601621.svg)](https://asciinema.org/a/601621?autoplay=1&startAt=2)
 
 
 

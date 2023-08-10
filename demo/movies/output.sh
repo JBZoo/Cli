@@ -16,7 +16,6 @@
 
 cd ..
 
-# Hide the evidence
 clear
 
 PROMPT_TIMEOUT=7
@@ -24,11 +23,13 @@ PROMPT_TIMEOUT=7
 pei "# This is demo of different output levels of JBZoo/Cli framework."
 pei "# We have a lot of output levels, which can be used for different purposes."
 pei "# For the demo I've prepared a simple script, which will print some messages."
-pei "# See it here './demo/Commands/ExamplesOutput.php'"
+pei "# See it here './demo/Commands/DemoOutput.php'"
 pei "# Let's get started!"
 wait
 
 
+pei ""
+pei ""
 pei "# At first, let me show you the output of the command by default."
 pei "./my-app output"
 wait
@@ -83,6 +84,19 @@ wait
 pei "clear"
 
 
+pei "# You can quickly switch to crontab mode"
+pei "./my-app output --output-mode=cron"
+wait
+pei "clear"
+
+
+pei ""
+pei "# It's ready for ELK Stack (Logstash)."
+pei "./my-app output --output-mode=logstash | jq"
+wait
+pei "clear"
+
+
 pei "# Let's simulate a fatal error."
 pei "./my-app output --throw-custom-exception"
 wait
@@ -91,6 +105,8 @@ pei "clear"
 
 pei "# Sometimes we have to ignore exception not to break the pipeline."
 pei "./my-app output --throw-custom-exception --mute-errors -vvv"
+pei ""
+pei ""
 pei "# Look at the last lines."
 wait
 pei "clear"
@@ -98,6 +114,8 @@ pei "clear"
 
 pei "# In rare cases we can use the flag '--non-zero-on-error' to return ExitCode=1 if any stderr happend."
 pei "./my-app output --non-zero-on-error -vvv"
+pei ""
+pei ""
 pei "# Look at the last lines."
 wait
 pei "clear"

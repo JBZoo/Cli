@@ -121,7 +121,7 @@ class Logstash extends AbstractOutputMode
         }
 
         if ($message !== null) {
-            $this->logger->log($psrErrorLevel, $message, $context);
+            $this->logger->log($psrErrorLevel, \strip_tags($message), $context);
         }
     }
 

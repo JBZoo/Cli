@@ -27,10 +27,10 @@ class DemoProgressBar extends CliCommand
     private const CASE_SIMPLE         = 'simple';
     private const CASE_MESSAGES       = 'messages';
     private const CASE_ARRAY          = 'array';
-    private const CASE_MILLION        = 'million';
     private const CASE_BREAK          = 'break';
     private const CASE_EXCEPTION      = 'exception';
     private const CASE_EXCEPTION_LIST = 'exception-list';
+    private const CASE_MILLION        = 'million';
 
     protected function configure(): void
     {
@@ -50,10 +50,10 @@ class DemoProgressBar extends CliCommand
             self::CASE_SIMPLE,
             self::CASE_MESSAGES,
             self::CASE_ARRAY,
-            self::CASE_MILLION,
             self::CASE_BREAK,
             self::CASE_EXCEPTION,
             self::CASE_EXCEPTION_LIST,
+            self::CASE_MILLION,
         ]);
 
         // Just 5 simple steps /////////////////////////////////////////////////////////////////////////////////////////
@@ -65,10 +65,10 @@ class DemoProgressBar extends CliCommand
 
         // Simple progress with custom message based on callback arguments /////////////////////////////////////////////
         if ($caseName === self::CASE_MESSAGES) {
-            $this->progressBar(5, function ($value, $key, $step) {
+            $this->progressBar($listOfUsers, function ($value, $key, $step) {
                 $this->sleep();
 
-                return "<c>Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
+                return "<c>Callback Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
             }, 'Custom messages based on callback arguments');
         }
 
@@ -78,18 +78,8 @@ class DemoProgressBar extends CliCommand
             $this->progressBar($listOfUsers, function ($value, $key, $step) {
                 $this->sleep();
 
-                return "<c>Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
+                return "<c>Callback Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
             }, 'Handling associated array as a data source');
-        }
-
-        // 1 000 000 Items Benchmark ///////////////////////////////////////////////////////////////////////////////////
-        if ($caseName === self::CASE_MILLION) {
-            $this->progressBar(
-                1_000_000,
-                static fn ($value, $key, $step) => '<c>Args</c> ' .
-                    "\$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>",
-                '1 000 000 items benchmark',
-            );
         }
 
         // Exit the loop programmatically //////////////////////////////////////////////////////////////////////////////
@@ -101,7 +91,7 @@ class DemoProgressBar extends CliCommand
                     throw new ExceptionBreak("Something went wrong with \$value={$value}");
                 }
 
-                return "<c>Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
+                return "<c>Callback Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
             }, 'Exit the loop programmatically');
         }
 
@@ -110,7 +100,7 @@ class DemoProgressBar extends CliCommand
             $this->progressBar(5, function ($value) {
                 $this->sleep();
                 if ($value === 1) {
-                    throw new Exception("Exception #{$value}");
+                    throw new Exception("Something went really wrong on step #{$value}");
                 }
 
                 return "\$value=<i>{$value}</i>";
@@ -119,14 +109,22 @@ class DemoProgressBar extends CliCommand
 
         // Ignoring and collecting exceptions. Throw an error only at the end. /////////////////////////////////////////
         if ($caseName === self::CASE_EXCEPTION_LIST) {
-            $this->progressBar(10, function ($value) {
+            $this->progressBar(10, function ($value): void {
                 $this->sleep();
                 if ($value % 3 === 0) {
-                    throw new \RuntimeException("\$value={$value}; " . Factory::create()->realText(50));
+                    throw new Exception("Something went really wrong on step #{$value}");
                 }
-
-                return "\$value=<i>{$value}</i>";
             }, 'Ignoring and collecting exceptions. Throw them only at the end.', true);
+        }
+
+        // 1 000 000 Items Benchmark ///////////////////////////////////////////////////////////////////////////////////
+        if ($caseName === self::CASE_MILLION) {
+            $this->progressBar(
+                1_000_000,
+                static fn ($value, $key, $step) => '<c>Callback Args</c> ' .
+                    "\$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>",
+                '1 000 000 items benchmark',
+            );
         }
 
         return self::SUCCESS;
