@@ -9,8 +9,12 @@
    * [Live Demo](#live-demo)
       * [Output regular messages](#output-regular-messages)
       * [Progress Bar](#progress-bar)
-   * [Installing](#installing)
    * [Quck Start - Build your first CLI App](#quck-start---build-your-first-cli-app)
+      * [Installing](#installing)
+      * [File Structure](#file-structure)
+      * [Composer file](#composer-file)
+      * [Binary file](#binary-file)
+      * [Simple CLI Action](#simple-cli-action)
    * [Built-in Functionality](#built-in-functionality)
       * [Sanitize input variables](#sanitize-input-variables)
       * [Rendering text in different colors and styles](#rendering-text-in-different-colors-and-styles)
@@ -34,7 +38,7 @@
    * [See Also](#see-also)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: smetdenis, at: Thu Aug 10 12:03:40 +04 2023 -->
+<!-- Added by: smetdenis, at: Thu Aug 10 12:11:27 +04 2023 -->
 
 <!--te-->
 
@@ -66,7 +70,7 @@ The library greatly extends the functionality of CLI App and helps make creating
  * **Versatile Output Modes:** The library provides different output formats catering to various use cases. Whether you're focusing on user-friendly text, logs, or integration with tools like ELK Stack, there's an output mode tailored for you.
      * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
      * `--output-mode=cron` (`-Ocron`). It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
-     * `--output-mode=logstash` (`-Ologstash`). It's basically focused on Logstash format for ELK Stack. Also, it's `--stdout-only --no-progress -vv`.
+     * `--output-mode=logstash` (`-Ologstash`). It's basically focused on Logstash format for ELK Stack. Also, it means `--stdout-only --no-progress -vv`.
 
 ## Live Demo
 
@@ -78,17 +82,19 @@ The library greatly extends the functionality of CLI App and helps make creating
 
 
 
-## Installing
+## Quck Start - Build your first CLI App
+
+### Installing
 
 ```sh
 composer require jbzoo/cli
 ```
 
 
-## Quck Start - Build your first CLI App
-
 The simplest CLI application has the following file structure. See the [Demo App](demo) for more details.
 
+
+### File Structure
 ```
 /path/to/app/
     my-app                      # Binrary file (See below)
@@ -99,6 +105,8 @@ The simplest CLI application has the following file structure. See the [Demo App
         autoload.php            # Composer autoload
 ```
 
+
+### Composer file
 
 [./demo/composer.json](demo/composer.json)
 
@@ -128,6 +136,8 @@ The simplest CLI application has the following file structure. See the [Demo App
 
 </details>
 
+
+### Binary file
 
 Binary file: [demo/my-app](demo/my-app)
 
@@ -178,6 +188,8 @@ $application->run();
 
 </details>
 
+
+### Simple CLI Action
 
 The simplest CLI action: [./demo/Commands/DemoSimple.php](demo/Commands/DemoSimple.php)
 
