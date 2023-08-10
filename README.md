@@ -39,7 +39,7 @@
    * [See Also](#see-also)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: smetdenis, at: Thu Aug 10 13:13:06 +04 2023 -->
+<!-- Added by: smetdenis, at: Thu Aug 10 14:09:36 +04 2023 -->
 
 <!--te-->
 
@@ -336,12 +336,15 @@ Example of usage of verbosity levels
 ![output-full-example](.github/assets/output-full-example.png)
 
 ```php
-// There two strictly recommended output ways:
-$this->_($messages, $verboseLevel); // Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
-cli($messages, $verboseLevel);      // This is global alias function of `$this->_(...)`. It's nice to have it if you want to display a text from not CliCommand class.
+use function JBZoo\Cli\cli;
+
+// There two strictly(!) recommended output ways:
+$this->_($messages, $verboseLevel, $context); // Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
+cli($messages, $verboseLevel, $context);      // This is global alias function of `$this->_(...)`. It's nice to have it if you want to display a text from not CliCommand class.
 
 // * `$messages` can be an array of strings or a string. Array of strings will be imploded with new line.
 // * `$verboseLevel` is one of value form the class \JBZoo\Cli\OutLvl::* 
+// * `$context` is array of extra info. Will be serialized to JSON and displayed in the end of the message. 
 ```
 
 ```bash
@@ -378,9 +381,10 @@ Try to launch `./my-app profile --profile`.
 
 As live-demo take a look at demo application - [./demo/Commands/DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
 
-![progress-full-example](.github/assets/progress-full-example.gif)
 
 ### Simple example
+
+![progress-default-example](.github/assets/progress-default-example.gif)
 
 ```php
 $this->progressBar(5, function (): void {
@@ -390,6 +394,8 @@ $this->progressBar(5, function (): void {
 
 
 ### Advanced usage
+
+![progress-full-example](.github/assets/progress-full-example.gif)
 
 ```php
 $this->progressBar($arrayOfSomething, function ($value, $key, $step) {
@@ -412,6 +418,8 @@ As live-demo take a look at demo application - [./demo/Commands/DemoHelpers.php]
 Try to launch `./my-app helpers`.
 
 JBZoo/Cli uses [Symfony Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html) as base for aliases.
+
+![helpers](.github/assets/helpers.gif)
 
 ### Regualar question
 
@@ -495,6 +503,9 @@ Just add the `--output-mode=cron` flag and save the output to a file. Especially
 ./my-app output --output-mode=cron >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log 2>&1
 ```
 
+![logs-cron](.github/assets/logs-cron.png)
+
+
 
 ### Elatcisearch / Logstash (ELK)
 
@@ -512,15 +523,14 @@ Just add the `--output-mode=logstash` flag and save the output to a file. Especi
 
 ```shell
 # Fork the repo and build project
-make build
+make update
 
 # Make your local changes
 
 # Run all tests and check code style
-make test
-make codestyle
+make test-all
 
-# Create your pull request and check all tests in CI
+# Create your pull request and check all tests on GithubActions page
 ```
 
 

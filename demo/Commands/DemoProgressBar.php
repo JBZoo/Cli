@@ -136,7 +136,7 @@ class DemoProgressBar extends CliCommand
 
         $users = [];
 
-        for ($i = 0; $i < 40; $i++) {
+        for ($i = 0; $i < 5; $i++) {
             $firstName = $faker->firstName;
             $lastName  = $faker->lastName;
             $email     = Slug::filter($firstName) . '@site.com';
@@ -153,6 +153,6 @@ class DemoProgressBar extends CliCommand
             return;
         }
 
-        \usleep(\random_int(50, 120) * 1000);
+        \usleep(\random_int(500, 1200) * 1000);
     }
 }
