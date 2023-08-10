@@ -8,7 +8,7 @@
    * [Why?](#why)
    * [Live Demo](#live-demo)
       * [Output regular messages](#output-regular-messages)
-      * [Progress Bar](#progress-bar)
+      * [Progress Bar Demo](#progress-bar-demo)
    * [Quck Start - Build your first CLI App](#quck-start---build-your-first-cli-app)
       * [Installing](#installing)
       * [File Structure](#file-structure)
@@ -20,7 +20,7 @@
       * [Rendering text in different colors and styles](#rendering-text-in-different-colors-and-styles)
       * [Verbosity Levels](#verbosity-levels)
       * [Memory and time profiling](#memory-and-time-profiling)
-   * [Progress Bar](#progress-bar-1)
+   * [Progress Bar](#progress-bar)
       * [Simple example](#simple-example)
       * [Advanced usage](#advanced-usage)
    * [Helper Functions](#helper-functions)
@@ -41,7 +41,7 @@
    * [See Also](#see-also)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: smetdenis, at: Thu Aug 10 15:27:43 +04 2023 -->
+<!-- Added by: smetdenis, at: Thu Aug 10 15:37:25 +04 2023 -->
 
 <!--te-->
 
@@ -49,38 +49,56 @@
 
 The library greatly extends the functionality of CLI App and helps make creating new console utilities in PHP quicker and easier. Here's a summary of why this library is essential:
 
- * **Enhanced Functionality:** The library supercharges [Symfony/Console](https://symfony.com/doc/current/components/console.html), facilitating a more streamlined development of console utilities. 
+ * **Enhanced Functionality**
+   * The library supercharges [Symfony/Console](https://symfony.com/doc/current/components/console.html), facilitating a more streamlined development of console utilities. 
 
- * **Progress Bar Improvements:** Developers gain a refined progress bar suited for loop actions and enhanced with debugging information. This makes tracking task progress and diagnosing issues a breeze. See [DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and see [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
-     * `$this->_($messages, $level, $context)` as part of CliCommand instead of Symfony/Console `$output->writeln()`.
-     * `cli($messages, $level, $context)` as alias for different classes.
-     * `$this->progressBar(iterable|int $listOrMax, \Closure $callback, string $title = '')` as part of CliCommand instead of Symfony/Console ProgressBar.
+ * **Progress Bar Improvements**
+   * Developers gain a refined progress bar suited for loop actions and enhanced with debugging information. This makes tracking task progress and diagnosing issues a breeze. See [DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and see [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
+   * `$this->_($messages, $level, $context)` as part of CliCommand instead of Symfony/Console `$output->writeln()`.
+   * `cli($messages, $level, $context)` as alias for different classes.
+   * `$this->progressBar(iterable|int $listOrMax, \Closure $callback, string $title = '')` as part of CliCommand instead of Symfony/Console ProgressBar.
 
- * **Strict Type Conversion:** One notable feature allows for the strict conversion of option values, ensuring data integrity and reducing runtime errors. See [DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
+ * **Strict Type Conversion**
+   * One notable feature allows for the strict conversion of option values, ensuring data integrity and reducing runtime errors. See [DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
+   * Built-in validations for list of values. See [Sanitize input variables](#sanitize-input-variables).
 
- * **Styling and Output Customization:** With built-in styles and color schemes, developers can make their console outputs more readable and visually appealing. See [DemoStyles.php](demo/Commands/DemoStyles.php).
+ * **Styling and Output Customization**
+   * With built-in styles and color schemes, developers can make their console outputs more readable and visually appealing. See [DemoStyles.php](demo/Commands/DemoStyles.php).
 
- * **Message Aliases:** The library introduces powerful aliases for message outputs, allowing for concise and consistent command calls. This is especially helpful in maintaining clean code.
+ * **Message Aliases**
+   * The library introduces powerful aliases for message outputs, allowing for concise and consistent command calls. This is especially helpful in maintaining clean code.
 
- * **Advanced Options:** Features such as profiling for performance, timestamping, error muting, and specialized output modes (like cron and logstash modes) empower developers to refine their console outputs and diagnostics according to their specific needs.
-     * Display timing and memory usage information with `--profile` (`-X`) option.
-     * Show timestamp at the beginning of each message with `--timestamp` (`-T`) option.
-     * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors` (`-M`).
-     * None-zero exit code on any StdErr message with `--non-zero-on-error` (`-Z`) option.
-     * For any errors messages application will use StdOut instead of StdErr `--stdout-only` (`-1`) option (It's on your own risk!).
-     * Disable progress bar animation for logs with `--no-progress` (`-P`) option.
+ * **Advanced Options**
+   * Features such as profiling for performance, timestamping, error muting, and specialized output modes (like cron and logstash modes) empower developers to refine their console outputs and diagnostics according to their specific needs.
+   * Display timing and memory usage information with `--profile` (`-X`) option.
+   * Show timestamp at the beginning of each message with `--timestamp` (`-T`) option.
+   * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors` (`-M`).
+   * None-zero exit code on any StdErr message with `--non-zero-on-error` (`-Z`) option.
+   * For any errors messages application will use StdOut instead of StdErr `--stdout-only` (`-1`) option (It's on your own risk!).
+   * Disable progress bar animation for logs with `--no-progress` (`-P`) option.
 
- * **Versatile Output Modes:** The library provides different output formats catering to various use cases. Whether you're focusing on user-friendly text, logs, or integration with tools like ELK Stack, there's an output mode tailored for you.
-     * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
-     * `--output-mode=cron` (`-Ocron`). It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
-     * `--output-mode=logstash` (`-Ologstash`). It's basically focused on Logstash format for ELK Stack. Also, it means `--stdout-only --no-progress -vv`.
+ * **Versatile Output Modes** 
+   * The library provides different output formats catering to various use cases. Whether you're focusing on user-friendly text, logs, or integration with tools like ELK Stack, there's an output mode tailored for you.
+   * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
+   * `--output-mode=cron` (`-Ocron`). It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
+   * `--output-mode=logstash` (`-Ologstash`). It's basically focused on Logstash format for ELK Stack. Also, it means `--stdout-only --no-progress -vv`.
+
+ * **Bonuses**
+   * There is a [multiprocess](#multi-processing) mode (please don't confuse it with multithreading) to speed up work with a monotonous dataset.
+   * Helper functions for [user input](#helper-functions) in interactive mode.
+
+
 
 ## Live Demo
 
 ### Output regular messages
+
 [![asciicast](https://asciinema.org/a/601633.svg)](https://asciinema.org/a/601633?autoplay=1&startAt=4)
 
-### Progress Bar
+
+
+### Progress Bar Demo
+
 [![asciicast](https://asciinema.org/a/601621.svg)](https://asciinema.org/a/601621?autoplay=1&startAt=2)
 
 
@@ -393,6 +411,11 @@ Try to launch `./my-app profile --profile`.
 ## Progress Bar
 
 As live-demo take a look at demo application - [./demo/Commands/DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
+
+You can consider this as a substitute for the long cycles you want to profile.
+
+Keep in mind that there is an additional overhead for memory and runtime to calculate all the extra debugging information in `--verbose` mode.
+
 
 
 ### Simple example
