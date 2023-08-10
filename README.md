@@ -19,8 +19,8 @@ The library greatly extends the functionality of [Symfony/Console](https://symfo
    * Disable progress bar animation for logs with `--no-progress` (`-P`) option.
  * Different output modes:
    * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
-   * `--output-mode=cron`. It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv`.
-   * `--output-mode=logstash`. It's basically focused on Logstash format for ELT Stack. Also, it's `--stdout-only --no-progress -vv`.
+   * `--output-mode=cron` (`-Ocron`). It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
+   * `--output-mode=logstash` (`-Ologstash`). It's basically focused on Logstash format for ELK Stack. Also, it's `--stdout-only --no-progress -vv`.
 
 ## Live Demo
 
@@ -69,12 +69,8 @@ The simplest CLI application has the following file structure. See the [Demo App
       "keywords"    : ["cli", "application", "example"],
   
       "require"     : {
-          "php"       : ">=7.4",
-          "jbzoo/cli" : "^2.0.0"
-      },
-  
-      "require-dev" : {
-          "roave/security-advisories" : "dev-latest"
+          "php"       : ">=8.1",
+          "jbzoo/cli" : "^7.1.0"
       },
   
       "autoload"    : {
@@ -332,7 +328,7 @@ No need to bother with the logging setup as Symfony/Console suggests. Just add t
 
 
 
-### Helper Functions
+## Helper Functions
 
 As live-demo take a look at demo application - [./demo/Commands/DemoHelpers.php](demo/Commands/DemoHelpers.php).
 
