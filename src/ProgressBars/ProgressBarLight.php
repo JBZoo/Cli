@@ -40,7 +40,7 @@ class ProgressBarLight extends AbstractSymfonyProgressBar
 
             $this->outputMode->_($stepResult);
 
-            if (\is_string($stepResult) && \str_contains($stepResult, self::BREAK)) {
+            if (\is_string($stepResult) && \str_contains($stepResult, ExceptionBreak::MESSAGE)) {
                 break;
             }
 

@@ -220,7 +220,7 @@ abstract class CliCommand extends Command
     }
 
     /**
-     * @param float[] $onlyExpectedOptions
+     * @param int[] $onlyExpectedOptions
      */
     protected function getOptInt(string $optionName, array $onlyExpectedOptions = []): int
     {

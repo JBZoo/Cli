@@ -43,6 +43,9 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         $this->finishIcon   = Icons::getRandomIcon(Icons::GROUP_FINISH, $this->output->isDecorated());
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     public function execute(): bool
     {
         if (!$this->init()) {
@@ -58,19 +61,21 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
             \call_user_func($this->callbackOnStart, $this);
         }
 
+        $isOptimizeMode = $this->isOptimizeMode();
+
         foreach ($this->list as $stepIndex => $stepValue) {
             $this->setStep($stepIndex, $currentIndex);
 
             $startTime   = 0;
             $startMemory = 0;
-            if (!$this->isOptimizeMode()) {
+            if (!$isOptimizeMode) {
                 $startTime   = \microtime(true);
                 $startMemory = \memory_get_usage(false);
             }
 
             [$stepResult, $exceptionMessage] = $this->handleOneStep($stepValue, $stepIndex, $currentIndex);
 
-            if (!$this->isOptimizeMode()) {
+            if (!$isOptimizeMode) {
                 $this->stepMemoryDiff[] = \memory_get_usage(false) - $startMemory;
                 $this->stepTimers[]     = \microtime(true) - $startTime;
             }
