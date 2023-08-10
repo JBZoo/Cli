@@ -34,13 +34,14 @@
       * [Crontab](#crontab)
       * [Elatcisearch / Logstash (ELK)](#elatcisearch--logstash-elk)
    * [Multi processing](#multi-processing)
+   * [Tips &amp; Tricks](#tips--tricks)
    * [Contributing](#contributing)
    * [Useful projects and links](#useful-projects-and-links)
    * [License](#license)
    * [See Also](#see-also)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: smetdenis, at: Thu Aug 10 15:21:24 +04 2023 -->
+<!-- Added by: smetdenis, at: Thu Aug 10 15:27:43 +04 2023 -->
 
 <!--te-->
 
@@ -545,6 +546,11 @@ Notes:
  * Optimal number of child processes is `Number of CPU cores - 1` . You can override this value by setting cli options. See them here [./src/CliCommandMultiProc.php](src/CliCommandMultiProc.php).
  * Be really careful with concurrency. It's not easy to debug. Try to use `-vvv` option to see all errors and warnings.
 
+
+## Tips & Tricks
+
+ * Define constant `\JBZOO_CLI_NO_PREDEFINED_SHORTCUTS=true` to disable all predefined shortcuts in options if you have conflicts.
+ * Use class `\JBZoo\Cli\Codes` to get all available exit codes.
 
 
 ## Contributing
