@@ -501,6 +501,24 @@ Just add the `--output-mode=logstash` flag and save the output to a file. Especi
 ```
 
 
+
+## Contributing
+
+```shell
+# Fork the repo and build project
+make build
+
+# Make your local changes
+
+# Run all tests and check code style
+make test
+make codestyle
+
+# Create your pull request and check all tests in CI
+```
+
+
+
 ## Useful projects and links
 
 * [Symfony/Console Docs](https://symfony.com/doc/current/components/console.html)
