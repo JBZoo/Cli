@@ -23,6 +23,7 @@
    * [Progress Bar](#progress-bar-1)
       * [Simple example](#simple-example)
       * [Advanced usage](#advanced-usage)
+      * [Multi processing](#multi-processing)
    * [Helper Functions](#helper-functions)
       * [Regualar question](#regualar-question)
       * [Ask user's password](#ask-users-password)
@@ -39,7 +40,7 @@
    * [See Also](#see-also)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: smetdenis, at: Thu Aug 10 14:09:36 +04 2023 -->
+<!-- Added by: smetdenis, at: Thu Aug 10 14:34:30 +04 2023 -->
 
 <!--te-->
 
@@ -242,33 +243,36 @@ Try to launch `./my-app options-strict-types`.
 
 ```php
 // If the option has `InputOption::VALUE_NONE` it returns true/false.
-// --flag-name
-$value = $this->getOpt('flag-name');         // `$value === true` 
+// --option-name
+$value = $this->getOpt('option-name'); // `$value === true` 
 
-// --flag-name="    123.6   "
-$value = $this->getOpt('flag-name');         // Returns the value AS-IS. `$value ===  "   123.6   "`
+// --option-name="    123.6   "
+$value = $this->getOpt('option-name'); // Returns the value AS-IS. `$value ===  "   123.6   "`
 
-// --flag-name="    123.6   "
-$value = $this->getOptBool('flag-name');     // Converts an input variable to boolean. `$value === true`
+// --option-name="    123.6   "
+$value = $this->getOptBool('option-name'); // Converts an input variable to boolean. `$value === true`
 
-// --flag-name="    123.6   "
-$value = $this->getOptInt('flag-name');      // Converts an input variable to integer. `$value === 123`
+// --option-name="    123.6   "
+$value = $this->getOptInt('option-name'); // Converts an input variable to integer. `$value === 123`
+$value = $this->getOptInt('option-name', 42, [1, 2, 42]); // Strict comparing with allowed values
 
-// --flag-name="    123.6   "
-$value = $this->getOptFloat('flag-name');    // Converts an input variable to float. `$value === 123.6`
+// --option-name="    123.6   "
+$value = $this->getOptFloat('option-name'); // Converts an input variable to float. `$value === 123.6`
+$value = $this->getOptFloat('option-name', 1.0, [1.0, 2.0, 3.0]); // Strict comparing with allowed values
 
-// --flag-name="    123.6   "
-$value = $this->getOptString('flag-name');   // Converts an input variable to trimmed string. `$value === "123.6"`
+// --option-name="    123.6   "
+$value = $this->getOptString('option-name'); // Converts an input variable to trimmed string. `$value === "123.6"`
+$value = $this->getOptString('option-name', 'default', ['default', 'mini', 'full']); // Strict comparing with allowed values
 
-// --flag-name=123.6
-$value = $this->getOptArray('flag-name');    // Converts an input variable to trimmed string. `$value === ["123.6"]`
+// --option-name=123.6
+$value = $this->getOptArray('option-name'); // Converts an input variable to trimmed string. `$value === ["123.6"]`
 
-// --flag-name="15 July 2021 13:48:00"
-$value = $this->getOptDatetime('flag-name'); // Converts an input variable to \DateTimeImmutable object.
+// --option-name="15 July 2021 13:48:00"
+$value = $this->getOptDatetime('option-name'); // Converts an input variable to \DateTimeImmutable object.
 
 // Use standard input as input variable.
 // Example. `echo " Qwerty 123 " | php ./my-app agruments`
-$value = self::getStdIn();                   // Reads StdIn as string value. `$value === " Qwerty 123 \n"`
+$value = self::getStdIn(); // Reads StdIn as string value. `$value === " Qwerty 123 \n"`
 ```
 
 
@@ -406,8 +410,16 @@ $this->progressBar($arrayOfSomething, function ($value, $key, $step) {
     }
 
     return "<c>Callback Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
-}, 'Custom messages based on callback arguments', $throwBatchException = true);
+}, 'Custom messages based on callback arguments', $throwBatchException);
 ```
+
+
+### Multi processing
+
+Docs in progress...
+But you can find examples here
+ * [./tests/TestApp/Commands/TestSleepMulti.php](tests/TestApp/Commands/TestSleepMulti.php) - Parent command
+ * [./tests/TestApp/Commands/TestSleep.php](tests/TestApp/Commands/TestSleep.php) - Child command
 
 
 
