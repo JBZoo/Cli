@@ -27,6 +27,7 @@ test-all: ##@Project Run all project tests at once
 	@make codestyle
 	@make codestyle PATH_SRC=./demo
 
+
 toc: ##@Project Generate table of contents
 	@echo "Generate table of contents"
 	@gh-md-toc --insert --no-backup --skip-header ./README.md
