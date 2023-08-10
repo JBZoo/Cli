@@ -5,16 +5,20 @@
 
 
 <!--ts-->
+   * [Why?](#why)
    * [Live Demo](#live-demo)
       * [Output regular messages](#output-regular-messages)
       * [Progress Bar](#progress-bar)
    * [Installing](#installing)
-   * [Usage Example](#usage-example)
+   * [Quck Start - Build your first CLI App](#quck-start---build-your-first-cli-app)
    * [Built-in Functionality](#built-in-functionality)
       * [Sanitize input variables](#sanitize-input-variables)
       * [Rendering text in different colors and styles](#rendering-text-in-different-colors-and-styles)
       * [Verbosity Levels](#verbosity-levels)
       * [Memory and time profiling](#memory-and-time-profiling)
+   * [Progress Bar](#progress-bar-1)
+      * [Simple example](#simple-example)
+      * [Advanced usage](#advanced-usage)
    * [Helper Functions](#helper-functions)
       * [Regualar question](#regualar-question)
       * [Ask user's password](#ask-users-password)
@@ -22,34 +26,47 @@
       * [Represent a yes/no question](#represent-a-yesno-question)
       * [Rendering key=&gt;value list](#rendering-keyvalue-list)
    * [Easy logging](#easy-logging)
+      * [Simple log](#simple-log)
       * [Crontab](#crontab)
-      * [ELK Stack. Elatcisearch / Logstash](#elk-stack-elatcisearch--logstash)
+      * [Elatcisearch / Logstash (ELK)](#elatcisearch--logstash-elk)
    * [Useful projects and links](#useful-projects-and-links)
    * [License](#license)
    * [See Also](#see-also)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: smetdenis, at: Thu Aug 10 11:27:07 +04 2023 -->
+<!-- Added by: smetdenis, at: Thu Aug 10 12:03:40 +04 2023 -->
 
 <!--te-->
 
-The library greatly extends the functionality of [Symfony/Console](https://symfony.com/doc/current/components/console.html) and helps make creating new console utilities in PHP quicker and easier.
+## Why?
 
- * Improved ProgressBar for loop actions and extra debug info. See [DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and see [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
- * Convert option values to a strict variable type. See [DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
- * New built-in styles and colors for text output. See [DemoStyles.php](demo/Commands/DemoStyles.php).
- * A powerful alias `$this->_($messages, $level, $context)`, or `cli($messages, $level, $context)`. See [DemoOutput.php](demo/Commands/DemoOutput.php).
- * Extra options:
-   * Display timing and memory usage information with `--profile` (`-X`) option.
-   * Show timestamp at the beginning of each message with `--timestamp` (`-T`) option.
-   * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors` (`-M`). 
-   * None-zero exit code on any StdErr message with `--non-zero-on-error` (`-Z`) option.
-   * For any errors messages application will use StdOut instead of StdErr `--stdout-only` (`-1`) option (It's on your own risk!).
-   * Disable progress bar animation for logs with `--no-progress` (`-P`) option.
- * Different output modes:
-   * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
-   * `--output-mode=cron` (`-Ocron`). It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
-   * `--output-mode=logstash` (`-Ologstash`). It's basically focused on Logstash format for ELK Stack. Also, it's `--stdout-only --no-progress -vv`.
+The library greatly extends the functionality of CLI App and helps make creating new console utilities in PHP quicker and easier. Here's a summary of why this library is essential:
+
+ * **Enhanced Functionality:** The library supercharges [Symfony/Console](https://symfony.com/doc/current/components/console.html), facilitating a more streamlined development of console utilities. 
+
+ * **Progress Bar Improvements:** Developers gain a refined progress bar suited for loop actions and enhanced with debugging information. This makes tracking task progress and diagnosing issues a breeze. See [DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and see [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
+     * `$this->_($messages, $level, $context)` as part of CliCommand instead of Symfony/Console `$output->writeln()`.
+     * `cli($messages, $level, $context)` as alias for different classes.
+     * `$this->progressBar(iterable|int $listOrMax, \Closure $callback, string $title = '')` as part of CliCommand instead of Symfony/Console ProgressBar.
+
+ * **Strict Type Conversion:** One notable feature allows for the strict conversion of option values, ensuring data integrity and reducing runtime errors. See [DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
+
+ * **Styling and Output Customization:** With built-in styles and color schemes, developers can make their console outputs more readable and visually appealing. See [DemoStyles.php](demo/Commands/DemoStyles.php).
+
+ * **Message Aliases:** The library introduces powerful aliases for message outputs, allowing for concise and consistent command calls. This is especially helpful in maintaining clean code.
+
+ * **Advanced Options:** Features such as profiling for performance, timestamping, error muting, and specialized output modes (like cron and logstash modes) empower developers to refine their console outputs and diagnostics according to their specific needs.
+     * Display timing and memory usage information with `--profile` (`-X`) option.
+     * Show timestamp at the beginning of each message with `--timestamp` (`-T`) option.
+     * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors` (`-M`).
+     * None-zero exit code on any StdErr message with `--non-zero-on-error` (`-Z`) option.
+     * For any errors messages application will use StdOut instead of StdErr `--stdout-only` (`-1`) option (It's on your own risk!).
+     * Disable progress bar animation for logs with `--no-progress` (`-P`) option.
+
+ * **Versatile Output Modes:** The library provides different output formats catering to various use cases. Whether you're focusing on user-friendly text, logs, or integration with tools like ELK Stack, there's an output mode tailored for you.
+     * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
+     * `--output-mode=cron` (`-Ocron`). It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
+     * `--output-mode=logstash` (`-Ologstash`). It's basically focused on Logstash format for ELK Stack. Also, it's `--stdout-only --no-progress -vv`.
 
 ## Live Demo
 
@@ -68,8 +85,7 @@ composer require jbzoo/cli
 ```
 
 
-
-## Usage Example
+## Quck Start - Build your first CLI App
 
 The simplest CLI application has the following file structure. See the [Demo App](demo) for more details.
 
@@ -344,6 +360,34 @@ Try to launch `./my-app profile --profile`.
 ![ExamplesProfile](.github/assets/ExamplesProfile.png)
 
 
+## Progress Bar
+
+As live-demo take a look at demo application - [./demo/Commands/DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
+
+### Simple example
+
+```php
+$this->progressBar(5, function (): void {
+    // Some code in loop
+});
+```
+
+
+### Advanced usage
+
+```php
+$this->progressBar($arrayOfSomething, function ($value, $key, $step) {
+    // Some code in loop
+
+    if ($step === 3) {
+        throw new ExceptionBreak("Something went wrong with \$value={$value}. Stop the loop!");
+    }
+
+    return "<c>Callback Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
+}, 'Custom messages based on callback arguments', $throwBatchException);
+```
+
+
 
 ## Helper Functions
 
@@ -417,6 +461,15 @@ $this->_(CliRender::list([
 
 ## Easy logging
 
+### Simple log
+
+```bash
+./my-app output --timestamp >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log 2>&1
+```
+
+![ExamplesProfile--timestamp](.github/assets/ExamplesProfile--timestamp.png)
+
+
 
 ### Crontab
 
@@ -426,10 +479,8 @@ Just add the `--output-mode=cron` flag and save the output to a file. Especially
 ./my-app output --output-mode=cron >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log 2>&1
 ```
 
-![ExamplesProfile--timestamp](.github/assets/ExamplesProfile--timestamp.png)
 
-
-### ELK Stack. Elatcisearch / Logstash
+### Elatcisearch / Logstash (ELK)
 
 Just add the `--output-mode=logstash` flag and save the output to a file. Especially, this is very handy for saving logs for ELK Stack.
 
