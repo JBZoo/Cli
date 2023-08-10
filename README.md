@@ -33,12 +33,13 @@
       * [Simple log](#simple-log)
       * [Crontab](#crontab)
       * [Elatcisearch / Logstash (ELK)](#elatcisearch--logstash-elk)
+   * [Contributing](#contributing)
    * [Useful projects and links](#useful-projects-and-links)
    * [License](#license)
    * [See Also](#see-also)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: smetdenis, at: Thu Aug 10 12:11:27 +04 2023 -->
+<!-- Added by: smetdenis, at: Thu Aug 10 13:13:06 +04 2023 -->
 
 <!--te-->
 
@@ -274,6 +275,8 @@ $value = self::getStdIn();                   // Reads StdIn as string value. `$v
 
 ### Rendering text in different colors and styles
 
+<img alt="output-styles" src=".github/assets/output-styles.gif" width="600"/>
+
 There are list of predefined colors
 
 ```html
@@ -330,6 +333,8 @@ As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.p
 
 Example of usage of verbosity levels
 
+![output-full-example](.github/assets/output-full-example.png)
+
 ```php
 // There two strictly recommended output ways:
 $this->_($messages, $verboseLevel); // Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
@@ -357,10 +362,6 @@ cli($messages, $verboseLevel);      // This is global alias function of `$this->
 ./my-app output -vvv
 ```
 
-As result, you will see
-
-![ExamplesOutput -vvv](.github/assets/ExamplesOutput-vvv.png)
-
 
 
 ### Memory and time profiling
@@ -369,12 +370,15 @@ As live-demo take a look at demo application - [./demo/Commands/DemoProfile.php]
 
 Try to launch `./my-app profile --profile`.
 
-![ExamplesProfile](.github/assets/ExamplesProfile.png)
+![profiling](.github/assets/profiling.png)
+
 
 
 ## Progress Bar
 
 As live-demo take a look at demo application - [./demo/Commands/DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
+
+![progress-full-example](.github/assets/progress-full-example.gif)
 
 ### Simple example
 
@@ -396,7 +400,7 @@ $this->progressBar($arrayOfSomething, function ($value, $key, $step) {
     }
 
     return "<c>Callback Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
-}, 'Custom messages based on callback arguments', $throwBatchException);
+}, 'Custom messages based on callback arguments', $throwBatchException = true);
 ```
 
 
@@ -479,7 +483,7 @@ $this->_(CliRender::list([
 ./my-app output --timestamp >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log 2>&1
 ```
 
-![ExamplesProfile--timestamp](.github/assets/ExamplesProfile--timestamp.png)
+![logs-simple](.github/assets/logs-simple.png)
 
 
 
@@ -499,6 +503,8 @@ Just add the `--output-mode=logstash` flag and save the output to a file. Especi
 ```bash
 ./my-app output --output-mode=logstash >> /path/to/logstash/logs/`date +\%Y-\%m-\%d`.log 2>&1
 ```
+
+![logs-logstash-exception](.github/assets/logs-logstash-exception.png)
 
 
 
@@ -528,6 +534,7 @@ make codestyle
 * [splitbrain/php-cli - Lightweight and no dependencies CLI framework](https://packagist.org/packages/splitbrain/php-cli)
 * [thephpleague/climate - Allows you to easily output colored text, special formats](https://github.com/thephpleague/climate)
 * [Exit Codes With Special Meanings](https://tldp.org/LDP/abs/html/exitcodes.html)
+* [How to redirect standard (stderr) error in bash](https://www.cyberciti.biz/faq/how-to-redirect-standard-error-in-bash/)
 
 
 

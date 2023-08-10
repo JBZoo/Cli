@@ -120,7 +120,7 @@ class Logstash extends AbstractOutputMode
             $this->markOutputHasErrors(true);
         }
 
-        if ($message !== null) {
+        if ($message !== null && $message !== '') {
             $this->logger->log($psrErrorLevel, \strip_tags($message), $context);
         }
     }
