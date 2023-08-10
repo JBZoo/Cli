@@ -21,6 +21,8 @@ use JBZoo\Cli\Exception;
 use JBZoo\Cli\OutLvl;
 use Symfony\Component\Console\Input\InputOption;
 
+use function JBZoo\Cli\cli;
+
 class TestOutput extends CliCommand
 {
     /**
@@ -36,9 +38,6 @@ class TestOutput extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         if ($this->getOptBool('type-of-vars')) {
@@ -64,8 +63,8 @@ class TestOutput extends CliCommand
         $this->_(['Normal 1', 'Normal 2']);
         $this->_('Message', OutLvl::ERROR);
 
-        $this->_('Info1 -v', OutLvl::V);
-        $this->_('Info2 -v', OutLvl::INFO);
+        cli('Info1 -v', OutLvl::V);
+        cli('Info2 -v', OutLvl::INFO);
 
         $this->_('Verbose1 -vv', OutLvl::VV);
         $this->_('Verbose2 -vv', OutLvl::WARNING);
@@ -79,6 +78,8 @@ class TestOutput extends CliCommand
         $this->_('Error (e)', OutLvl::E);
         $this->_('Error (error)', OutLvl::ERROR);
         $this->_('Error (exception)', OutLvl::EXCEPTION);
+
+        $this->_('Message with context', OutLvl::DEBUG, ['foo' => 'bar']);
 
         $this->_('Quiet -q', OutLvl::Q);
 

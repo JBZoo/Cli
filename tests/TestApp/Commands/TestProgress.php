@@ -18,9 +18,12 @@ namespace JBZoo\PHPUnit\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\Exception;
+use JBZoo\Cli\ProgressBars\ExceptionBreak;
 use JBZoo\Cli\ProgressBars\ProgressBar;
+use JBZoo\Cli\ProgressBars\ProgressBarSymfony;
 use Symfony\Component\Console\Input\InputOption;
 
+use function JBZoo\Cli\cli;
 use function JBZoo\Data\json;
 
 class TestProgress extends CliCommand
@@ -39,107 +42,138 @@ class TestProgress extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         $testCase = $this->getOptString('case');
 
-        if ($testCase === 'no-items-int') {
-            ProgressBar::run(0, static function (): void {
-            }, $testCase);
-        }
-
-        if ($testCase === 'no-items-array') {
-            ProgressBar::run([], static function (): void {
-            }, $testCase);
-        }
-
-        if ($testCase === 'no-items-data') {
-            ProgressBar::run(json(), static function (): void {
-            }, $testCase);
-        }
-
         if ($testCase === 'minimal') {
+            // Static call as backwards capability
             ProgressBar::run(2, function (): void {
                 \sleep($this->getOptInt('sleep'));
             });
         }
 
-        if ($testCase === 'no-messages') {
-            ProgressBar::run(3, static function ($stepValue, $stepIndex, $currentStep): void {
-            }, $testCase);
-        }
-
         if ($testCase === 'one-message') {
-            ProgressBar::run(3, static function ($stepValue, $stepIndex, $currentStep) {
-                if ($stepValue === 1) {
-                    return "{$stepValue}, {$stepIndex}, {$currentStep}";
+            $this->progressBar(3, static function ($listValue, $listKey, $stepIndex) {
+                if ($listValue === 1) {
+                    return "{$listValue}, {$listKey}, {$stepIndex}";
                 }
             }, $testCase);
-        }
-
-        if ($testCase === 'simple-message-all') {
-            ProgressBar::run(3, static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
-        }
-
-        if ($testCase === 'output-as-array') {
-            $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
-            ProgressBar::run($list, static fn ($stepValue, $stepIndex, $currentStep) => [$stepValue, $stepIndex, $currentStep], $testCase);
-        }
-
-        if ($testCase === 'array-int') {
-            ProgressBar::run([4, 5, 6], static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
-        }
-
-        if ($testCase === 'array-string') {
-            ProgressBar::run(['qwerty', 'asdfgh'], static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
         }
 
         if ($testCase === 'array-assoc') {
             $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
-            ProgressBar::run($list, static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
+            $this->progressBar(
+                $list,
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
+                $testCase,
+            );
+        }
+
+        if ($testCase === 'no-items-int') {
+            $this->progressBar(0, static function (): void { }, $testCase);
+        }
+
+        if ($testCase === 'no-items-array') {
+            $this->progressBar([], static function (): void { }, $testCase);
+        }
+
+        if ($testCase === 'no-items-data') {
+            $this->progressBar(json(), static function (): void { }, $testCase);
+        }
+
+        // // old tests
+
+        if ($testCase === 'no-messages') {
+            $this->progressBar(3, static function ($listValue, $listKey, $stepIndex): void {
+            }, $testCase);
+        }
+
+        if ($testCase === 'simple-message-all') {
+            $this->progressBar(
+                3,
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
+                $testCase,
+            );
+        }
+
+        if ($testCase === 'output-as-array') {
+            $list = ['key_1' => 'value_1', 'key_2' => 'value_2'];
+            $this->progressBar(
+                $list,
+                static fn ($listValue, $listKey, $stepIndex) => [$listValue, $listKey, $stepIndex],
+                $testCase,
+            );
+        }
+
+        if ($testCase === 'array-int') {
+            $this->progressBar(
+                [4, 5, 6],
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
+                $testCase,
+            );
+        }
+
+        if ($testCase === 'array-string') {
+            $this->progressBar(
+                ['qwerty', 'asdfgh'],
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
+                $testCase,
+            );
         }
 
         if ($testCase === 'data') {
             $list = json(['key_1' => 'value_1', 'key_2' => 'value_2']);
-            ProgressBar::run($list, static fn ($stepValue, $stepIndex, $currentStep) => "{$stepValue}, {$stepIndex}, {$currentStep}", $testCase);
+            $this->progressBar(
+                $list,
+                static fn ($listValue, $listKey, $stepIndex) => "{$listValue}, {$listKey}, {$stepIndex}",
+                $testCase,
+            );
         }
 
         if ($testCase === 'break') {
-            ProgressBar::run(3, static function ($stepValue) {
-                if ($stepValue === 1) {
-                    return ProgressBar::BREAK;
+            $this->progressBar(3, static function ($listValue) {
+                if ($listValue === 1) {
+                    return ProgressBarSymfony::BREAK;
                 }
 
-                return $stepValue;
+                return $listValue;
+            }, $testCase);
+        }
+
+        if ($testCase === 'break-exception') {
+            $this->progressBar(3, static function ($listValue) {
+                if ($listValue === 1) {
+                    throw new ExceptionBreak("Something went wrong with \$listValue={$listValue}");
+                }
+
+                return $listValue;
             }, $testCase);
         }
 
         if ($testCase === 'exception') {
-            ProgressBar::run(3, static function ($stepValue): void {
-                if ($stepValue === 1) {
-                    throw new \Exception("Exception #{$stepValue}");
+            $this->progressBar(3, static function ($listValue): void {
+                if ($listValue === 1) {
+                    throw new \Exception("Exception #{$listValue}");
                 }
             }, $testCase, $this->getOptBool('batch-exception'));
         }
 
         if ($testCase === 'exception-list') {
-            ProgressBar::run(10, static function ($stepValue): void {
-                if ($stepValue % 3 === 0) {
-                    throw new \Exception("Exception #{$stepValue}");
+            $this->progressBar(10, static function ($listValue): void {
+                if ($listValue % 3 === 0) {
+                    throw new \RuntimeException("Exception #{$listValue}");
                 }
             }, $testCase, $this->getOptBool('batch-exception'));
         }
 
         if ($testCase === 'million-items') {
-            ProgressBar::run(100000, static fn ($stepValue) => $stepValue, $testCase);
+            $this->progressBar(100000, static fn ($listValue) => $listValue, $testCase);
         }
 
         if ($testCase === 'memory-leak') {
             $array = [];
-            ProgressBar::run(3, function () use (&$array): void {
+            $this->progressBar(3, function () use (&$array): void {
                 for ($i = 0; $i < 100000; $i++) {
                     $array[] = $i;
                 }
@@ -149,23 +183,28 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'nested') {
-            $array         = [];
-            $parentSection = $this->helper->getOutput()->section();
-            $childSection  = $this->helper->getOutput()->section();
-
-            ProgressBar::run(3, function ($parentId) use ($testCase, $childSection) {
+            $this->progressBar(3, function ($parentId) use ($testCase) {
                 \sleep($this->getOptInt('sleep'));
 
-                ProgressBar::run(4, function ($childId) use ($parentId) {
+                $this->progressBar(4, function ($childId) use ($parentId) {
                     \sleep($this->getOptInt('sleep'));
 
                     return "out_child_{$parentId}_{$childId}";
-                }, "{$testCase}_child_{$parentId}", false, $childSection);
-
-                $childSection->clear();
+                }, "{$testCase}_child_{$parentId}", false);
 
                 return "out_parent_{$parentId}";
-            }, "{$testCase}_parent", false, $parentSection);
+            }, "{$testCase}_parent", false);
+        }
+
+        if ($testCase === 'catch-mode') {
+            $this->progressBar(3, function ($index) {
+                echo 'echo';
+                $this->_('_()');
+                cli('cli()');
+                \sleep($this->getOptInt('sleep'));
+
+                return "Regular return {$index}";
+            }, $testCase, false);
         }
 
         if (!$testCase) {

@@ -18,7 +18,7 @@ namespace DemoApp\Commands;
 
 use JBZoo\Cli\CliCommand;
 
-class Simple extends CliCommand
+class DemoSimple extends CliCommand
 {
     protected function configure(): void
     {
@@ -28,9 +28,6 @@ class Simple extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         // Your code here

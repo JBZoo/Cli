@@ -14,17 +14,9 @@
 
 declare(strict_types=1);
 
-namespace JBZoo\Cli;
+namespace JBZoo\Cli\ProgressBars;
 
-use JBZoo\Cli\OutputMods\AbstractOutputMode;
-
-/**
- * Shortcut method.
- * @param mixed $messages
- * @psalm-suppress DeprecatedMethod
- * @suppress PhanDeprecatedFunction
- */
-function cli($messages = '', string $verboseLevel = OutLvl::DEFAULT): void
+class ExceptionBreak extends \JBZoo\Cli\Exception
 {
-    AbstractOutputMode::getInstance()->_($messages, $verboseLevel);
+    public const MESSAGE = 'Progress aborted.';
 }

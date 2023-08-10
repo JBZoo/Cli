@@ -20,20 +20,17 @@ use JBZoo\Cli\CliCommand;
 
 use function JBZoo\Cli\cli;
 
-class ExamplesHelpers extends CliCommand
+class DemoHelpers extends CliCommand
 {
     protected function configure(): void
     {
         $this
-            ->setName('examples:helpers')
+            ->setName('helpers')
             ->setDescription('Examples of new CLI helpers');
 
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         $yourName = $this->ask("What's your name?", 'idk');

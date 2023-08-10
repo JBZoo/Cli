@@ -4,38 +4,118 @@
 [![Stable Version](https://poser.pugx.org/jbzoo/cli/version)](https://packagist.org/packages/jbzoo/cli/)    [![Total Downloads](https://poser.pugx.org/jbzoo/cli/downloads)](https://packagist.org/packages/jbzoo/cli/stats)    [![Dependents](https://poser.pugx.org/jbzoo/cli/dependents)](https://packagist.org/packages/jbzoo/cli/dependents?order_by=downloads)    [![GitHub License](https://img.shields.io/github/license/jbzoo/cli)](https://github.com/JBZoo/Cli/blob/master/LICENSE)
 
 
-The library greatly extends the functionality of [Symfony/Console](https://symfony.com/doc/current/components/console.html) and helps make creating new console utilities in PHP quicker and easier.
+<!--ts-->
+   * [Why?](#why)
+   * [Live Demo](#live-demo)
+      * [Output regular messages](#output-regular-messages)
+      * [Progress Bar Demo](#progress-bar-demo)
+   * [Quck Start - Build your first CLI App](#quck-start---build-your-first-cli-app)
+      * [Installing](#installing)
+      * [File Structure](#file-structure)
+      * [Composer file](#composer-file)
+      * [Binary file](#binary-file)
+      * [Simple CLI Action](#simple-cli-action)
+   * [Built-in Functionality](#built-in-functionality)
+      * [Sanitize input variables](#sanitize-input-variables)
+      * [Rendering text in different colors and styles](#rendering-text-in-different-colors-and-styles)
+      * [Verbosity Levels](#verbosity-levels)
+      * [Memory and time profiling](#memory-and-time-profiling)
+   * [Progress Bar](#progress-bar)
+      * [Simple example](#simple-example)
+      * [Advanced usage](#advanced-usage)
+   * [Helper Functions](#helper-functions)
+      * [Regualar question](#regualar-question)
+      * [Ask user's password](#ask-users-password)
+      * [Ask user to select the option](#ask-user-to-select-the-option)
+      * [Represent a yes/no question](#represent-a-yesno-question)
+      * [Rendering key=&gt;value list](#rendering-keyvalue-list)
+   * [Easy logging](#easy-logging)
+      * [Simple log](#simple-log)
+      * [Crontab](#crontab)
+      * [Elatcisearch / Logstash (ELK)](#elatcisearch--logstash-elk)
+   * [Multi processing](#multi-processing)
+   * [Tips &amp; Tricks](#tips--tricks)
+   * [Contributing](#contributing)
+   * [Useful projects and links](#useful-projects-and-links)
+   * [License](#license)
+   * [See Also](#see-also)
 
- * Improved progress bar with a new template and additional information. See [ExamplesProgressBar.php](demo/Commands/ExamplesProgressBar.php).
- * Convert option values to a strict variable type. See [ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
- * New built-in styles and colors for text output. See [ExamplesStyles.php](demo/Commands/ExamplesStyles.php).
- * A powerful alias `$this->_($messages, $level)` instead of `output->wrileln()`. See [ExamplesOutput.php](demo/Commands/ExamplesOutput.php).
- * Display timing and memory usage information with `--profile` option.
- * Show timestamp at the beginning of each message with `--timestamp` option.
- * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors`. 
- * None-zero exit code on any StdErr message with `--non-zero-on-error` option.
- * For any errors messages application will use StdOut instead of StdErr `--stdout-only` option (It's on your own risk!).
- * Disable progress bar animation for logs with `--no-progress` option.
- * Shortcut for crontab `--cron`. It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv`.
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+<!-- Added by: smetdenis, at: Thu Aug 10 15:37:25 +04 2023 -->
+
+<!--te-->
+
+## Why?
+
+The library greatly extends the functionality of CLI App and helps make creating new console utilities in PHP quicker and easier. Here's a summary of why this library is essential:
+
+ * **Enhanced Functionality**
+   * The library supercharges [Symfony/Console](https://symfony.com/doc/current/components/console.html), facilitating a more streamlined development of console utilities. 
+
+ * **Progress Bar Improvements**
+   * Developers gain a refined progress bar suited for loop actions and enhanced with debugging information. This makes tracking task progress and diagnosing issues a breeze. See [DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and see [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
+   * `$this->_($messages, $level, $context)` as part of CliCommand instead of Symfony/Console `$output->writeln()`.
+   * `cli($messages, $level, $context)` as alias for different classes.
+   * `$this->progressBar(iterable|int $listOrMax, \Closure $callback, string $title = '')` as part of CliCommand instead of Symfony/Console ProgressBar.
+
+ * **Strict Type Conversion**
+   * One notable feature allows for the strict conversion of option values, ensuring data integrity and reducing runtime errors. See [DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
+   * Built-in validations for list of values. See [Sanitize input variables](#sanitize-input-variables).
+
+ * **Styling and Output Customization**
+   * With built-in styles and color schemes, developers can make their console outputs more readable and visually appealing. See [DemoStyles.php](demo/Commands/DemoStyles.php).
+
+ * **Message Aliases**
+   * The library introduces powerful aliases for message outputs, allowing for concise and consistent command calls. This is especially helpful in maintaining clean code.
+
+ * **Advanced Options**
+   * Features such as profiling for performance, timestamping, error muting, and specialized output modes (like cron and logstash modes) empower developers to refine their console outputs and diagnostics according to their specific needs.
+   * Display timing and memory usage information with `--profile` (`-X`) option.
+   * Show timestamp at the beginning of each message with `--timestamp` (`-T`) option.
+   * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors` (`-M`).
+   * None-zero exit code on any StdErr message with `--non-zero-on-error` (`-Z`) option.
+   * For any errors messages application will use StdOut instead of StdErr `--stdout-only` (`-1`) option (It's on your own risk!).
+   * Disable progress bar animation for logs with `--no-progress` (`-P`) option.
+
+ * **Versatile Output Modes** 
+   * The library provides different output formats catering to various use cases. Whether you're focusing on user-friendly text, logs, or integration with tools like ELK Stack, there's an output mode tailored for you.
+   * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
+   * `--output-mode=cron` (`-Ocron`). It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
+   * `--output-mode=logstash` (`-Ologstash`). It's basically focused on Logstash format for ELK Stack. Also, it means `--stdout-only --no-progress -vv`.
+
+ * **Bonuses**
+   * There is a [multiprocess](#multi-processing) mode (please don't confuse it with multithreading) to speed up work with a monotonous dataset.
+   * Helper functions for [user input](#helper-functions) in interactive mode.
+
+
 
 ## Live Demo
 
-[![asciicast](https://asciinema.org/a/486674.svg)](https://asciinema.org/a/486674)
+### Output regular messages
+
+[![asciicast](https://asciinema.org/a/601633.svg)](https://asciinema.org/a/601633?autoplay=1&startAt=4)
 
 
 
-## Installing
+### Progress Bar Demo
+
+[![asciicast](https://asciinema.org/a/601621.svg)](https://asciinema.org/a/601621?autoplay=1&startAt=2)
+
+
+
+## Quck Start - Build your first CLI App
+
+### Installing
 
 ```sh
 composer require jbzoo/cli
 ```
 
 
-
-## Usage Example
-
 The simplest CLI application has the following file structure. See the [Demo App](demo) for more details.
 
+
+### File Structure
 ```
 /path/to/app/
     my-app                      # Binrary file (See below)
@@ -46,6 +126,8 @@ The simplest CLI application has the following file structure. See the [Demo App
         autoload.php            # Composer autoload
 ```
 
+
+### Composer file
 
 [./demo/composer.json](demo/composer.json)
 
@@ -61,12 +143,8 @@ The simplest CLI application has the following file structure. See the [Demo App
       "keywords"    : ["cli", "application", "example"],
   
       "require"     : {
-          "php"       : ">=7.4",
-          "jbzoo/cli" : "^2.0.0"
-      },
-  
-      "require-dev" : {
-          "roave/security-advisories" : "dev-latest"
+          "php"       : ">=8.1",
+          "jbzoo/cli" : "^7.1.0"
       },
   
       "autoload"    : {
@@ -80,6 +158,8 @@ The simplest CLI application has the following file structure. See the [Demo App
 </details>
 
 
+### Binary file
+
 Binary file: [demo/my-app](demo/my-app)
 
 <details>
@@ -87,52 +167,52 @@ Binary file: [demo/my-app](demo/my-app)
 
   ```php
   #!/usr/bin/env php
-  <?php declare(strict_types=1);
-  
-  namespace DemoApp;
-  
-  use JBZoo\Cli\CliApplication;
-  
-  // Init composer autoloader
-  if (file_exists(__DIR__ . '/vendor/autoload.php')) {
-      require_once __DIR__ . '/vendor/autoload.php';
-  } else {
-      require_once dirname(__DIR__) . '/vendor/autoload.php';
-  }
-  
-  // Set your application name and version.
-  $application = new CliApplication('My Console Application', 'v1.0.0');
-  
-  // Looks at the online generator of ASCII logos
-  // https://patorjk.com/software/taag/#p=testall&f=Epic&t=My%20Console%20App
-  $application->setLogo(implode(PHP_EOL, [
-      "  __  __          _____                      _                             ",
-      " |  \/  |        / ____|                    | |          /\                ",
-      " | \  / |_   _  | |     ___  _ __  ___  ___ | | ___     /  \   _ __  _ __  ",
-      " | |\/| | | | | | |    / _ \| '_ \/ __|/ _ \| |/ _ \   / /\ \ | '_ \| '_ \ ",
-      " | |  | | |_| | | |___| (_) | | | \__ \ (_) | |  __/  / ____ \| |_) | |_) |",
-      " |_|  |_|\__, |  \_____\___/|_| |_|___/\___/|_|\___| /_/    \_\ .__/| .__/ ",
-      "          __/ |                                               | |   | |    ",
-      "         |___/                                                |_|   |_|    ",
-  ]));
-  
-  // Scan directory to find commands.
-  //  * It doesn't work recursively!
-  //  * They must be inherited from the class \JBZoo\Cli\CliCommand
-  $application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);
-  
-  // Action name by default (if there is no arguments)
-  $application->setDefaultCommand('list');
-  
-  // Run application
-  $application->run();
+<?php declare(strict_types=1);
+
+namespace DemoApp;
+
+use JBZoo\Cli\CliApplication;
+
+// Init composer autoloader
+require_once __DIR__ . '/vendor/autoload.php';
+
+// Optional. Set your application name and version.
+$application = new CliApplication('My Console Application', 'v1.0.0');
+
+// Optional. Looks at the online generator of ASCII logos
+// https://patorjk.com/software/taag/#p=testall&f=Epic&t=My%20Console%20App
+$application->setLogo(
+    <<<'EOF'
+          __  __          _____                      _
+         |  \/  |        / ____|                    | |          /\
+         | \  / |_   _  | |     ___  _ __  ___  ___ | | ___     /  \   _ __  _ __
+         | |\/| | | | | | |    / _ \| '_ \/ __|/ _ \| |/ _ \   / /\ \ | '_ \| '_ \
+         | |  | | |_| | | |___| (_) | | | \__ \ (_) | |  __/  / ____ \| |_) | |_) |
+         |_|  |_|\__, |  \_____\___/|_| |_|___/\___/|_|\___| /_/    \_\ .__/| .__/
+                  __/ |                                               | |   | |
+                 |___/                                                |_|   |_|
+        EOF,
+);
+
+// Scan directory to find commands.
+//  * It doesn't work recursively!
+//  * They must be inherited from the class \JBZoo\Cli\CliCommand
+$application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);
+
+// Optional. Action name by default (if there is no arguments)
+$application->setDefaultCommand('list');
+
+// Run application
+$application->run();
   
   ```
 
 </details>
 
 
-The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
+### Simple CLI Action
+
+The simplest CLI action: [./demo/Commands/DemoSimple.php](demo/Commands/DemoSimple.php)
 
 <details>
   <summary>See Details</summary>
@@ -176,44 +256,49 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
 
 ### Sanitize input variables
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
+As live-demo take a look at demo application - [./demo/Commands/DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
 
-Try to launch `./my-app examples:options-strict-types`.
+Try to launch `./my-app options-strict-types`.
 
 ```php
 // If the option has `InputOption::VALUE_NONE` it returns true/false.
-// --flag-name
-$value = $this->getOpt('flag-name');         // `$value === true` 
+// --option-name
+$value = $this->getOpt('option-name'); // `$value === true` 
 
-// --flag-name="    123.6   "
-$value = $this->getOpt('flag-name');         // Returns the value AS-IS. `$value ===  "   123.6   "`
+// --option-name="    123.6   "
+$value = $this->getOpt('option-name'); // Returns the value AS-IS. `$value ===  "   123.6   "`
 
-// --flag-name="    123.6   "
-$value = $this->getOptBool('flag-name');     // Converts an input variable to boolean. `$value === true`
+// --option-name="    123.6   "
+$value = $this->getOptBool('option-name'); // Converts an input variable to boolean. `$value === true`
 
-// --flag-name="    123.6   "
-$value = $this->getOptInt('flag-name');      // Converts an input variable to integer. `$value === 123`
+// --option-name="    123.6   "
+$value = $this->getOptInt('option-name'); // Converts an input variable to integer. `$value === 123`
+$value = $this->getOptInt('option-name', 42, [1, 2, 42]); // Strict comparing with allowed values
 
-// --flag-name="    123.6   "
-$value = $this->getOptFloat('flag-name');    // Converts an input variable to float. `$value === 123.6`
+// --option-name="    123.6   "
+$value = $this->getOptFloat('option-name'); // Converts an input variable to float. `$value === 123.6`
+$value = $this->getOptFloat('option-name', 1.0, [1.0, 2.0, 3.0]); // Strict comparing with allowed values
 
-// --flag-name="    123.6   "
-$value = $this->getOptString('flag-name');   // Converts an input variable to trimmed string. `$value === "123.6"`
+// --option-name="    123.6   "
+$value = $this->getOptString('option-name'); // Converts an input variable to trimmed string. `$value === "123.6"`
+$value = $this->getOptString('option-name', 'default', ['default', 'mini', 'full']); // Strict comparing with allowed values
 
-// --flag-name=123.6
-$value = $this->getOptArray('flag-name');    // Converts an input variable to trimmed string. `$value === ["123.6"]`
+// --option-name=123.6
+$value = $this->getOptArray('option-name'); // Converts an input variable to trimmed string. `$value === ["123.6"]`
 
-// --flag-name="15 July 2021 13:48:00"
-$value = $this->getOptDatetime('flag-name'); // Converts an input variable to \DateTimeImmutable object.
+// --option-name="15 July 2021 13:48:00"
+$value = $this->getOptDatetime('option-name'); // Converts an input variable to \DateTimeImmutable object.
 
 // Use standard input as input variable.
-// Example. `echo " Qwerty 123 " | php ./my-app examples:agruments`
-$value = self::getStdIn();                   // Reads StdIn as string value. `$value === " Qwerty 123 \n"`
+// Example. `echo " Qwerty 123 " | php ./my-app agruments`
+$value = self::getStdIn(); // Reads StdIn as string value. `$value === " Qwerty 123 \n"`
 ```
 
 
 
 ### Rendering text in different colors and styles
+
+<img alt="output-styles" src=".github/assets/output-styles.gif" width="600"/>
 
 There are list of predefined colors
 
@@ -267,74 +352,111 @@ And predefined shortcuts for standard styles of Symfony Console
 
 Console commands have different verbosity levels, which determine the messages displayed in their output. 
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/ExamplesOutput.php). You can see [Demo video](https://asciinema.org/a/486674).
+As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/DemoOutput.php). You can see [Demo video](https://asciinema.org/a/486674).
 
 Example of usage of verbosity levels
 
-```php
-// There two strictly recommended output ways:
-$this->_($messages, $verboseLevel); // Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
-cli($messages, $verboseLevel);      // This is global alias function of `$this->_(...)`. It's nice to have it if you want to display a text from not CliCommand class.
+![output-full-example](.github/assets/output-full-example.png)
 
-// * `$messages` can be an array of strings or a string. Array of strings will be imploded with new line.
-// * `$verboseLevel` is one of value form the class \JBZoo\Cli\OutLvl::* 
+```php
+// There two strictly(!) recommended output ways:
+
+/**
+ * Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
+ * 
+ * @param string|string[] $messages     Output message(s). Can be an array of strings or a string. Array of strings will be imploded with new line.
+ * @param string          $verboseLevel is one of value form the class \JBZoo\Cli\OutLvl::*
+ * @param string          $context      is array of extra info. Will be serialized to JSON and displayed in the end of the message.
+ */
+$this->_($messages, $verboseLevel, $context);
+
+/**
+ * This is global alias function of `$this->_(...)`.
+ * It's nice to have it if you want to display a text from not CliCommand class.
+ */
+JBZoo\Cli\cli($messages, $verboseLevel, $context);
+ 
 ```
 
 ```bash
 # Do not output any message
-./my-app examples:output -q
-./my-app examples:output --quiet
+./my-app output -q
+./my-app output --quiet
 
 # Normal behavior, no option required. Only the most useful messages.
-./my-app examples:output 
+./my-app output 
 
 # Increase verbosity of messages
-./my-app examples:output -v
+./my-app output -v
 
 # Display also the informative non essential messages
-./my-app examples:output -vv
+./my-app output -vv
 
 # Display all messages (useful to debug errors)
-./my-app examples:output -vvv
+./my-app output -vvv
 ```
-
-As result, you will see
-
-![ExamplesOutput -vvv](.github/assets/ExamplesOutput-vvv.png)
 
 
 
 ### Memory and time profiling
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesProfile.php](demo/Commands/ExamplesProfile.php).
+As live-demo take a look at demo application - [./demo/Commands/DemoProfile.php](demo/Commands/DemoProfile.php).
 
-Try to launch `./my-app examples:profile --profile`.
+Try to launch `./my-app profile --profile`.
 
-![ExamplesProfile](.github/assets/ExamplesProfile.png)
+![profiling](.github/assets/profiling.png)
 
 
 
-### Easy logging
+## Progress Bar
 
-No need to bother with the logging setup as Symfony/Console suggests. Just add the `--timestamp` flag and save the output to a file. Especially, this is very handy for saving cron logs.
+As live-demo take a look at demo application - [./demo/Commands/DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
 
-```bash
-./my-app examples:profile --timestamp >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log
+You can consider this as a substitute for the long cycles you want to profile.
+
+Keep in mind that there is an additional overhead for memory and runtime to calculate all the extra debugging information in `--verbose` mode.
+
+
+
+### Simple example
+
+![progress-default-example](.github/assets/progress-default-example.gif)
+
+```php
+$this->progressBar(5, function (): void {
+    // Some code in loop
+});
 ```
 
-![ExamplesProfile--timestamp](.github/assets/ExamplesProfile--timestamp.png)
+
+### Advanced usage
+
+![progress-full-example](.github/assets/progress-full-example.gif)
+
+```php
+$this->progressBar($arrayOfSomething, function ($value, $key, $step) {
+    // Some code in loop
+
+    if ($step === 3) {
+        throw new ExceptionBreak("Something went wrong with \$value={$value}. Stop the loop!");
+    }
+
+    return "<c>Callback Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
+}, 'Custom messages based on callback arguments', $throwBatchException);
+```
 
 
+## Helper Functions
 
-### Helper Functions
+As live-demo take a look at demo application - [./demo/Commands/DemoHelpers.php](demo/Commands/DemoHelpers.php).
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesHelpers.php](demo/Commands/ExamplesHelpers.php).
-
-Try to launch `./my-app examples:helpers`.
+Try to launch `./my-app helpers`.
 
 JBZoo/Cli uses [Symfony Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html) as base for aliases.
 
-#### Regualar question
+![helpers](.github/assets/helpers.gif)
+
+### Regualar question
 
 Ask any custom question and wait for a user's input. There is an option to set a default value.
 
@@ -343,7 +465,7 @@ $yourName = $this->ask("What's your name?", 'Default Noname');
 $this->_("Your name is \"{$yourName}\"");
 ```
 
-#### Ask user's password
+### Ask user's password
 
 Ask a question and hide the response. This is particularly convenient for passwords.
 There is an option to set a random value as default value.
@@ -353,7 +475,7 @@ $yourSecret = $this->askPassword("New password?", true);
 $this->_("Your secret is \"{$yourSecret}\"");
 ```
 
-#### Ask user to select the option
+### Ask user to select the option
 
 If you have a predefined set of answers the user can choose from, you could use a method `askOption` which makes sure
 that the user can only enter a valid string from a predefined list.
@@ -364,7 +486,7 @@ $selectedColor = $this->askOption("What's your favorite color?", ['Red', 'Blue',
 $this->_("Selected color is {$selectedColor}");
 ```
 
-#### Represent a yes/no question
+### Represent a yes/no question
 
 Suppose you want to confirm an action before actually executing it. Add the following to your command.
 
@@ -373,7 +495,7 @@ $isConfirmed = $this->confirmation('Are you ready to execute the script?');
 $this->_("Is confirmed: " . ($isConfirmed ? 'Yes' : 'No'));
 ```
 
-#### Rendering key=>value list
+### Rendering key=>value list
 
 If you need to show an aligned list, use the following code.
 
@@ -396,6 +518,79 @@ $this->_(CliRender::list([
 ```
 
 
+## Easy logging
+
+### Simple log
+
+```bash
+./my-app output --timestamp >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log 2>&1
+```
+
+![logs-simple](.github/assets/logs-simple.png)
+
+
+
+### Crontab
+
+Just add the `--output-mode=cron` flag and save the output to a file. Especially, this is very handy for saving logs for Crontab.
+
+```bash
+./my-app output --output-mode=cron >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log 2>&1
+```
+
+![logs-cron](.github/assets/logs-cron.png)
+
+
+
+### Elatcisearch / Logstash (ELK)
+
+Just add the `--output-mode=logstash` flag and save the output to a file. Especially, this is very handy for saving logs for ELK Stack.
+
+```bash
+./my-app output --output-mode=logstash >> /path/to/logstash/logs/`date +\%Y-\%m-\%d`.log 2>&1
+```
+
+![logs-logstash-exception](.github/assets/logs-logstash-exception.png)
+
+
+## Multi processing
+
+There is a multiprocess mode (please don't confuse it with multithreading) to speed up work with a monotonous dataset. Basically, `JBZoo\Cli` will start a separate child process (not a thread!) for each dataset and wait for all of them to execute (like a Promise). This is how you get acceleration, which will depend on the power of your server and the data processing algorithm.
+
+You will see a simple progress bar, but you won't be able to profile and log nicely, as it works for normal mode.
+
+You can find examples here
+ * [./tests/TestApp/Commands/TestSleepMulti.php](tests/TestApp/Commands/TestSleepMulti.php) - Parent command
+ * [./tests/TestApp/Commands/TestSleep.php](tests/TestApp/Commands/TestSleep.php) - Child command
+
+
+Notes:
+ * Pay attention on the method `executeOneProcess()` and `getListOfChildIds()` which are used to manage child processes. They are inherited from `CliCommandMultiProc` class.
+ * Optimal number of child processes is `Number of CPU cores - 1` . You can override this value by setting cli options. See them here [./src/CliCommandMultiProc.php](src/CliCommandMultiProc.php).
+ * Be really careful with concurrency. It's not easy to debug. Try to use `-vvv` option to see all errors and warnings.
+
+
+## Tips & Tricks
+
+ * Define constant `\JBZOO_CLI_NO_PREDEFINED_SHORTCUTS=true` to disable all predefined shortcuts in options if you have conflicts.
+ * Use class `\JBZoo\Cli\Codes` to get all available exit codes.
+
+
+## Contributing
+
+```shell
+# Fork the repo and build project
+make update
+
+# Make your local changes
+
+# Run all tests and check code style
+make test-all
+
+# Create your pull request and check all tests on GithubActions page
+```
+
+
 
 ## Useful projects and links
 
@@ -406,6 +601,7 @@ $this->_(CliRender::list([
 * [splitbrain/php-cli - Lightweight and no dependencies CLI framework](https://packagist.org/packages/splitbrain/php-cli)
 * [thephpleague/climate - Allows you to easily output colored text, special formats](https://github.com/thephpleague/climate)
 * [Exit Codes With Special Meanings](https://tldp.org/LDP/abs/html/exitcodes.html)
+* [How to redirect standard (stderr) error in bash](https://www.cyberciti.biz/faq/how-to-redirect-standard-error-in-bash/)
 
 
 

@@ -14,17 +14,8 @@
 
 declare(strict_types=1);
 
-namespace JBZoo\Cli;
+namespace JBZoo\Cli\OutputMods;
 
-use JBZoo\Cli\OutputMods\AbstractOutputMode;
-
-/**
- * Shortcut method.
- * @param mixed $messages
- * @psalm-suppress DeprecatedMethod
- * @suppress PhanDeprecatedFunction
- */
-function cli($messages = '', string $verboseLevel = OutLvl::DEFAULT): void
+class Exception extends \JBZoo\Cli\Exception
 {
-    AbstractOutputMode::getInstance()->_($messages, $verboseLevel);
 }

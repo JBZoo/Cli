@@ -24,7 +24,10 @@ return \array_merge($default, [
         'vendor/jbzoo/event',
 
         'vendor/symfony/console',
+        'vendor/symfony/console/Command',
         'vendor/symfony/process',
         'vendor/bluepsyduck/symfony-process-manager/src',
+        'vendor/psr/log',
+        'vendor/monolog/monolog',
     ],
 ]);

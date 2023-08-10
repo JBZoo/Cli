@@ -54,9 +54,6 @@ class TestCliOptions extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         $options = [
@@ -72,7 +69,7 @@ class TestCliOptions extends CliCommand
 
         foreach ($options as $option) {
             $result[$option] = [
-                'Default' => $this->helper->getInput()->getOption($option),
+                'Default' => $this->outputMode->getInput()->getOption($option),
                 'Bool'    => $this->getOptBool($option),
                 'Int'     => $this->getOptInt($option),
                 'Float'   => $this->getOptFloat($option),

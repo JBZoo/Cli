@@ -18,19 +18,22 @@ namespace JBZoo\Cli\ProgressBars;
 
 use JBZoo\Cli\CliRender;
 use JBZoo\Cli\Icons;
+use JBZoo\Cli\OutputMods\AbstractOutputMode;
 use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProgressBarProcessManager extends AbstractProgressBar
+class ProgressBarProcessManager extends AbstractSymfonyProgressBar
 {
     private OutputInterface $output;
 
     private SymfonyProgressBar $progressBar;
 
-    public function __construct(OutputInterface $output, int $maxCount = 0)
+    public function __construct(AbstractOutputMode $outputMode)
     {
-        $this->output      = $output;
-        $this->progressBar = $this->createProgressBar($output, $maxCount);
+        parent::__construct($outputMode);
+
+        $this->output      = $outputMode->getOutput();
+        $this->progressBar = $this->createProgressBar($this->output);
     }
 
     public function start(): void
@@ -46,6 +49,11 @@ class ProgressBarProcessManager extends AbstractProgressBar
     public function advance(): void
     {
         $this->progressBar->advance();
+    }
+
+    public function execute(): bool
+    {
+        return true;
     }
 
     protected function buildTemplate(): string

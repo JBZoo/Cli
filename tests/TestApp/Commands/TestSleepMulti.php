@@ -43,9 +43,6 @@ class TestSleepMulti extends CliCommandMultiProc
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeOneProcess(string $pmThreadId): int
     {
         $sleep = $this->getOptInt('sleep');
@@ -60,9 +57,9 @@ class TestSleepMulti extends CliCommandMultiProc
         $this->_([
             "Started: {$pmThreadId}",
             'Sleep : ' . $sleep,
-            'Arg #1: ' . $this->helper->getInput()->getArgument('arg-1'),
-            'Arg #2: ' . $this->helper->getInput()->getArgument('arg-2'),
-            'Arg #3: ' . $this->helper->getInput()->getArgument('arg-3'),
+            'Arg #1: ' . $this->outputMode->getInput()->getArgument('arg-1'),
+            'Arg #2: ' . $this->outputMode->getInput()->getArgument('arg-2'),
+            'Arg #3: ' . $this->outputMode->getInput()->getArgument('arg-3'),
             'Env Var: ' . Env::string('JBZOO_TEST_VAR'),
         ]);
 
@@ -90,10 +87,10 @@ class TestSleepMulti extends CliCommandMultiProc
     {
         $result = [];
 
-        foreach ($procPool as $procId => $procInfo) {
+        foreach ($procPool as $procInfo) {
             $result[] = $procInfo['std_out'];
         }
 
-        $this->_(json($result));
+        $this->_((string)json($result));
     }
 }

@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace JBZoo\PHPUnit;
 
 use JBZoo\Cli\CliApplication;
+use JBZoo\Data\JSON;
 use JBZoo\PHPUnit\TestApp\Commands\TestCliOptions;
 use JBZoo\PHPUnit\TestApp\Commands\TestCliStdIn;
 use JBZoo\PHPUnit\TestApp\Commands\TestProgress;
@@ -28,34 +29,42 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 
-class Helper extends PHPUnit
+use function JBZoo\Data\json;
+
+class Helper
 {
     public static function executeReal(
         string $command,
         array $options = [],
         string $preAction = '',
         string $postAction = '',
-    ): array {
+    ): CmdResult {
         $cwd = __DIR__ . '/TestApp';
 
         $options['no-ansi'] = null;
 
-        $realCommand = \trim(\implode(' ', [
-            $preAction,
-            Env::string('PHP_BIN', 'php'),
-            Cli::build("{$cwd}/cli-wrapper.php {$command}", $options),
-            '',
-            $postAction,
-        ]));
+        $realCommand = \trim(
+            \implode(' ', [
+                $preAction,
+                Env::string('PHP_BIN', 'php'),
+                Cli::build("{$cwd}/cli-wrapper.php {$command}", $options),
+                '',
+                $postAction,
+            ]),
+        );
 
-        // dump($realCommand);
         $process = Process::fromShellCommandline($realCommand, $cwd, null, null, 3600);
         $process->run();
 
-        return [$process->getExitCode(), \trim($process->getOutput()), \trim($process->getErrorOutput())];
+        return new CmdResult(
+            $process->getExitCode(),
+            \trim($process->getOutput()),
+            \trim($process->getErrorOutput()),
+            $realCommand,
+        );
     }
 
-    public static function executeVirtaul(string $command, array $options = []): string
+    public static function executeVirtaul(string $command, array $options = []): CmdResult
     {
         $rootPath = \dirname(__DIR__);
 
@@ -78,6 +87,49 @@ class Helper extends PHPUnit
             throw new Exception($buffer->fetch());
         }
 
-        return $buffer->fetch();
+        return new CmdResult(0, $buffer->fetch(), '', (string)$inputString);
+    }
+
+    public static function validateDateFormat(string $logMessage): bool
+    {
+        // Example: [2023-08-05T17:31:57.421918+04:00]
+        $pattern = '/\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+\+\d{2}:\d{2}\]/';
+        \preg_match($pattern, $logMessage, $matches);
+
+        return \count($matches) === 1;
+    }
+
+    public static function validateProfilerFormat(string $logMessage): bool
+    {
+        // Example: [+0.057s/  15.44 KB]
+        $pattern = '/\[\+\d+\.\d+s\/\s+\d+\.\d+ KB\]/';
+        \preg_match($pattern, $logMessage, $matches);
+
+        return \count($matches) === 1;
+    }
+
+    public static function assertLogstash(array $expected, JSON $stdOutput): void
+    {
+        isSame(
+            $expected,
+            [$stdOutput->get('level'), $stdOutput->get('message')],
+            "Expected: ['{$stdOutput->get('level')}', '{$stdOutput->get('message')}']",
+        );
+    }
+
+    /**
+     * @return JSON[]
+     */
+    public static function prepareLogstash(string $output): array
+    {
+        $lines = \explode("\n", $output);
+
+        $result = [];
+
+        foreach ($lines as $line) {
+            $result[] = json($line);
+        }
+
+        return $result;
     }
 }

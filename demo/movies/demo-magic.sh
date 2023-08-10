@@ -24,13 +24,13 @@
 ###############################################################################
 
 # the speed to "type" the text
-TYPE_SPEED=25
+TYPE_SPEED=20
 
 # no wait after "p" or "pe"
 NO_WAIT=false
 
 # if > 0, will pause for this amount of seconds before automatically proceeding with any p or pe
-PROMPT_TIMEOUT=3
+PROMPT_TIMEOUT=7
 
 # don't show command number unless user specifies it
 SHOW_CMD_NUMS=false
@@ -54,7 +54,7 @@ C_NUM=0
 # prompt and command color which can be overriden
 DEMO_PROMPT="\n$GREEN>$COLOR_RESET "
 DEMO_CMD_COLOR=$WHITE
-DEMO_COMMENT_COLOR=$GREY
+DEMO_COMMENT_COLOR=$WHITE
 
 ##
 # prints the script usage
@@ -114,16 +114,15 @@ function p() {
   fi
 
   if [[ -z $TYPE_SPEED ]]; then
-    echo -en "$cmd"
+    echo "$cmd"
   else
-    echo -en "$cmd" | pv -qL $[$TYPE_SPEED+(-2 + RANDOM%5)];
+    echo "$cmd" | pv -qL $[$TYPE_SPEED+(-2 + RANDOM%5)];
   fi
 
   # wait for the user to press a key before moving on
   if [ $NO_WAIT = false ]; then
     wait
   fi
-  echo ""
 }
 
 ##

@@ -20,20 +20,17 @@ use JBZoo\Cli\CliCommand;
 
 use function JBZoo\Cli\cli;
 
-class ExamplesProfile extends CliCommand
+class DemoProfile extends CliCommand
 {
     protected function configure(): void
     {
         $this
-            ->setName('examples:profile')
+            ->setName('profile')
             ->setDescription('Examples of memory and time profiling');
 
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         cli('Start cycles');

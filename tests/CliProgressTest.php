@@ -20,245 +20,317 @@ class CliProgressTest extends PHPUnit
 {
     public function testMinimal(): void
     {
-        $output = Helper::executeReal('test:progress', ['case' => 'minimal', 'sleep' => 1]);
-        isSame(0, $output[0]);
-        isSame('', $output[1]);
-        isNotContain('Progress of minimal', $output[2]);
-        isContain('0% (0 / 2) [>', $output[2]);
-        isContain('50% (1 / 2) [•', $output[2]);
-        isContain('100% (2 / 2) [•', $output[2]);
-        isContain('Last Step Message: n/a', $output[2]);
+        $cmdResult = Helper::executeReal('test:progress', ['case' => 'minimal', 'sleep' => 1]);
+        isSame(0, $cmdResult->code);
+        isSame('', $cmdResult->std);
+        isNotContain('Progress of minimal', $cmdResult->err);
+        isContain('0% (0 / 2) [>', $cmdResult->err);
+        isContain('50% (1 / 2) [•', $cmdResult->err);
+        isContain('100% (2 / 2) [•', $cmdResult->err);
+        isContain('Last Step Message: n/a', $cmdResult->err);
 
-        $output = Helper::executeReal('test:progress', ['case' => 'minimal', 'stdout-only' => null, 'sleep' => 1]);
-        isSame(0, $output[0]);
-        isSame('', $output[2]);
-        isContain('0% (0 / 2) [>', $output[1]);
-        isContain('50% (1 / 2) [•', $output[1]);
-        isContain('100% (2 / 2) [•', $output[1]);
-        isContain('Last Step Message: n/a', $output[1]);
+        $cmdResult = Helper::executeReal('test:progress', ['case' => 'minimal', 'stdout-only' => null, 'sleep' => 1]);
+        isSame(0, $cmdResult->code);
+        isSame('', $cmdResult->err);
+        isContain('0% (0 / 2) [>', $cmdResult->std);
+        isContain('50% (1 / 2) [•', $cmdResult->std);
+        isContain('100% (2 / 2) [•', $cmdResult->std);
+        isContain('Last Step Message: n/a', $cmdResult->std);
     }
 
     public function testMinimalVirtual(): void
     {
-        $output = Helper::executeVirtaul('test:progress', ['case' => 'one-message', 'ansi' => null]);
-        isContain('Progress of one-message', $output);
-        isContain('Last Step Message: 1, 1, 1', $output);
+        $cmdResult = Helper::executeVirtaul('test:progress', ['case' => 'one-message', 'ansi' => null]);
+        isContain('Progress of one-message', $cmdResult->std);
+        isContain('Last Step Message: 1, 1, 1', $cmdResult->std);
 
-        $output = Helper::executeVirtaul('test:progress', ['case' => 'array-assoc']);
-        isContain('Progress of array-assoc', $output);
-        isContain('Last Step Message: value_2, key_2, 1', $output);
+        $cmdResult = Helper::executeVirtaul('test:progress', ['case' => 'array-assoc']);
+        isContain('Progress of array-assoc', $cmdResult->std);
+        isContain('Last Step Message: value_2, key_2, 1', $cmdResult->std);
     }
 
     public function testNoItems(): void
     {
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:progress', ['case' => 'no-items-int']);
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame('no-items-int. Number of items is 0 or less', $stdOut);
+        $cmdResult = Helper::executeReal('test:progress', ['case' => 'no-items-int']);
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame('no-items-int. Number of items is 0 or less.', $cmdResult->std);
 
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:progress', ['case' => 'no-items-array']);
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame('no-items-array. Number of items is 0 or less', $stdOut);
+        $cmdResult = Helper::executeReal('test:progress', ['case' => 'no-items-array']);
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame('no-items-array. Number of items is 0 or less.', $cmdResult->std);
 
-        [$exitCode, $stdOut, $errOut] = Helper::executeReal('test:progress', ['case' => 'no-items-data']);
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame('no-items-data. Number of items is 0 or less', $stdOut);
+        $cmdResult = Helper::executeReal('test:progress', ['case' => 'no-items-data']);
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame('no-items-data. Number of items is 0 or less.', $cmdResult->std);
     }
 
-    public function testProgressMessages(): void
+    public function testProgressMessagesLegacy(): void
     {
-        [$exitCode, $stdOut, $errOut] = $this->exec('no-messages');
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "no-messages". Number of steps: 3.',
-            ' * (0): n/a',
-            ' * (1): n/a',
-            ' * (2): n/a',
-        ]), $stdOut);
+        $cmdResult = $this->exec('no-messages');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "no-messages". Number of steps: 3.',
+                ' * (0): n/a',
+                ' * (1): n/a',
+                ' * (2): n/a',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('one-message');
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "one-message". Number of steps: 3.',
-            ' * (0): n/a',
-            ' * (1): 1, 1, 1',
-            ' * (2): n/a',
-        ]), $stdOut);
+        $cmdResult = $this->exec('one-message');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "one-message". Number of steps: 3.',
+                ' * (0): n/a',
+                ' * (1): 1, 1, 1',
+                ' * (2): n/a',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('simple-message-all');
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "simple-message-all". Number of steps: 3.',
-            ' * (0): 0, 0, 0',
-            ' * (1): 1, 1, 1',
-            ' * (2): 2, 2, 2',
-        ]), $stdOut);
+        $cmdResult = $this->exec('simple-message-all');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "simple-message-all". Number of steps: 3.',
+                ' * (0): 0, 0, 0',
+                ' * (1): 1, 1, 1',
+                ' * (2): 2, 2, 2',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('array-int');
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "array-int". Number of steps: 3.',
-            ' * (0): 4, 0, 0',
-            ' * (1): 5, 1, 1',
-            ' * (2): 6, 2, 2',
-        ]), $stdOut);
+        $cmdResult = $this->exec('array-int');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "array-int". Number of steps: 3.',
+                ' * (0): 4, 0, 0',
+                ' * (1): 5, 1, 1',
+                ' * (2): 6, 2, 2',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('array-string');
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "array-string". Number of steps: 2.',
-            ' * (0): qwerty, 0, 0',
-            ' * (1): asdfgh, 1, 1',
-        ]), $stdOut);
+        $cmdResult = $this->exec('array-string');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "array-string". Number of steps: 2.',
+                ' * (0): qwerty, 0, 0',
+                ' * (1): asdfgh, 1, 1',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('array-assoc');
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "array-assoc". Number of steps: 2.',
-            ' * (key_1/0): value_1, key_1, 0',
-            ' * (key_2/1): value_2, key_2, 1',
-        ]), $stdOut);
+        $cmdResult = $this->exec('array-assoc');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "array-assoc". Number of steps: 2.',
+                ' * (key_1/0): value_1, key_1, 0',
+                ' * (key_2/1): value_2, key_2, 1',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('data');
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "data". Number of steps: 2.',
-            ' * (key_1/0): value_1, key_1, 0',
-            ' * (key_2/1): value_2, key_2, 1',
-        ]), $stdOut);
+        $cmdResult = $this->exec('data');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "data". Number of steps: 2.',
+                ' * (key_1/0): value_1, key_1, 0',
+                ' * (key_2/1): value_2, key_2, 1',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('break');
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "break". Number of steps: 3.',
-            ' * (0): 0',
-            ' * (1): Progress stopped',
-        ]), $stdOut);
+        $cmdResult = $this->exec('output-as-array');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "output-as-array". Number of steps: 2.',
+                ' * (key_1/0): value_1; key_1; 0',
+                ' * (key_2/1): value_2; key_2; 1',
+            ]),
+            $cmdResult->std,
+        );
+    }
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('output-as-array');
-        isSame('', $errOut);
-        isSame(0, $exitCode);
-        isSame(\implode("\n", [
-            'Working on "output-as-array". Number of steps: 2.',
-            ' * (key_1/0): value_1; key_1; 0',
-            ' * (key_2/1): value_2; key_2; 1',
-        ]), $stdOut);
+    public function testProgressBreakLegacyReturnMessage(): void
+    {
+        $cmdResult = $this->exec('break');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "break". Number of steps: 3.',
+                ' * (0): 0',
+                ' * (1): Progress aborted.',
+            ]),
+            $cmdResult->std,
+        );
+    }
+
+    public function testProgressBreakWithException(): void
+    {
+        $cmdResult = $this->exec('break-exception');
+        isSame('', $cmdResult->err);
+        isSame(0, $cmdResult->code);
+        isSame(
+            \implode("\n", [
+                'Working on "break-exception". Number of steps: 3.',
+                ' * (0): 0',
+                ' * (1): Progress aborted. Something went wrong with $listValue=1',
+            ]),
+            $cmdResult->std,
+        );
     }
 
     public function testException(): void
     {
-        [$exitCode, $stdOut, $errOut] = $this->exec('exception');
-        isSame(1, $exitCode);
-        isContain('Exception #1', $errOut);
-        isSame(\implode("\n", [
-            'Working on "exception". Number of steps: 3.',
-            ' * (0): n/a',
-        ]), $stdOut);
+        $cmdResult = $this->exec('exception');
+        isSame(1, $cmdResult->code);
+        isContain('Exception #1', $cmdResult->err);
+        isSame(
+            \implode("\n", [
+                'Working on "exception". Number of steps: 3.',
+                ' * (0): n/a',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('exception-list');
-        isSame(1, $exitCode);
-        isContain('Exception #0', $errOut);
-        isSame('Working on "exception-list". Number of steps: 10.', $stdOut);
+        $cmdResult = $this->exec('exception-list');
+        isSame(1, $cmdResult->code);
+        isContain('Exception #0', $cmdResult->err);
+        isSame('Working on "exception-list". Number of steps: 10.', $cmdResult->std);
     }
 
     public function testBatchException(): void
     {
-        [$exitCode, $stdOut, $errOut] = $this->exec('exception', ['batch-exception' => null]);
-        isSame(1, $exitCode);
-        isContain('Error list:', $errOut);
-        isContain('* (1): Exception #1', $errOut);
-        isSame(\implode("\n", [
-            'Working on "exception". Number of steps: 3.',
-            ' * (0): n/a',
-            ' * (1): Error. Exception #1',
-            ' * (2): n/a',
-        ]), $stdOut);
+        $cmdResult = $this->exec('exception', ['batch-exception' => null]);
+        isSame(1, $cmdResult->code);
+        isContain('Error list:', $cmdResult->err);
+        isContain('* (1): Exception #1', $cmdResult->err);
+        isSame(
+            \implode("\n", [
+                'Working on "exception". Number of steps: 3.',
+                ' * (0): n/a',
+                ' * (1): Exception: Exception #1',
+                ' * (2): n/a',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('exception-list', ['batch-exception' => null]);
-        isSame(1, $exitCode);
-        isContain('Error list:', $errOut);
-        isContain('* (0): Exception #0', $errOut);
-        isContain('* (3): Exception #3', $errOut);
-        isContain('* (6): Exception #6', $errOut);
-        isContain('* (9): Exception #9', $errOut);
-        isSame(\implode("\n", [
-            'Working on "exception-list". Number of steps: 10.',
-            ' * (0): Error. Exception #0',
-            ' * (1): n/a',
-            ' * (2): n/a',
-            ' * (3): Error. Exception #3',
-            ' * (4): n/a',
-            ' * (5): n/a',
-            ' * (6): Error. Exception #6',
-            ' * (7): n/a',
-            ' * (8): n/a',
-            ' * (9): Error. Exception #9',
-        ]), $stdOut);
+        $cmdResult = $this->exec('exception-list', ['batch-exception' => null]);
+        isSame(1, $cmdResult->code);
+        isContain('Error list:', $cmdResult->err);
+        isContain('* (0): Exception #0', $cmdResult->err);
+        isContain('* (3): Exception #3', $cmdResult->err);
+        isContain('* (6): Exception #6', $cmdResult->err);
+        isContain('* (9): Exception #9', $cmdResult->err);
+        isSame(
+            \implode("\n", [
+                'Working on "exception-list". Number of steps: 10.',
+                ' * (0): Exception: Exception #0',
+                ' * (1): n/a',
+                ' * (2): n/a',
+                ' * (3): Exception: Exception #3',
+                ' * (4): n/a',
+                ' * (5): n/a',
+                ' * (6): Exception: Exception #6',
+                ' * (7): n/a',
+                ' * (8): n/a',
+                ' * (9): Exception: Exception #9',
+            ]),
+            $cmdResult->std,
+        );
 
-        [$exitCode, $stdOut, $errOut] = $this->exec('exception-list', ['-b' => null, '-vv' => null], false);
-        isSame(1, $exitCode);
-        isContain('[JBZoo\Cli\ProgressBars\Exception]', $errOut);
-        isContain('Error list:', $errOut);
-        isContain('* (0): Exception #0', $errOut);
-        isContain('* (3): Exception #3', $errOut);
-        isContain('* (6): Exception #6', $errOut);
-        isContain('* (9): Exception #9', $errOut);
-        isContain('Caught exceptions                : 4', $errOut);
-        isContain('Last Step Message                : Error. Exception #9', $errOut);
-        isContain('Exception trace:', $errOut);
-        isSame('', $stdOut);
+        $cmdResult = $this->exec('exception-list', ['-b' => null, '-vv' => null], false);
+        isSame(1, $cmdResult->code);
+        isContain('[JBZoo\Cli\ProgressBars\Exception]', $cmdResult->err);
+        isContain('Error list:', $cmdResult->err);
+        isContain('* (0): Exception #0', $cmdResult->err);
+        isContain('* (3): Exception #3', $cmdResult->err);
+        isContain('* (6): Exception #6', $cmdResult->err);
+        isContain('* (9): Exception #9', $cmdResult->err);
+        isContain('Caught exceptions               : 4', $cmdResult->err);
+        isContain('Last Step Message               : Exception: Exception #9', $cmdResult->err);
+        isContain('Exception trace:', $cmdResult->err);
+        isEmpty($cmdResult->std, $cmdResult->std);
     }
 
     public function testNested(): void
     {
-        [$exitCode, $stdOut, $errOut] = $this->exec('nested', ['-b' => null, '-vv' => null]);
+        $cmdResult = $this->exec('nested', ['-b' => null, '-vv' => null]);
 
-        isSame(0, $exitCode);
-        isSame('', $errOut);
-        isSame(\implode("\n", [
-            'Working on "nested_parent". Number of steps: 3.',
-            'Working on "nested_child_0". Number of steps: 4.',
-            ' * (0): out_child_0_0',
-            ' * (1): out_child_0_1',
-            ' * (2): out_child_0_2',
-            ' * (3): out_child_0_3',
-            '',
-            ' * (0): out_parent_0',
-            'Working on "nested_child_1". Number of steps: 4.',
-            ' * (0): out_child_1_0',
-            ' * (1): out_child_1_1',
-            ' * (2): out_child_1_2',
-            ' * (3): out_child_1_3',
-            '',
-            ' * (1): out_parent_1',
-            'Working on "nested_child_2". Number of steps: 4.',
-            ' * (0): out_child_2_0',
-            ' * (1): out_child_2_1',
-            ' * (2): out_child_2_2',
-            ' * (3): out_child_2_3',
-            '',
-            ' * (2): out_parent_2',
-        ]), $stdOut);
+        isSame(0, $cmdResult->code);
+        isSame('', $cmdResult->err);
+        isSame(
+            \implode("\n", [
+                'Working on "nested_parent". Number of steps: 3.',
+                'Working on "nested_child_0". Number of steps: 4. Level: 2.',
+                ' * (0): out_child_0_0',
+                ' * (1): out_child_0_1',
+                ' * (2): out_child_0_2',
+                ' * (3): out_child_0_3',
+                ' * (0): out_parent_0',
+                'Working on "nested_child_1". Number of steps: 4. Level: 2.',
+                ' * (0): out_child_1_0',
+                ' * (1): out_child_1_1',
+                ' * (2): out_child_1_2',
+                ' * (3): out_child_1_3',
+                ' * (1): out_parent_1',
+                'Working on "nested_child_2". Number of steps: 4. Level: 2.',
+                ' * (0): out_child_2_0',
+                ' * (1): out_child_2_1',
+                ' * (2): out_child_2_2',
+                ' * (3): out_child_2_3',
+                ' * (2): out_parent_2',
+            ]),
+            $cmdResult->std,
+        );
     }
 
-    private function exec(string $testCase, array $addOptions = [], bool $noProgress = true): array
+    public function testCatchMode(): void
+    {
+        $cmdResult = $this->exec('catch-mode');
+
+        isSame(0, $cmdResult->code);
+        isSame('', $cmdResult->err);
+        isSame(
+            \implode("\n", [
+                'Working on "catch-mode". Number of steps: 3.',
+                ' * (0): Regular return 0; _(); cli(); echo',
+                ' * (1): Regular return 1; _(); cli(); echo',
+                ' * (2): Regular return 2; _(); cli(); echo',
+            ]),
+            $cmdResult->std,
+        );
+    }
+
+    private function exec(string $testCase, array $addOptions = [], bool $noProgress = true): CmdResult
     {
         if ($noProgress) {
             $options['no-progress'] = null;
         }
 
         $options['case'] = $testCase;
-        $options         = \array_merge($options, $addOptions);
+
+        $options = \array_merge($options, $addOptions);
 
         return Helper::executeReal('test:progress', $options);
     }

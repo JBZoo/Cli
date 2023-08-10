@@ -19,17 +19,14 @@ namespace DemoApp\Commands;
 use JBZoo\Cli\CliCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-class ExamplesOptionsStrictTypes extends CliCommand
+class DemoOptionsStrictTypes extends CliCommand
 {
     protected function configure(): void
     {
         $this
-            ->setName('examples:options-strict-types')
+            ->setName('options-strict-types')
             ->setDescription('Show description of command.')
-            ->setHelp(
-                "Full description and usage of command.\n" .
-                'You can use severla lines.',
-            )
+            ->setHelp("Full description and usage of command.\nYou can use severla lines.")
 
             // None
             ->addOption('opt', 'o', InputOption::VALUE_NONE, 'Just a boolean flag')
@@ -88,9 +85,6 @@ class ExamplesOptionsStrictTypes extends CliCommand
         parent::configure();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function executeAction(): int
     {
         // //////////////////////////////////////// Just a boolean flag
@@ -157,7 +151,7 @@ class ExamplesOptionsStrictTypes extends CliCommand
         // ./my-app examples:agruments -aQwerty -aAsd
         $this->getOpt('opt-array-req-default'); // 'Asd'
 
-        $input = $this->helper->getInput();
+        $input = $this->outputMode->getInput();
         // //////////////////////////////////////// Arguments
         // ./my-app examples:agruments
         $input->getArgument('arg-req'); // null
