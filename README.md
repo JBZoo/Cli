@@ -23,7 +23,6 @@
    * [Progress Bar](#progress-bar-1)
       * [Simple example](#simple-example)
       * [Advanced usage](#advanced-usage)
-      * [Multi processing](#multi-processing)
    * [Helper Functions](#helper-functions)
       * [Regualar question](#regualar-question)
       * [Ask user's password](#ask-users-password)
@@ -34,13 +33,14 @@
       * [Simple log](#simple-log)
       * [Crontab](#crontab)
       * [Elatcisearch / Logstash (ELK)](#elatcisearch--logstash-elk)
+   * [Multi processing](#multi-processing)
    * [Contributing](#contributing)
    * [Useful projects and links](#useful-projects-and-links)
    * [License](#license)
    * [See Also](#see-also)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: smetdenis, at: Thu Aug 10 14:34:30 +04 2023 -->
+<!-- Added by: smetdenis, at: Thu Aug 10 15:21:24 +04 2023 -->
 
 <!--te-->
 
@@ -340,15 +340,23 @@ Example of usage of verbosity levels
 ![output-full-example](.github/assets/output-full-example.png)
 
 ```php
-use function JBZoo\Cli\cli;
-
 // There two strictly(!) recommended output ways:
-$this->_($messages, $verboseLevel, $context); // Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
-cli($messages, $verboseLevel, $context);      // This is global alias function of `$this->_(...)`. It's nice to have it if you want to display a text from not CliCommand class.
 
-// * `$messages` can be an array of strings or a string. Array of strings will be imploded with new line.
-// * `$verboseLevel` is one of value form the class \JBZoo\Cli\OutLvl::* 
-// * `$context` is array of extra info. Will be serialized to JSON and displayed in the end of the message. 
+/**
+ * Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
+ * 
+ * @param string|string[] $messages     Output message(s). Can be an array of strings or a string. Array of strings will be imploded with new line.
+ * @param string          $verboseLevel is one of value form the class \JBZoo\Cli\OutLvl::*
+ * @param string          $context      is array of extra info. Will be serialized to JSON and displayed in the end of the message.
+ */
+$this->_($messages, $verboseLevel, $context);
+
+/**
+ * This is global alias function of `$this->_(...)`.
+ * It's nice to have it if you want to display a text from not CliCommand class.
+ */
+JBZoo\Cli\cli($messages, $verboseLevel, $context);
+ 
 ```
 
 ```bash
@@ -412,15 +420,6 @@ $this->progressBar($arrayOfSomething, function ($value, $key, $step) {
     return "<c>Callback Args</c> \$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>";
 }, 'Custom messages based on callback arguments', $throwBatchException);
 ```
-
-
-### Multi processing
-
-Docs in progress...
-But you can find examples here
- * [./tests/TestApp/Commands/TestSleepMulti.php](tests/TestApp/Commands/TestSleepMulti.php) - Parent command
- * [./tests/TestApp/Commands/TestSleep.php](tests/TestApp/Commands/TestSleep.php) - Child command
-
 
 
 ## Helper Functions
@@ -528,6 +527,23 @@ Just add the `--output-mode=logstash` flag and save the output to a file. Especi
 ```
 
 ![logs-logstash-exception](.github/assets/logs-logstash-exception.png)
+
+
+## Multi processing
+
+There is a multiprocess mode (please don't confuse it with multithreading) to speed up work with a monotonous dataset. Basically, `JBZoo\Cli` will start a separate child process (not a thread!) for each dataset and wait for all of them to execute (like a Promise). This is how you get acceleration, which will depend on the power of your server and the data processing algorithm.
+
+You will see a simple progress bar, but you won't be able to profile and log nicely, as it works for normal mode.
+
+You can find examples here
+ * [./tests/TestApp/Commands/TestSleepMulti.php](tests/TestApp/Commands/TestSleepMulti.php) - Parent command
+ * [./tests/TestApp/Commands/TestSleep.php](tests/TestApp/Commands/TestSleep.php) - Child command
+
+
+Notes:
+ * Pay attention on the method `executeOneProcess()` and `getListOfChildIds()` which are used to manage child processes. They are inherited from `CliCommandMultiProc` class.
+ * Optimal number of child processes is `Number of CPU cores - 1` . You can override this value by setting cli options. See them here [./src/CliCommandMultiProc.php](src/CliCommandMultiProc.php).
+ * Be really careful with concurrency. It's not easy to debug. Try to use `-vvv` option to see all errors and warnings.
 
 
 
