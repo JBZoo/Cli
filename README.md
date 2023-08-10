@@ -6,17 +6,21 @@
 
 The library greatly extends the functionality of [Symfony/Console](https://symfony.com/doc/current/components/console.html) and helps make creating new console utilities in PHP quicker and easier.
 
- * Improved progress bar with a new template and additional information. See [ExamplesProgressBar.php](demo/Commands/ExamplesProgressBar.php).
- * Convert option values to a strict variable type. See [ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
- * New built-in styles and colors for text output. See [ExamplesStyles.php](demo/Commands/ExamplesStyles.php).
- * A powerful alias `$this->_($messages, $level)` instead of `output->wrileln()`. See [ExamplesOutput.php](demo/Commands/ExamplesOutput.php).
- * Display timing and memory usage information with `--profile` option.
- * Show timestamp at the beginning of each message with `--timestamp` option.
- * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors`. 
- * None-zero exit code on any StdErr message with `--non-zero-on-error` option.
- * For any errors messages application will use StdOut instead of StdErr `--stdout-only` option (It's on your own risk!).
- * Disable progress bar animation for logs with `--no-progress` option.
- * Shortcut for crontab `--cron`. It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv`.
+ * Improved ProgressBar for loop actions and extra debug info. See [DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and see [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
+ * Convert option values to a strict variable type. See [DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
+ * New built-in styles and colors for text output. See [DemoStyles.php](demo/Commands/DemoStyles.php).
+ * A powerful alias `$this->_($messages, $level, $context)`, or `cli($messages, $level, $context)`. See [DemoOutput.php](demo/Commands/DemoOutput.php).
+ * Extra options:
+   * Display timing and memory usage information with `--profile` (`-X`) option.
+   * Show timestamp at the beginning of each message with `--timestamp` (`-T`) option.
+   * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors` (`-M`). 
+   * None-zero exit code on any StdErr message with `--non-zero-on-error` (`-Z`) option.
+   * For any errors messages application will use StdOut instead of StdErr `--stdout-only` (`-1`) option (It's on your own risk!).
+   * Disable progress bar animation for logs with `--no-progress` (`-P`) option.
+ * Different output modes:
+   * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
+   * `--output-mode=cron`. It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv`.
+   * `--output-mode=logstash`. It's basically focused on Logstash format for ELT Stack. Also, it's `--stdout-only --no-progress -vv`.
 
 ## Live Demo
 
@@ -134,7 +138,7 @@ $application->run();
 </details>
 
 
-The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
+The simplest CLI action: [./demo/Commands/DemoSimple.php](demo/Commands/DemoSimple.php)
 
 <details>
   <summary>See Details</summary>
@@ -178,7 +182,7 @@ The simplest CLI action: [./demo/Commands/Simple.php](demo/Commands/Simple.php)
 
 ### Sanitize input variables
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesOptionsStrictTypes.php](demo/Commands/ExamplesOptionsStrictTypes.php).
+As live-demo take a look at demo application - [./demo/Commands/DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
 
 Try to launch `./my-app examples:options-strict-types`.
 
@@ -269,7 +273,7 @@ And predefined shortcuts for standard styles of Symfony Console
 
 Console commands have different verbosity levels, which determine the messages displayed in their output. 
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/ExamplesOutput.php). You can see [Demo video](https://asciinema.org/a/486674).
+As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/DemoOutput.php). You can see [Demo video](https://asciinema.org/a/486674).
 
 Example of usage of verbosity levels
 
@@ -308,7 +312,7 @@ As result, you will see
 
 ### Memory and time profiling
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesProfile.php](demo/Commands/ExamplesProfile.php).
+As live-demo take a look at demo application - [./demo/Commands/DemoProfile.php](demo/Commands/DemoProfile.php).
 
 Try to launch `./my-app examples:profile --profile`.
 
@@ -330,7 +334,7 @@ No need to bother with the logging setup as Symfony/Console suggests. Just add t
 
 ### Helper Functions
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesHelpers.php](demo/Commands/ExamplesHelpers.php).
+As live-demo take a look at demo application - [./demo/Commands/DemoHelpers.php](demo/Commands/DemoHelpers.php).
 
 Try to launch `./my-app examples:helpers`.
 
