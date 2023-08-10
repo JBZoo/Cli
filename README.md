@@ -4,6 +4,35 @@
 [![Stable Version](https://poser.pugx.org/jbzoo/cli/version)](https://packagist.org/packages/jbzoo/cli/)    [![Total Downloads](https://poser.pugx.org/jbzoo/cli/downloads)](https://packagist.org/packages/jbzoo/cli/stats)    [![Dependents](https://poser.pugx.org/jbzoo/cli/dependents)](https://packagist.org/packages/jbzoo/cli/dependents?order_by=downloads)    [![GitHub License](https://img.shields.io/github/license/jbzoo/cli)](https://github.com/JBZoo/Cli/blob/master/LICENSE)
 
 
+<!--ts-->
+   * [Live Demo](#live-demo)
+      * [Output regular messages](#output-regular-messages)
+      * [Progress Bar](#progress-bar)
+   * [Installing](#installing)
+   * [Usage Example](#usage-example)
+   * [Built-in Functionality](#built-in-functionality)
+      * [Sanitize input variables](#sanitize-input-variables)
+      * [Rendering text in different colors and styles](#rendering-text-in-different-colors-and-styles)
+      * [Verbosity Levels](#verbosity-levels)
+      * [Memory and time profiling](#memory-and-time-profiling)
+   * [Helper Functions](#helper-functions)
+      * [Regualar question](#regualar-question)
+      * [Ask user's password](#ask-users-password)
+      * [Ask user to select the option](#ask-user-to-select-the-option)
+      * [Represent a yes/no question](#represent-a-yesno-question)
+      * [Rendering key=&gt;value list](#rendering-keyvalue-list)
+   * [Easy logging](#easy-logging)
+      * [Crontab](#crontab)
+      * [ELK Stack. Elatcisearch / Logstash](#elk-stack-elatcisearch--logstash)
+   * [Useful projects and links](#useful-projects-and-links)
+   * [License](#license)
+   * [See Also](#see-also)
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+<!-- Added by: smetdenis, at: Thu Aug 10 11:27:07 +04 2023 -->
+
+<!--te-->
+
 The library greatly extends the functionality of [Symfony/Console](https://symfony.com/doc/current/components/console.html) and helps make creating new console utilities in PHP quicker and easier.
 
  * Improved ProgressBar for loop actions and extra debug info. See [DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and see [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
@@ -180,7 +209,7 @@ The simplest CLI action: [./demo/Commands/DemoSimple.php](demo/Commands/DemoSimp
 
 As live-demo take a look at demo application - [./demo/Commands/DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
 
-Try to launch `./my-app examples:options-strict-types`.
+Try to launch `./my-app options-strict-types`.
 
 ```php
 // If the option has `InputOption::VALUE_NONE` it returns true/false.
@@ -209,7 +238,7 @@ $value = $this->getOptArray('flag-name');    // Converts an input variable to tr
 $value = $this->getOptDatetime('flag-name'); // Converts an input variable to \DateTimeImmutable object.
 
 // Use standard input as input variable.
-// Example. `echo " Qwerty 123 " | php ./my-app examples:agruments`
+// Example. `echo " Qwerty 123 " | php ./my-app agruments`
 $value = self::getStdIn();                   // Reads StdIn as string value. `$value === " Qwerty 123 \n"`
 ```
 
@@ -284,20 +313,20 @@ cli($messages, $verboseLevel);      // This is global alias function of `$this->
 
 ```bash
 # Do not output any message
-./my-app examples:output -q
-./my-app examples:output --quiet
+./my-app output -q
+./my-app output --quiet
 
 # Normal behavior, no option required. Only the most useful messages.
-./my-app examples:output 
+./my-app output 
 
 # Increase verbosity of messages
-./my-app examples:output -v
+./my-app output -v
 
 # Display also the informative non essential messages
-./my-app examples:output -vv
+./my-app output -vv
 
 # Display all messages (useful to debug errors)
-./my-app examples:output -vvv
+./my-app output -vvv
 ```
 
 As result, you will see
@@ -310,21 +339,9 @@ As result, you will see
 
 As live-demo take a look at demo application - [./demo/Commands/DemoProfile.php](demo/Commands/DemoProfile.php).
 
-Try to launch `./my-app examples:profile --profile`.
+Try to launch `./my-app profile --profile`.
 
 ![ExamplesProfile](.github/assets/ExamplesProfile.png)
-
-
-
-### Easy logging
-
-No need to bother with the logging setup as Symfony/Console suggests. Just add the `--timestamp` flag and save the output to a file. Especially, this is very handy for saving cron logs.
-
-```bash
-./my-app examples:profile --timestamp >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log
-```
-
-![ExamplesProfile--timestamp](.github/assets/ExamplesProfile--timestamp.png)
 
 
 
@@ -332,11 +349,11 @@ No need to bother with the logging setup as Symfony/Console suggests. Just add t
 
 As live-demo take a look at demo application - [./demo/Commands/DemoHelpers.php](demo/Commands/DemoHelpers.php).
 
-Try to launch `./my-app examples:helpers`.
+Try to launch `./my-app helpers`.
 
 JBZoo/Cli uses [Symfony Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html) as base for aliases.
 
-#### Regualar question
+### Regualar question
 
 Ask any custom question and wait for a user's input. There is an option to set a default value.
 
@@ -345,7 +362,7 @@ $yourName = $this->ask("What's your name?", 'Default Noname');
 $this->_("Your name is \"{$yourName}\"");
 ```
 
-#### Ask user's password
+### Ask user's password
 
 Ask a question and hide the response. This is particularly convenient for passwords.
 There is an option to set a random value as default value.
@@ -355,7 +372,7 @@ $yourSecret = $this->askPassword("New password?", true);
 $this->_("Your secret is \"{$yourSecret}\"");
 ```
 
-#### Ask user to select the option
+### Ask user to select the option
 
 If you have a predefined set of answers the user can choose from, you could use a method `askOption` which makes sure
 that the user can only enter a valid string from a predefined list.
@@ -366,7 +383,7 @@ $selectedColor = $this->askOption("What's your favorite color?", ['Red', 'Blue',
 $this->_("Selected color is {$selectedColor}");
 ```
 
-#### Represent a yes/no question
+### Represent a yes/no question
 
 Suppose you want to confirm an action before actually executing it. Add the following to your command.
 
@@ -375,7 +392,7 @@ $isConfirmed = $this->confirmation('Are you ready to execute the script?');
 $this->_("Is confirmed: " . ($isConfirmed ? 'Yes' : 'No'));
 ```
 
-#### Rendering key=>value list
+### Rendering key=>value list
 
 If you need to show an aligned list, use the following code.
 
@@ -397,6 +414,28 @@ $this->_(CliRender::list([
  * Another Key #2: Qwerty
 ```
 
+
+## Easy logging
+
+
+### Crontab
+
+Just add the `--output-mode=cron` flag and save the output to a file. Especially, this is very handy for saving logs for Crontab.
+
+```bash
+./my-app output --output-mode=cron >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log 2>&1
+```
+
+![ExamplesProfile--timestamp](.github/assets/ExamplesProfile--timestamp.png)
+
+
+### ELK Stack. Elatcisearch / Logstash
+
+Just add the `--output-mode=logstash` flag and save the output to a file. Especially, this is very handy for saving logs for ELK Stack.
+
+```bash
+./my-app output --output-mode=logstash >> /path/to/logstash/logs/`date +\%Y-\%m-\%d`.log 2>&1
+```
 
 
 ## Useful projects and links
