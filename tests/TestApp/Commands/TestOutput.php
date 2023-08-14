@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace JBZoo\PHPUnit\TestApp\Commands;
 
 use JBZoo\Cli\CliCommand;
+use JBZoo\Cli\CliHelper;
 use JBZoo\Cli\Exception;
 use JBZoo\Cli\OutLvl;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,13 +34,27 @@ class TestOutput extends CliCommand
         $this
             ->setName('test:output')
             ->addOption('exception', null, InputOption::VALUE_OPTIONAL, 'Throw exception')
-            ->addOption('type-of-vars', null, InputOption::VALUE_NONE, 'Check type of vars');
+            ->addOption('type-of-vars', null, InputOption::VALUE_NONE, 'Check type of vars')
+            ->addOption('extra-context', null, InputOption::VALUE_NONE, 'Check type of vars');
 
         parent::configure();
     }
 
     protected function executeAction(): int
     {
+        if ($this->getOptBool('extra-context')) {
+            CliHelper::getInstance()->appendExtraContext(['foo' => ['bar' => 1]]);
+            $this->_('Message with extra context #1', OutLvl::DEFAULT, ['zzz' => 'line #1']);
+
+            CliHelper::getInstance()->appendExtraContext(['foo' => ['bar' => 2]]);
+            $this->_('Message with extra context #2', OutLvl::DEFAULT, ['zzz' => 'line #2']);
+
+            CliHelper::getInstance()->appendExtraContext(['foo' => ['zzz' => 3]]);
+            $this->_('Message with extra context #3', OutLvl::DEFAULT, ['zzz' => 'line #3']);
+
+            return 0;
+        }
+
         if ($this->getOptBool('type-of-vars')) {
             $this->_(' ');
             $this->_(0);

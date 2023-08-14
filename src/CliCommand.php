@@ -66,12 +66,12 @@ abstract class CliCommand extends Command
         }
 
         $nestedLevel++;
-        $progressBar->setNextedLevel($nestedLevel);
+        $progressBar->setNestedLevel($nestedLevel);
 
         $progressBar->execute();
 
         $nestedLevel--;
-        $progressBar->setNextedLevel($nestedLevel);
+        $progressBar->setNestedLevel($nestedLevel);
 
         return $progressBar;
     }
