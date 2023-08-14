@@ -97,14 +97,14 @@ abstract class AbstractProgressBar
         return $this;
     }
 
-    public function setNextedLevel(int $nestedLevel): self
+    public function setNestedLevel(int $nestedLevel): self
     {
         $this->nestedLevel = $nestedLevel;
 
         return $this;
     }
 
-    public function getNextedLevel(): int
+    public function getNestedLevel(): int
     {
         return $this->nestedLevel;
     }

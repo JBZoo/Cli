@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
+use JBZoo\Cli\OutputMods\AbstractOutputMode;
 use JBZoo\Utils\Env;
 use JBZoo\Utils\Str;
 
@@ -24,6 +25,23 @@ use function JBZoo\Utils\isStrEmpty;
 
 class CliHelper
 {
+    private static ?AbstractOutputMode $outputMode = null;
+
+    public static function arrayMergeRecursiveDistinct(array &$array1, array &$array2): array
+    {
+        $merged = $array1;
+
+        foreach ($array2 as $key => &$value) {
+            if (\is_array($value) && isset($merged[$key]) && \is_array($merged[$key])) {
+                $merged[$key] = self::arrayMergeRecursiveDistinct($merged[$key], $value);
+            } else {
+                $merged[$key] = $value;
+            }
+        }
+
+        return $merged;
+    }
+
     public static function getRootPath(): string
     {
         $rootPath = \defined('JBZOO_PATH_ROOT') ? (string)JBZOO_PATH_ROOT : null;
@@ -126,5 +144,21 @@ class CliHelper
         }
 
         return \rtrim($result);
+    }
+
+    public static function setInstance(AbstractOutputMode $outputMode): void
+    {
+        self::$outputMode = $outputMode;
+    }
+
+    public static function getInstance(): AbstractOutputMode
+    {
+        $result = self::$outputMode;
+
+        if ($result === null) {
+            throw new Exception('Output mode is not defined');
+        }
+
+        return $result;
     }
 }

@@ -385,4 +385,37 @@ class CliOutputTextTest extends PHPUnit
         isSame(\str_word_count($cmdResultAlias->std), \str_word_count($cmdResult->std));
         isSame(\count(\explode("\n", $cmdResultAlias->std)), \count(\explode("\n", $cmdResult->std)));
     }
+
+    public function testExtraContext(): void
+    {
+        $cmdResult = Helper::executeReal('test:output', [
+            'extra-context' => null,
+        ]);
+
+        isSame(0, $cmdResult->code);
+        isSame('', $cmdResult->err);
+        isSame(
+            \implode("\n", [
+                'Message with extra context #1 {"foo":{"bar":1},"zzz":"line #1"}',
+                'Message with extra context #2 {"foo":{"bar":2},"zzz":"line #2"}',
+                'Message with extra context #3 {"foo":{"bar":2,"zzz":3},"zzz":"line #3"}',
+            ]),
+            $cmdResult->std,
+        );
+    }
+
+    public function testExtraContextCron(): void
+    {
+        $cmdResult = Helper::executeReal('test:output', [
+            'output-mode'   => 'cron',
+            'extra-context' => null,
+        ]);
+
+        isSame(0, $cmdResult->code);
+        isSame('', $cmdResult->err);
+
+        isContain('] Message with extra context #1 {"foo":{"bar":1},"zzz":"line #1"}', $cmdResult->std);
+        isContain('] Message with extra context #2 {"foo":{"bar":2},"zzz":"line #2"}', $cmdResult->std);
+        isContain('] Message with extra context #3 {"foo":{"bar":2,"zzz":3},"zzz":"line #3"}', $cmdResult->std);
+    }
 }

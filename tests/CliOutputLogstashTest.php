@@ -90,30 +90,10 @@ class CliOutputLogstashTest extends PHPUnit
                     'type'    => 'string',
                 ],
                 'process' => [
-                    'pid'             => 'integer',
-                    'executable'      => 'string',
-                    'args_count'      => ['string', 'string', 'string', 'string', 'string'],
-                    'command_line'    => 'string',
-                    'process_command' => 'string',
-                    'args'            => [
-                        'command'           => 'string',
-                        'exception'         => 'NULL',
-                        'type-of-vars'      => 'boolean',
-                        'no-progress'       => 'boolean',
-                        'mute-errors'       => 'boolean',
-                        'stdout-only'       => 'boolean',
-                        'non-zero-on-error' => 'boolean',
-                        'timestamp'         => 'boolean',
-                        'profile'           => 'boolean',
-                        'output-mode'       => 'string',
-                        'cron'              => 'boolean',
-                        'help'              => 'boolean',
-                        'quiet'             => 'boolean',
-                        'verbose'           => 'boolean',
-                        'version'           => 'boolean',
-                        'ansi'              => 'boolean',
-                        'no-interaction'    => 'boolean',
-                    ],
+                    'pid'               => 'integer',
+                    'executable'        => 'string',
+                    'command_line'      => 'string',
+                    'process_command'   => 'string',
                     'working_directory' => 'string',
                 ],
             ],
@@ -478,6 +458,31 @@ class CliOutputLogstashTest extends PHPUnit
         Helper::assertLogstash(['WARNING', 'Legacy'], $stdOutput[7]);
         Helper::assertLogstash(['WARNING', '   Message'], $stdOutput[8]);
         Helper::assertLogstash(['CRITICAL', 'Command Exception: Some message'], $stdOutput[9]);
+    }
+
+    public function testExtraContext(): void
+    {
+        $cmdResult = Helper::executeReal('test:output', [
+            'output-mode'   => 'logstash',
+            'extra-context' => null,
+        ]);
+
+        isSame(0, $cmdResult->code);
+        isSame('', $cmdResult->err);
+
+        $stdOutput = Helper::prepareLogstash($cmdResult->std);
+
+        isSame(['bar' => 1], $stdOutput[0]->find('context.foo'));
+        isSame('line #1', $stdOutput[0]->find('context.zzz'));
+        Helper::assertLogstash(['NOTICE', 'Message with extra context #1'], $stdOutput[0]);
+
+        isSame(['bar' => 2], $stdOutput[1]->find('context.foo'));
+        isSame('line #2', $stdOutput[1]->find('context.zzz'));
+        Helper::assertLogstash(['NOTICE', 'Message with extra context #2'], $stdOutput[1]);
+
+        isSame(['bar' => 2, 'zzz' => 3], $stdOutput[2]->find('context.foo'));
+        isSame('line #3', $stdOutput[2]->find('context.zzz'));
+        Helper::assertLogstash(['NOTICE', 'Message with extra context #3'], $stdOutput[2]);
     }
 
     public function testCronAlias(): void

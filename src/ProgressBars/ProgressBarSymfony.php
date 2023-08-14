@@ -179,7 +179,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
 
     private function init(): bool
     {
-        $progresBarLevel = $this->getNextedLevel();
+        $progresBarLevel = $this->getNestedLevel();
         $levelPostfix    = $progresBarLevel > 1 ? " Level: {$progresBarLevel}." : '';
 
         if ($this->max <= 0) {

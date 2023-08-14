@@ -62,10 +62,8 @@ class Logstash extends AbstractOutputMode
             'process' => [
                 'pid'               => \getmypid(),
                 'executable'        => $_SERVER['PHP_SELF'] ?? null,
-                'args_count'        => $_SERVER['argv'] ?? null,
                 'command_line'      => $this->input->__toString(),
                 'process_command'   => $this->input->getFirstArgument(),
-                'args'              => $this->input->getArguments() + $this->input->getOptions(),
                 'working_directory' => \getcwd(),
             ],
         ]);

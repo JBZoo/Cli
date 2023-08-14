@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace JBZoo\Cli\OutputMods;
 
 use JBZoo\Cli\CliApplication;
+use JBZoo\Cli\CliHelper;
 use JBZoo\Cli\OutLvl;
 use JBZoo\Cli\ProgressBars\AbstractProgressBar;
 use Monolog\Formatter\NormalizerFormatter;
@@ -29,8 +30,6 @@ use function JBZoo\Utils\isStrEmpty;
 
 abstract class AbstractOutputMode
 {
-    protected static self $instance;
-
     protected CliApplication $application;
 
     protected float $startTimer;
@@ -41,8 +40,11 @@ abstract class AbstractOutputMode
 
     protected InputInterface  $input;
     protected OutputInterface $output;
-    protected bool            $catchMode      = false;
-    protected array           $caughtMessages = [];
+
+    protected bool  $catchMode      = false;
+    protected array $caughtMessages = [];
+
+    protected array $extraContext = [];
 
     private bool $outputHasErrors = false;
 
@@ -69,7 +71,7 @@ abstract class AbstractOutputMode
         $this->input  = $input;
         $this->output = $output;
 
-        self::$instance = $this;
+        CliHelper::setInstance($this);
     }
 
     public function getStartTime(): float
@@ -206,12 +208,27 @@ abstract class AbstractOutputMode
         return $caughtMessages;
     }
 
+    public function appendExtraContext(array $context): void
+    {
+        $this->extraContext = CliHelper::arrayMergeRecursiveDistinct($this->extraContext, $context);
+    }
+
+    public function getExtraContext(): array
+    {
+        return $this->extraContext;
+    }
+
+    public function setExtraContext(array $context): void
+    {
+        $this->extraContext = $context;
+    }
+
     /**
      * @deprecated
      */
     public static function getInstance(): self
     {
-        return self::$instance;
+        return CliHelper::getInstance();
     }
 
     /**
@@ -271,7 +288,9 @@ abstract class AbstractOutputMode
 
     protected function prepareContext(array $context): array
     {
-        return (array)(new NormalizerFormatter())->normalizeValue($context);
+        $resultContext = \array_merge($this->getExtraContext(), $context);
+
+        return (array)(new NormalizerFormatter())->normalizeValue($resultContext);
     }
 
     protected function markOutputHasErrors(bool $hasError = true): void
