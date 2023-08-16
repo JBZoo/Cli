@@ -74,7 +74,15 @@ class Logstash extends AbstractOutputMode
         $this->logger->log(
             Level::Critical,
             'Command Exception: ' . $exception->getMessage(),
-            $this->prepareContext(['error' => self::exceptionToLog($exception)]),
+            $this->prepareContext([
+                'error' => [
+                    'type'        => \get_class($exception),
+                    'code'        => $exception->getCode(),
+                    'message'     => $exception->getMessage(),
+                    'file'        => $exception->getFile() . ':' . $exception->getLine(),
+                    'stack_trace' => $exception->getTraceAsString(),
+                ],
+            ]),
         );
     }
 
@@ -131,33 +139,5 @@ class Logstash extends AbstractOutputMode
         ] + $context;
 
         return parent::prepareContext($newContext);
-    }
-
-    private static function exceptionToLog(?\Throwable $exception): ?array
-    {
-        static $deepCounter = 0;
-
-        if ($exception === null) {
-            return null;
-        }
-
-        $maxExceptionDeepLevel = 5;
-        $deepCounter++;
-
-        if ($deepCounter === $maxExceptionDeepLevel) {
-            return [
-                'message'  => $exception->getMessage(),
-                'previous' => 'too deep',
-            ];
-        }
-
-        return [
-            'type'        => \get_class($exception),
-            'code'        => $exception->getCode(),
-            'message'     => $exception->getMessage(),
-            'file'        => $exception->getFile() . ':' . $exception->getLine(),
-            'stack_trace' => $exception->getTraceAsString(),
-            'previous'    => self::exceptionToLog($exception->getPrevious()),
-        ];
     }
 }

@@ -164,7 +164,6 @@ class CliOutputLogstashTest extends PHPUnit
                     'message'     => 'string',
                     'file'        => 'string',
                     'stack_trace' => 'string',
-                    'previous'    => 'NULL',
                 ],
             ],
         ], $lineStruture);
