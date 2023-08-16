@@ -120,7 +120,7 @@ class Logstash extends AbstractOutputMode
         array $context = [],
     ): void {
         $nonZeroOnError = bool($this->getInput()->getOption('non-zero-on-error'));
-        $psrErrorLevel = OutLvl::mapToMonologLevel($verboseLevel);
+        $psrErrorLevel  = OutLvl::mapToMonologLevel($verboseLevel);
 
         if ($nonZeroOnError && OutLvl::isPsrErrorLevel($psrErrorLevel)) {
             $this->markOutputHasErrors(true);
@@ -134,9 +134,9 @@ class Logstash extends AbstractOutputMode
     protected function prepareContext(array $context): array
     {
         $newContext = [
-                'trace'   => ['id' => CliHelper::createOrGetTraceId()],
-                'profile' => $this->getProfileInfo(),
-            ] + $context;
+            'trace'   => ['id' => CliHelper::createOrGetTraceId()],
+            'profile' => $this->getProfileInfo(),
+        ] + $context;
 
         return parent::prepareContext($newContext);
     }
