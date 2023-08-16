@@ -74,7 +74,15 @@ class Logstash extends AbstractOutputMode
         $this->logger->log(
             Level::Critical,
             'Command Exception: ' . $exception->getMessage(),
-            $this->prepareContext(['error' => self::exceptionToLog($exception)]),
+            $this->prepareContext([
+                'error' => [
+                    'type'        => \get_class($exception),
+                    'code'        => $exception->getCode(),
+                    'message'     => $exception->getMessage(),
+                    'file'        => $exception->getFile() . ':' . $exception->getLine(),
+                    'stack_trace' => $exception->getTraceAsString(),
+                ],
+            ]),
         );
     }
 
@@ -112,7 +120,7 @@ class Logstash extends AbstractOutputMode
         array $context = [],
     ): void {
         $nonZeroOnError = bool($this->getInput()->getOption('non-zero-on-error'));
-        $psrErrorLevel  = OutLvl::mapToMonologLevel($verboseLevel);
+        $psrErrorLevel = OutLvl::mapToMonologLevel($verboseLevel);
 
         if ($nonZeroOnError && OutLvl::isPsrErrorLevel($psrErrorLevel)) {
             $this->markOutputHasErrors(true);
@@ -126,38 +134,10 @@ class Logstash extends AbstractOutputMode
     protected function prepareContext(array $context): array
     {
         $newContext = [
-            'trace'   => ['id' => CliHelper::createOrGetTraceId()],
-            'profile' => $this->getProfileInfo(),
-        ] + $context;
+                'trace'   => ['id' => CliHelper::createOrGetTraceId()],
+                'profile' => $this->getProfileInfo(),
+            ] + $context;
 
         return parent::prepareContext($newContext);
-    }
-
-    private static function exceptionToLog(?\Throwable $exception): ?array
-    {
-        static $deepCounter = 0;
-
-        if ($exception === null) {
-            return null;
-        }
-
-        $maxExceptionDeepLevel = 5;
-        $deepCounter++;
-
-        if ($deepCounter === $maxExceptionDeepLevel) {
-            return [
-                'message'  => $exception->getMessage(),
-                'previous' => 'too deep',
-            ];
-        }
-
-        return [
-            'type'        => \get_class($exception),
-            'code'        => $exception->getCode(),
-            'message'     => $exception->getMessage(),
-            'file'        => $exception->getFile() . ':' . $exception->getLine(),
-            'stack_trace' => $exception->getTraceAsString(),
-            'previous'    => self::exceptionToLog($exception->getPrevious()),
-        ];
     }
 }
