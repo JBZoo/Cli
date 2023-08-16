@@ -27,6 +27,8 @@ use function JBZoo\Utils\isStrEmpty;
 
 class ProgressBarSymfony extends AbstractSymfonyProgressBar
 {
+    private const LIMIT_ITEMT_FOR_PROFILING = 10;
+
     private OutputInterface     $output;
     private ?SymfonyProgressBar $progressBar = null;
 
@@ -78,6 +80,9 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
             if (!$isOptimizeMode) {
                 $this->stepMemoryDiff[] = \memory_get_usage(false) - $startMemory;
                 $this->stepTimers[]     = \microtime(true) - $startTime;
+
+                $this->stepMemoryDiff = self::sliceProfileStats($this->stepMemoryDiff);
+                $this->stepTimers     = self::sliceProfileStats($this->stepTimers);
             }
 
             $exceptionMessages = \array_merge($exceptionMessages, (array)$exceptionMessage);
@@ -302,6 +307,19 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
     private function isOptimizeMode(): bool
     {
         return $this->outputMode->getOutput()->getVerbosity() <= OutputInterface::VERBOSITY_NORMAL;
+    }
+
+    private static function sliceProfileStats(array $arrayOfItems): array
+    {
+        if (\count($arrayOfItems) > self::LIMIT_ITEMT_FOR_PROFILING) {
+            $arrayOfItems = \array_slice(
+                $arrayOfItems,
+                -self::LIMIT_ITEMT_FOR_PROFILING,
+                self::LIMIT_ITEMT_FOR_PROFILING,
+            );
+        }
+
+        return $arrayOfItems;
     }
 
     private static function showListOfExceptions(array $exceptionMessages): void

@@ -20,17 +20,19 @@ use Faker\Factory;
 use JBZoo\Cli\CliCommand;
 use JBZoo\Cli\ProgressBars\ExceptionBreak;
 use JBZoo\Utils\Slug;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 
 class DemoProgressBar extends CliCommand
 {
-    private const CASE_SIMPLE         = 'simple';
-    private const CASE_MESSAGES       = 'messages';
-    private const CASE_ARRAY          = 'array';
-    private const CASE_BREAK          = 'break';
-    private const CASE_EXCEPTION      = 'exception';
-    private const CASE_EXCEPTION_LIST = 'exception-list';
-    private const CASE_MILLION        = 'million';
+    private const CASE_SIMPLE          = 'simple';
+    private const CASE_MESSAGES        = 'messages';
+    private const CASE_ARRAY           = 'array';
+    private const CASE_BREAK           = 'break';
+    private const CASE_EXCEPTION       = 'exception';
+    private const CASE_EXCEPTION_LIST  = 'exception-list';
+    private const CASE_MILLION         = 'million';
+    private const CASE_MILLION_SYMFONY = 'million-symfony';
 
     protected function configure(): void
     {
@@ -54,6 +56,7 @@ class DemoProgressBar extends CliCommand
             self::CASE_EXCEPTION,
             self::CASE_EXCEPTION_LIST,
             self::CASE_MILLION,
+            self::CASE_MILLION_SYMFONY,
         ]);
 
         // Just 5 simple steps /////////////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +120,7 @@ class DemoProgressBar extends CliCommand
             }, 'Ignoring and collecting exceptions. Throw them only at the end.', true);
         }
 
-        // 1 000 000 Items Benchmark ///////////////////////////////////////////////////////////////////////////////////
+        // Benchmark: 1 000 000 Items (~23 sec) ////////////////////////////////////////////////////////////////////////
         if ($caseName === self::CASE_MILLION) {
             $this->progressBar(
                 1_000_000,
@@ -125,6 +128,24 @@ class DemoProgressBar extends CliCommand
                     "\$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>",
                 '1 000 000 items benchmark',
             );
+        }
+
+        // Benchmark: 1 000 000 Items with pure Symfony progress bar (~4 sec) //////////////////////////////////////////
+        if ($caseName === self::CASE_MILLION_SYMFONY) {
+            $this->_('Creates a new progress bar (1_000_000 units)');
+            $progressBar = new ProgressBar($this->outputMode->getOutput(), 1_000_000);
+
+            $this->_('Starts and displays the progress bar');
+            $progressBar->start();
+
+            $i = 0;
+
+            while ($i++ < 1_000_000) {
+                $progressBar->advance();
+            }
+
+            $this->_('Ensures that the progress bar is at 100%');
+            $progressBar->finish();
         }
 
         return self::SUCCESS;
