@@ -39,10 +39,6 @@
    * [Useful projects and links](#useful-projects-and-links)
    * [License](#license)
    * [See Also](#see-also)
-
-<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: smetdenis, at: Thu Aug 10 15:37:25 +04 2023 -->
-
 <!--te-->
 
 ## Why?
