@@ -70,18 +70,18 @@ The library greatly extends the functionality of CLI App and helps make creating
 
  * **Advanced Options**
    * Features such as profiling for performance, timestamping, error muting, and specialized output modes (like cron and logstash modes) empower developers to refine their console outputs and diagnostics according to their specific needs.
-   * Display timing and memory usage information with `--profile` (`-X`) option.
-   * Show timestamp at the beginning of each message with `--timestamp` (`-T`) option.
-   * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors` (`-M`).
-   * None-zero exit code on any StdErr message with `--non-zero-on-error` (`-Z`) option.
-   * For any errors messages application will use StdOut instead of StdErr `--stdout-only` (`-1`) option (It's on your own risk!).
-   * Disable progress bar animation for logs with `--no-progress` (`-P`) option.
+   * Display timing and memory usage information with `--profile` option.
+   * Show timestamp at the beginning of each message with `--timestamp` option.
+   * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors`.
+   * None-zero exit code on any StdErr message with `--non-zero-on-error` option.
+   * For any errors messages application will use StdOut instead of StdErr `--stdout-only` option (It's on your own risk!).
+   * Disable progress bar animation for logs with `--no-progress` option.
 
  * **Versatile Output Modes** 
    * The library provides different output formats catering to various use cases. Whether you're focusing on user-friendly text, logs, or integration with tools like ELK Stack, there's an output mode tailored for you.
    * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
-   * `--output-mode=cron` (`-Ocron`). It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
-   * `--output-mode=logstash` (`-Ologstash`). It's basically focused on Logstash format for ELK Stack. Also, it means `--stdout-only --no-progress -vv`.
+   * `--output-mode=cron`. It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
+   * `--output-mode=logstash`. It's basically focused on Logstash format for ELK Stack. Also, it means `--stdout-only --no-progress -vv`.
 
  * **Bonuses**
    * There is a [multiprocess](#multi-processing) mode (please don't confuse it with multithreading) to speed up work with a monotonous dataset.
