@@ -81,51 +81,49 @@ abstract class CliCommand extends Command
      */
     protected function configure(): void
     {
-        $definedShortcuts = !\defined('\JBZOO_CLI_NO_PREDEFINED_SHORTCUTS');
-
         $this
             ->addOption(
                 'no-progress',
-                $definedShortcuts ? 'P' : null,
+                null,
                 InputOption::VALUE_NONE,
                 'Disable progress bar animation for logs. ' .
                 'It will be used only for <info>' . Text::getName() . '</info> output format.',
             )
             ->addOption(
                 'mute-errors',
-                $definedShortcuts ? 'M' : null,
+                null,
                 InputOption::VALUE_NONE,
                 "Mute any sort of errors. So exit code will be always \"0\" (if it's possible).\n" .
                 "It has major priority then <info>--non-zero-on-error</info>. It's on your own risk!",
             )
             ->addOption(
                 'stdout-only',
-                $definedShortcuts ? '1' : null,
+                null,
                 InputOption::VALUE_NONE,
                 "For any errors messages application will use StdOut instead of StdErr. It's on your own risk!",
             )
             ->addOption(
                 'non-zero-on-error',
-                $definedShortcuts ? 'Z' : null,
+                null,
                 InputOption::VALUE_NONE,
                 'None-zero exit code on any StdErr message.',
             )
             ->addOption(
                 'timestamp',
-                $definedShortcuts ? 'T' : null,
+                null,
                 InputOption::VALUE_NONE,
                 'Show timestamp at the beginning of each message.' .
                 'It will be used only for <info>' . Text::getName() . '</info> output format.',
             )
             ->addOption(
                 'profile',
-                $definedShortcuts ? 'X' : '',
+                null,
                 InputOption::VALUE_NONE,
                 'Display timing and memory usage information.',
             )
             ->addOption(
                 'output-mode',
-                $definedShortcuts ? 'O' : null,
+                null,
                 InputOption::VALUE_REQUIRED,
                 "Output format. Available options:\n" . CliHelper::renderListForHelpDescription([
                     Text::getName()     => Text::getDescription(),

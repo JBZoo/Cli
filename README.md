@@ -572,8 +572,8 @@ Notes:
 
 ## Tips & Tricks
 
- * Define constant `\JBZOO_CLI_NO_PREDEFINED_SHORTCUTS=true` to disable all predefined shortcuts in options if you have conflicts.
  * Use class `\JBZoo\Cli\Codes` to get all available exit codes.
+ * You can add extra context to any message. It will be serialized to JSON and displayed in the end of the message. Just use `CliHelper::getInstance()->appendExtraContext(['section' => ['var' => 'value']]);`
 
 
 ## Contributing
