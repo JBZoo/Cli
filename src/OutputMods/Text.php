@@ -142,46 +142,97 @@ class Text extends AbstractOutputMode
             $profilePrefix .= "<green>[</green>{$timestamp}<green>]</green> ";
         }
 
-        if ($this->isDisplayProfiling()) {
-            $profile    = $this->getProfileInfo();
-            $memoryDiff = FS::format($profile['memory_usage_diff']);
-            $totalTime  = \number_format($profile['time_diff_ms'] / 1000, 3);
-            $curMemory  = \str_pad($memoryDiff, 10, ' ', \STR_PAD_LEFT);
-
-            $profilePrefix .= "<green>[</green>+{$totalTime}s<green>/</green>{$curMemory}<green>]</green> ";
-        }
-
-        $vNormal = OutputInterface::VERBOSITY_NORMAL;
+        $executePrint  = false;
+        $printCallback = null;
+        $vNormal       = OutputInterface::VERBOSITY_NORMAL;
 
         if ($verboseLevel === OutLvl::DEFAULT) {
-            $this->getOutput()->writeln($profilePrefix . $message, $vNormal);
+            $executePrint  = $this->showMessage($vNormal);
+            $printCallback = function (string $profilePrefix) use ($message, $vNormal): void {
+                $this->getOutput()->writeln($profilePrefix . $message, $vNormal);
+            };
         } elseif ($verboseLevel === OutLvl::V) {
-            $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_VERBOSE);
+            $executePrint  = $this->showMessage(OutputInterface::VERBOSITY_VERBOSE);
+            $printCallback = function (string $profilePrefix) use ($message): void {
+                $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_VERBOSE);
+            };
         } elseif ($verboseLevel === OutLvl::VV) {
-            $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_VERY_VERBOSE);
+            $executePrint  = $this->showMessage(OutputInterface::VERBOSITY_VERY_VERBOSE);
+            $printCallback = function (string $profilePrefix) use ($message): void {
+                $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_VERY_VERBOSE);
+            };
         } elseif ($verboseLevel === OutLvl::VVV) {
-            $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_DEBUG);
+            $executePrint  = $this->showMessage(OutputInterface::VERBOSITY_DEBUG);
+            $printCallback = function (string $profilePrefix) use ($message): void {
+                $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_DEBUG);
+            };
         } elseif ($verboseLevel === OutLvl::Q) {
-            $this->getOutput()->writeln($profilePrefix . $message, OutputInterface::VERBOSITY_QUIET); // Show ALWAYS!
+            $executePrint  = $this->showMessage(OutputInterface::VERBOSITY_QUIET);
+            $printCallback = function (string $profilePrefix) use ($message): void {
+                $this->getOutput()->writeln(
+                    $profilePrefix . $message,
+                    OutputInterface::VERBOSITY_QUIET,
+                ); // Show ALWAYS!
+            };
         } elseif ($verboseLevel === OutLvl::LEGACY) {
-            $this->_('<yellow>Legacy Output:</yellow> ' . $message);
+            $this->_("<yellow>Legacy Output:</yellow> {$message}");
         } elseif ($verboseLevel === OutLvl::DEBUG) {
-            $this->_('<magenta>Debug:</magenta> ' . $message, OutLvl::VVV);
+            $this->_("<magenta>Debug:</magenta> {$message}", OutLvl::VVV);
         } elseif ($verboseLevel === OutLvl::WARNING) {
-            $this->_('<yellow>Warning:</yellow> ' . $message, OutLvl::VV);
+            $this->_("<yellow>Warning:</yellow> {$message}", OutLvl::VV);
         } elseif ($verboseLevel === OutLvl::INFO) {
-            $this->_('<blue>Info:</blue> ' . $message, OutLvl::V);
+            $this->_("<blue>Info:</blue> {$message}", OutLvl::V);
         } elseif ($verboseLevel === OutLvl::E) {
-            $this->markOutputHasErrors(true);
-            $this->getErrOutput()->writeln($profilePrefix . $message, $vNormal);
+            $executePrint  = $this->showMessage($vNormal);
+            $printCallback = function (string $profilePrefix) use ($message, $vNormal): void {
+                $this->markOutputHasErrors(true);
+                $this->getErrOutput()->writeln($profilePrefix . $message, $vNormal);
+            };
         } elseif ($verboseLevel === OutLvl::ERROR) {
-            $this->markOutputHasErrors(true);
-            $this->getErrOutput()->writeln($profilePrefix . '<red-bg>Error:</red-bg> ' . $message, $vNormal);
+            $executePrint  = $this->showMessage($vNormal);
+            $printCallback = function (string $profilePrefix) use ($message, $vNormal): void {
+                $this->markOutputHasErrors(true);
+                $this->getErrOutput()->writeln("{$profilePrefix}<red-bg>Error:</red-bg> {$message}", $vNormal);
+            };
         } elseif ($verboseLevel === OutLvl::EXCEPTION) {
-            $this->markOutputHasErrors(true);
-            $this->getErrOutput()->writeln($profilePrefix . '<red-bg>Muted Exception:</red-bg> ' . $message, $vNormal);
+            $executePrint  = $this->showMessage($vNormal);
+            $printCallback = function (string $profilePrefix) use ($message, $vNormal): void {
+                $this->markOutputHasErrors(true);
+                $this->getErrOutput()->writeln(
+                    "{$profilePrefix}<red-bg>Muted Exception:</red-bg> {$message}",
+                    $vNormal,
+                );
+            };
         } else {
             throw new Exception("Undefined verbose level: \"{$verboseLevel}\"");
         }
+
+        if ($executePrint && $printCallback !== null) {
+            if ($this->isDisplayProfiling()) {
+                $profile    = $this->getProfileInfo();
+                $memoryDiff = FS::format($profile['memory_usage_diff']);
+                $totalTime  = \number_format($profile['time_diff_ms'] / 1000, 3);
+                $curMemory  = \str_pad($memoryDiff, 10, ' ', \STR_PAD_LEFT);
+                $profilePrefix .= "<green>[</green>+{$totalTime}s<green>/</green>{$curMemory}<green>]</green> ";
+            }
+            $printCallback($profilePrefix);
+        }
+    }
+
+    private function showMessage(int $selectedVerbosity): bool
+    {
+        $verbosities = OutputInterface::VERBOSITY_QUIET
+            | OutputInterface::VERBOSITY_NORMAL
+            | OutputInterface::VERBOSITY_VERBOSE
+            | OutputInterface::VERBOSITY_VERY_VERBOSE
+            | OutputInterface::VERBOSITY_DEBUG;
+
+        $verbosity = ($verbosities & $selectedVerbosity) > 0
+            ? $verbosities & $selectedVerbosity
+            : OutputInterface::VERBOSITY_NORMAL;
+
+        $curVerbose = $this->getOutput()->getVerbosity();
+
+        return $verbosity <= $curVerbose;
     }
 }

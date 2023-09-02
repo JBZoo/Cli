@@ -85,9 +85,10 @@ class CliOutputLogstashTest extends PHPUnit
                     'time_diff_ms'      => 'double',
                 ],
                 'service' => [
-                    'name'    => 'string',
-                    'version' => 'string',
-                    'type'    => 'string',
+                    'name'        => 'string',
+                    'version'     => 'string',
+                    'type'        => 'string',
+                    'php_version' => 'string',
                 ],
                 'process' => [
                     'pid'               => 'integer',

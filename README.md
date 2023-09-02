@@ -519,7 +519,7 @@ $this->_(CliRender::list([
 ### Simple log
 
 ```bash
-./my-app output --timestamp >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log 2>&1
+./my-app output --timestamp >> /path/to/crontab/logs/$(date +%Y-%m-%d).log 2>&1
 ```
 
 ![logs-simple](.github/assets/logs-simple.png)
@@ -531,7 +531,7 @@ $this->_(CliRender::list([
 Just add the `--output-mode=cron` flag and save the output to a file. Especially, this is very handy for saving logs for Crontab.
 
 ```bash
-./my-app output --output-mode=cron >> /path/to/crontab/logs/`date +\%Y-\%m-\%d`.log 2>&1
+./my-app output --output-mode=cron >> /path/to/crontab/logs/$(date +%Y-%m-%d).log 2>&1
 ```
 
 ![logs-cron](.github/assets/logs-cron.png)
@@ -543,7 +543,7 @@ Just add the `--output-mode=cron` flag and save the output to a file. Especially
 Just add the `--output-mode=logstash` flag and save the output to a file. Especially, this is very handy for saving logs for ELK Stack.
 
 ```bash
-./my-app output --output-mode=logstash >> /path/to/logstash/logs/`date +\%Y-\%m-\%d`.log 2>&1
+./my-app output --output-mode=logstash >> /path/to/logstash/logs/$(date +%Y-%m-%d).log 2>&1
 ```
 
 ![logs-logstash-exception](.github/assets/logs-logstash-exception.png)
