@@ -57,6 +57,8 @@ class DemoOutput extends CliCommand
 
         // `cli($text)` is global alias for `$this->_();`
 
+        // \sleep(1);
+
         // Info output
         // ./my-app examples:output -v
         cli("Verbose message #1       {$code('OutLvl::V')}    (-v)", OutLvl::V);

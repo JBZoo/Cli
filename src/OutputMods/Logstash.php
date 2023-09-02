@@ -55,9 +55,10 @@ class Logstash extends AbstractOutputMode
     {
         $this->_('Command Start: ' . (string)$this->input->getFirstArgument(), OutLvl::INFO, [
             'service' => [
-                'name'    => $this->application->getName(),
-                'version' => $this->application->getVersion(),
-                'type'    => 'php',
+                'name'        => $this->application->getName(),
+                'version'     => $this->application->getVersion(),
+                'type'        => 'php',
+                'php_version' => \PHP_VERSION,
             ],
             'process' => [
                 'pid'               => \getmypid(),

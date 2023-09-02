@@ -236,8 +236,8 @@ abstract class AbstractOutputMode
      */
     protected function getProfileInfo(): array
     {
-        $currentTime   = \microtime(true);
         $currentMemory = \memory_get_usage(false);
+        $currentTime   = \microtime(true);
 
         $startTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? 0.0;
 
