@@ -245,8 +245,8 @@ abstract class AbstractOutputMode
             'memory_usage_real' => \memory_get_usage(true),
             'memory_usage'      => $currentMemory,
             'memory_usage_diff' => $currentMemory - $this->prevMemory,
-            'memory_pick_real'  => \memory_get_peak_usage(true),
-            'memory_pick'       => \memory_get_peak_usage(false),
+            'memory_peak_real'  => \memory_get_peak_usage(true),
+            'memory_peak'       => \memory_get_peak_usage(false),
             'time_total_ms'     => \round(1000 * ($currentTime - $startTime), 3),
             'time_diff_ms'      => \round(1000 * ($currentTime - $this->prevTime), 3),
         ];
