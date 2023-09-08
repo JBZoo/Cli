@@ -71,22 +71,21 @@ class TestProgress extends CliCommand
         }
 
         if ($testCase === 'no-items-int') {
-            $this->progressBar(0, static function (): void { }, $testCase);
+            $this->progressBar(0, static function (): void {}, $testCase);
         }
 
         if ($testCase === 'no-items-array') {
-            $this->progressBar([], static function (): void { }, $testCase);
+            $this->progressBar([], static function (): void {}, $testCase);
         }
 
         if ($testCase === 'no-items-data') {
-            $this->progressBar(json(), static function (): void { }, $testCase);
+            $this->progressBar(json(), static function (): void {}, $testCase);
         }
 
         // // old tests
 
         if ($testCase === 'no-messages') {
-            $this->progressBar(3, static function ($listValue, $listKey, $stepIndex): void {
-            }, $testCase);
+            $this->progressBar(3, static function ($listValue, $listKey, $stepIndex): void {}, $testCase);
         }
 
         if ($testCase === 'simple-message-all') {
