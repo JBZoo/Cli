@@ -16,4 +16,6 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli\OutputMods;
 
-class Exception extends \JBZoo\Cli\Exception {}
+class Exception extends \JBZoo\Cli\Exception
+{
+}

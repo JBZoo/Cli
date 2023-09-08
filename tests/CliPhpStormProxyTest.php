@@ -16,4 +16,6 @@ declare(strict_types=1);
 
 namespace JBZoo\PHPUnit;
 
-final class CliPhpStormProxyTest extends \JBZoo\Codestyle\PHPUnit\AbstractPhpStormProxyTest {}
+final class CliPhpStormProxyTest extends \JBZoo\Codestyle\PHPUnit\AbstractPhpStormProxyTest
+{
+}

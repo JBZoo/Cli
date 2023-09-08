@@ -16,4 +16,6 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
-class Exception extends \RuntimeException {}
+class Exception extends \RuntimeException
+{
+}

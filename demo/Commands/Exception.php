@@ -16,4 +16,6 @@ declare(strict_types=1);
 
 namespace DemoApp\Commands;
 
-class Exception extends \RuntimeException {}
+class Exception extends \RuntimeException
+{
+}
