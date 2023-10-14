@@ -44,7 +44,7 @@ abstract class CliCommand extends Command
     abstract protected function executeAction(): int;
 
     public function progressBar(
-        iterable|int $listOrMax,
+        int|iterable $listOrMax,
         \Closure $callback,
         string $title = '',
         bool $throwBatchException = true,
@@ -305,7 +305,7 @@ abstract class CliCommand extends Command
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
     protected function _(
-        iterable|string|int|float|bool|null $messages = '',
+        null|bool|float|int|iterable|string $messages = '',
         string $verboseLevel = '',
         array $context = [],
     ): void {
@@ -402,7 +402,7 @@ abstract class CliCommand extends Command
     /**
      * @param string[] $options
      */
-    protected function askOption(string $question, array $options, int|float|string|null $default = null): string
+    protected function askOption(string $question, array $options, null|float|int|string $default = null): string
     {
         $question = '<yellow-r>Question:</yellow-r> ' . \trim($question);
 

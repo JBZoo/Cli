@@ -103,7 +103,7 @@ abstract class AbstractOutputMode
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
     public function _(
-        iterable|float|int|bool|string|null $messages = '',
+        null|bool|float|int|iterable|string $messages = '',
         string $verboseLevel = OutLvl::DEFAULT,
         array $context = [],
     ): void {
@@ -257,7 +257,7 @@ abstract class AbstractOutputMode
         return $result;
     }
 
-    protected function prepareMessages(iterable|float|int|bool|string|null $messages, string $verboseLevel): ?string
+    protected function prepareMessages(null|bool|float|int|iterable|string $messages, string $verboseLevel): ?string
     {
         $verboseLevel = \strtolower(\trim($verboseLevel));
 

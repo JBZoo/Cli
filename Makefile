@@ -26,3 +26,10 @@ test-all: ##@Project Run all project tests at once
 	@make test
 	@make codestyle
 	@make codestyle PATH_SRC=./demo
+
+
+test-logstash: ##@Project Run Logstash manual tests (direct)
+	rm -f $(PATH_BUILD)/logstash.log
+	$(PHP_BIN) $(PATH_ROOT)/demo/my-app test --output-mode=logstash >> $(PATH_BUILD)/logstash.log 2>&1
+	cat $(PATH_BUILD)/logstash.log | jq
+	cat $(PATH_BUILD)/logstash.log | nc -c localhost 50000
