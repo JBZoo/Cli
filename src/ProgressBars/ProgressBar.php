@@ -24,7 +24,7 @@ use JBZoo\Cli\CliCommand;
 class ProgressBar extends ProgressBarSymfony
 {
     public static function run(
-        iterable|int $listOrMax,
+        int|iterable $listOrMax,
         \Closure $callback,
         string $title = '',
         bool $throwBatchException = true,

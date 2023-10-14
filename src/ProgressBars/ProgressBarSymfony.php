@@ -212,7 +212,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         return true;
     }
 
-    private function setStep(int|float|string $stepIndex, int $currentIndex): void
+    private function setStep(float|int|string $stepIndex, int $currentIndex): void
     {
         if ($this->progressBar !== null) {
             $this->progressBar->setProgress($currentIndex);
@@ -220,7 +220,7 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
         }
     }
 
-    private function handleOneStep(mixed $stepValue, int|float|string $stepIndex, int $currentIndex): array
+    private function handleOneStep(mixed $stepValue, float|int|string $stepIndex, int $currentIndex): array
     {
         if ($this->callback === null) {
             throw new Exception('Callback function is not defined');

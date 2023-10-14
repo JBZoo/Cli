@@ -80,7 +80,7 @@ class ProgressBarLight extends AbstractSymfonyProgressBar
         return true;
     }
 
-    private function handleOneStep(mixed $stepValue, int|float|string $stepIndex, int $currentIndex): array
+    private function handleOneStep(mixed $stepValue, float|int|string $stepIndex, int $currentIndex): array
     {
         if ($this->callback === null) {
             throw new Exception('Callback function is not defined');
