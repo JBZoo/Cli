@@ -20,7 +20,6 @@ use JBZoo\Cli\CliApplication;
 use JBZoo\Cli\CliHelper;
 use JBZoo\Cli\OutLvl;
 use JBZoo\Cli\ProgressBars\AbstractProgressBar;
-use Monolog\DateTimeImmutable;
 use Monolog\Formatter\NormalizerFormatter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
@@ -289,12 +288,6 @@ abstract class AbstractOutputMode
 
     protected function prepareContext(array $context): array
     {
-        // We use timestamp_real to use the value from it in @timestamp using the rules of the logstash service.
-        // In cases if the default field `@timestamp` doesn't work with the logstash service for some reason.
-        if (\defined('JBZOO_CLI_TIMESTAMP_REAL') && JBZOO_CLI_TIMESTAMP_REAL) {
-            $context['timestamp_real'] = new DateTimeImmutable(true, new \DateTimeZone(\date_default_timezone_get()));
-        }
-
         $resultContext = \array_merge($this->getExtraContext(), $context);
 
         return (array)(new NormalizerFormatter())->normalizeValue($resultContext);
