@@ -49,6 +49,7 @@ class CliOutputLogstashTest extends PHPUnit
                     'time_total_ms'     => 'double',
                     'time_diff_ms'      => 'double',
                 ],
+                'timestamp_real' => 'string',
             ],
         ], $lineStruture);
     }
@@ -97,6 +98,7 @@ class CliOutputLogstashTest extends PHPUnit
                     'process_command'   => 'string',
                     'working_directory' => 'string',
                 ],
+                'timestamp_real' => 'string',
             ],
         ], $lineStruture);
     }
@@ -127,7 +129,8 @@ class CliOutputLogstashTest extends PHPUnit
                     'time_total_ms'     => 'double',
                     'time_diff_ms'      => 'double',
                 ],
-                'process' => ['exit_code' => 'integer'],
+                'process'        => ['exit_code' => 'integer'],
+                'timestamp_real' => 'string',
             ],
         ], $lineStruture);
     }
@@ -135,6 +138,7 @@ class CliOutputLogstashTest extends PHPUnit
     public function testFormatOfMessageException(): void
     {
         $cmdResult = Helper::executeReal('test:output', ['output-mode' => 'logstash', 'exception' => 'Some message']);
+        dump($cmdResult);
 
         $lineAsArray  = Helper::prepareLogstash($cmdResult->std)[9]->getArrayCopy();
         $lineStruture = self::replaceValues($lineAsArray);
@@ -166,6 +170,7 @@ class CliOutputLogstashTest extends PHPUnit
                     'file'        => 'string',
                     'stack_trace' => 'string',
                 ],
+                'timestamp_real' => 'string',
             ],
         ], $lineStruture);
     }

@@ -26,6 +26,8 @@ if (!\defined('JBZOO_PATH_BIN')) {
     \define('JBZOO_PATH_BIN', JBZOO_PATH_ROOT . '/' . \pathinfo(__FILE__, \PATHINFO_BASENAME));
 }
 
+\define('JBZOO_CLI_TIMESTAMP_REAL', true);
+
 require '../../vendor/autoload.php';
 
 $application = new CliApplication('Dummy App', '@git-version@');

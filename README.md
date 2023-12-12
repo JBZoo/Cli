@@ -570,6 +570,7 @@ Notes:
 
  * Use class `\JBZoo\Cli\Codes` to get all available exit codes.
  * You can add extra context to any message. It will be serialized to JSON and displayed in the end of the message. Just use `CliHelper::getInstance()->appendExtraContext(['section' => ['var' => 'value']]);`
+ * You can define constant `\JBZOO_CLI_TIMESTAMP_REAL=true` to add `timestamp_real` as exta context. Sometimes it's useful for logstash if default value `@timestamp` doesn't work for you.
 
 
 ## Contributing

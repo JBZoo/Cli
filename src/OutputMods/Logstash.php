@@ -22,6 +22,7 @@ use JBZoo\Cli\OutLvl;
 use JBZoo\Cli\ProgressBars\AbstractProgressBar;
 use JBZoo\Cli\ProgressBars\ProgressBarLight;
 use JBZoo\Utils\Slug;
+use Monolog\DateTimeImmutable;
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
@@ -134,6 +135,16 @@ class Logstash extends AbstractOutputMode
 
     protected function prepareContext(array $context): array
     {
+        // We use timestamp_real to use the value from it in @timestamp using the rules of the logstash service.
+        // In cases if the default field `@timestamp` doesn't work with the logstash service for some reason.
+        if (
+            \defined('JBZOO_CLI_TIMESTAMP_REAL')
+            && JBZOO_CLI_TIMESTAMP_REAL
+            && !isset($context['timestamp_real'])
+        ) {
+            $context['timestamp_real'] = new DateTimeImmutable(true, new \DateTimeZone(\date_default_timezone_get()));
+        }
+
         $newContext = [
             'trace'   => ['id' => CliHelper::createOrGetTraceId()],
             'profile' => $this->getProfileInfo(),
