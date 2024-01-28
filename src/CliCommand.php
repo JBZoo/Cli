@@ -409,7 +409,11 @@ abstract class CliCommand extends Command
         $defaultValue = '';
         if ($default !== null) {
             /** @phpstan-ignore-next-line */
-            $defaultValue = $options[$default] ?? $default ?: '';
+            $defaultValue = $options[$default] ?? '';
+            if (!bool($default)) {
+                $default = '';
+            }
+
             if ($defaultValue !== '') {
                 $defaultValue = " (Default: <i>{$defaultValue}</i>)";
             }
