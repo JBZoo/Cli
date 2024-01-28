@@ -179,7 +179,7 @@ class DemoOptionsStrictTypes extends CliCommand
 
         // //////////////////////////////////////// Standard input
         // echo " Qwerty 123 " | php ./my-app examples:agruments
-        self::getStdIn(); // " Qwerty 123 \n"
+        $this->_('STDIN: "' . self::getStdIn() . '"'); // " Qwerty 123 \n"
 
         // Default success exist code is "0". Max value is 255.
         return self::SUCCESS;
