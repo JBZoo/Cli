@@ -438,27 +438,25 @@ abstract class CliCommand extends Command
      */
     protected static function getStdIn(int $timeout = 5): ?string
     {
-        static $result;
+        static $result; // It can be read only once, so we save result as internal variable
 
         if ($result === null) {
             $result = '';
-            \stream_set_timeout(\STDIN, $timeout); // set the timeout
 
-            while (!\feof(\STDIN)) {
-                $chunk = \fread(\STDIN, 1024);
-                if ($chunk === false) {
-                    throw new Exception('Error reading STDIN');
-                }
+            $read        = [\STDIN];
+            $write       = [];
+            $except      = [];
+            $streamCount = \stream_select($read, $write, $except, $timeout);
 
-                $result .= $chunk;
-                $metadata = \stream_get_meta_data(\STDIN);
-
-                if ($metadata['timed_out']) {
-                    throw new Exception("Reading from STDIN timed out (timeout: {$timeout} sec)");
+            if ($streamCount > 0) {
+                while ($line = \fgets(\STDIN, 1024)) {
+                    $result .= $line;
                 }
             }
 
-            return $result;
+            if ($result === '') {
+                cli("Reading from STDIN timed out ({$timeout} seconds)", OutLvl::WARNING);
+            }
         }
 
         return $result;
