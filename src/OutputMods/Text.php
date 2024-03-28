@@ -236,14 +236,20 @@ class Text extends AbstractOutputMode
             if ($this->isDisplayProfiling()) {
                 $profile = $this->getProfileInfo();
 
-                $timeDiff = \number_format($profile['time_diff_ms'] / 1000, 2);
-                $timeDiff = $timeDiff === '0.00' ? "<gray>{$timeDiff}s</gray>" : "{$timeDiff}s";
-
                 $timeTotal = \number_format($profile['time_total_ms'] / 1000, 2);
+
+                $timeDiff = \number_format($profile['time_diff_ms'] / 1000, 2);
+                $timeDiff = $timeDiff === '0.00' ? '<gray>    -</gray>' : "{$timeDiff}s";
 
                 $memoryDiff = FS::format($profile['memory_usage_diff'], 0);
                 $memoryDiff = \str_pad($memoryDiff, 6, ' ', \STR_PAD_LEFT);
-                $memoryDiff = $profile['memory_usage_diff'] === 0 ? "<gray>{$memoryDiff}</gray>" : $memoryDiff;
+                if ($profile['memory_usage_diff'] === 0) {
+                    $memoryDiff = '<gray>' . \str_pad('0', 6, ' ', \STR_PAD_LEFT) . '</gray>';
+                } else {
+                    $memoryDiff = $profile['memory_usage_diff'] > 0
+                        ? "<yellow>{$memoryDiff}</yellow>"
+                        : "<green>{$memoryDiff}</green>";
+                }
 
                 $profilerData = [];
                 if ($this instanceof Cron) {
@@ -255,7 +261,7 @@ class Text extends AbstractOutputMode
                         $profilerData[] = $timeDiff;
                         $profilerData[] = $memoryDiff;
                         $profilerData[] = FS::format($profile['memory_usage'], 0);
-                        $profilerData[] = 'Peak: ' . FS::format($profile['memory_peak'], 0);
+                        $profilerData[] = 'P: ' . FS::format($profile['memory_peak'], 0);
                     } elseif ($this->showMessage(OutputInterface::VERBOSITY_VERY_VERBOSE)) {
                         $profilerData[] = $timeTotal;
                         $profilerData[] = $timeDiff;
@@ -272,7 +278,7 @@ class Text extends AbstractOutputMode
                 }
 
                 $profilePrefix .= '<green>[</green>'
-                    . \implode(' <green>/</green> ', $profilerData)
+                    . \implode(' <green>|</green> ', $profilerData)
                     . '<green>]</green> ';
             }
             $printCallback($profilePrefix);

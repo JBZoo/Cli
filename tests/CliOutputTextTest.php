@@ -181,9 +181,9 @@ class CliOutputTextTest extends PHPUnit
     {
         $cmdResult = Helper::executeReal('test:output', ['profile' => null]);
 
-        isContain('B] Normal 1', $cmdResult->std);
-        isContain('B] Normal 2', $cmdResult->std);
-        isContain('B] Quiet -q', $cmdResult->std);
+        isContain('] Normal 1', $cmdResult->std);
+        isContain('] Normal 2', $cmdResult->std);
+        isContain('] Quiet -q', $cmdResult->std);
         isContain('Memory:', $cmdResult->std);
         isContain('Real peak:', $cmdResult->std);
         isContain('Time:', $cmdResult->std);
