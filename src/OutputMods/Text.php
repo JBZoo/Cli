@@ -297,7 +297,7 @@ class Text extends AbstractOutputMode
     }
 
     /**
-     * Weird hack...
+     * Weird hack... Need to be fixed in the future.
      * @SuppressWarnings(PHPMD.Superglobals)
      */
     private static function isParallelExec(): bool
