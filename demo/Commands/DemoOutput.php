@@ -57,7 +57,7 @@ class DemoOutput extends CliCommand
 
         // `cli($text)` is global alias for `$this->_();`
 
-        // \sleep(1);
+        \usleep(25000);
 
         // Info output
         // ./my-app examples:output -v
