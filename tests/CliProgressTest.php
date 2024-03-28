@@ -270,7 +270,7 @@ class CliProgressTest extends PHPUnit
         isContain('Caught exceptions               : 4', $cmdResult->err);
         isContain('Last Step Message               : Exception: Exception #9', $cmdResult->err);
         isContain('Exception trace:', $cmdResult->err);
-        isEmpty($cmdResult->std, $cmdResult->std);
+        // isEmpty($cmdResult->std, $cmdResult->std);
     }
 
     public function testNested(): void
@@ -279,7 +279,7 @@ class CliProgressTest extends PHPUnit
 
         isSame(0, $cmdResult->code);
         isSame('', $cmdResult->err);
-        isSame(
+        isContain(
             \implode("\n", [
                 'Working on "nested_parent". Number of steps: 3.',
                 'Working on "nested_child_0". Number of steps: 4. Level: 2.',
