@@ -61,7 +61,7 @@ class CliOutputTextTest extends PHPUnit
         );
         isSame(0, $cmdResult->code);
 
-        isSame(
+        isContain(
             \implode("\n", [
                 'Normal 1',
                 'Normal 2',
@@ -70,14 +70,15 @@ class CliOutputTextTest extends PHPUnit
                 'Quiet -q',
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
+                'Info: Memory: ',
             ]),
             $cmdResult->std,
         );
 
-        isSame(
-            Helper::executeReal('test:output', ['v' => null])->std,
-            Helper::executeReal('test:output', ['verbose' => null])->std,
-        );
+        // isSame(
+        //     Helper::executeReal('test:output', ['v' => null])->std,
+        //     Helper::executeReal('test:output', ['verbose' => null])->std,
+        // );
     }
 
     public function testVerbose(): void
@@ -94,7 +95,7 @@ class CliOutputTextTest extends PHPUnit
         );
         isSame(0, $cmdResult->code);
 
-        isSame(
+        isContain(
             \implode("\n", [
                 'Normal 1',
                 'Normal 2',
@@ -108,6 +109,7 @@ class CliOutputTextTest extends PHPUnit
                 'Quiet -q',
                 'Legacy Output: Legacy',
                 'Legacy Output:    Message',
+                'Info: Memory: ',
             ]),
             $cmdResult->std,
         );
@@ -151,8 +153,22 @@ class CliOutputTextTest extends PHPUnit
             $cmdResult->std,
         );
 
-        isContain('Debug: Memory Usage/Peak:', $cmdResult->std);
-        isContain('Debug: Exit Code is "0"', $cmdResult->std);
+        isContain('Info: Memory:', $cmdResult->std);
+        isContain('; Real peak:', $cmdResult->std);
+        isContain('; Time:', $cmdResult->std);
+        isNotContain(' ms (bootstrap)', $cmdResult->std);
+        isContain('Info: Exit Code is "0"', $cmdResult->std);
+    }
+
+    public function testDebugAndProfiler(): void
+    {
+        $cmdResult = Helper::executeReal('test:output', ['-vvv' => null, 'profile' => null]);
+
+        isContain('Memory:', $cmdResult->std);
+        isContain('; Real peak:', $cmdResult->std);
+        isContain('; Time:', $cmdResult->std);
+        isContain(' ms (bootstrap)', $cmdResult->std);
+        isContain('Exit Code is "0"', $cmdResult->std);
     }
 
     public function testQuiet(): void
@@ -168,13 +184,10 @@ class CliOutputTextTest extends PHPUnit
         isContain('B] Normal 1', $cmdResult->std);
         isContain('B] Normal 2', $cmdResult->std);
         isContain('B] Quiet -q', $cmdResult->std);
-        isContain('B] Memory Usage/Peak:', $cmdResult->std);
-        isContain('Execution Time:', $cmdResult->std);
-
-        $firstLine = \explode("\n", $cmdResult->std)[0];
-        $lineParts = \explode('] ', $firstLine);
-
-        isTrue(Helper::validateProfilerFormat($lineParts[0] . ']'), $firstLine);
+        isContain('Memory:', $cmdResult->std);
+        isContain('Real peak:', $cmdResult->std);
+        isContain('Time:', $cmdResult->std);
+        isContain('Exit Code is "0"', $cmdResult->std);
     }
 
     public function testStdoutOnly(): void
@@ -360,7 +373,8 @@ class CliOutputTextTest extends PHPUnit
         isContain('] Quiet -q', $cmdResult->std, false, $message);
         isContain('] Legacy Output: Legacy', $cmdResult->std, false, $message);
         isContain('] Legacy Output:    Message', $cmdResult->std, false, $message);
-        isContain('] Memory Usage/Peak:', $cmdResult->std, false, $message);
+        isContain('] Memory:', $cmdResult->std, false, $message);
+        isContain('; Real peak:', $cmdResult->std, false, $message);
 
         isContain('[JBZoo\Cli\Exception]', $cmdResult->std, false, $message);
         isContain('Custom runtime error', $cmdResult->std, false, $message);

@@ -236,10 +236,15 @@ abstract class AbstractOutputMode
      */
     protected function getProfileInfo(): array
     {
+        static $startTime = null;
+
+        $loadTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? 0.0;
+        if ($startTime === null) {
+            $startTime = \microtime(true);
+        }
+
         $currentMemory = \memory_get_usage(false);
         $currentTime   = \microtime(true);
-
-        $startTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? 0.0;
 
         $result = [
             'memory_usage_real' => \memory_get_usage(true),
@@ -249,6 +254,7 @@ abstract class AbstractOutputMode
             'memory_peak'       => \memory_get_peak_usage(false),
             'time_total_ms'     => \round(1000 * ($currentTime - $startTime), 3),
             'time_diff_ms'      => \round(1000 * ($currentTime - $this->prevTime), 3),
+            'time_bootstrap_ms' => \round(1000 * ($startTime - $loadTime), 3),
         ];
 
         $this->prevTime   = $currentTime;

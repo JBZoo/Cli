@@ -50,20 +50,26 @@ class Text extends AbstractOutputMode
 
     public function onExecAfter(int $exitCode, ?string $outputLevel = null): void
     {
-        $outputLevel ??= OutLvl::DEBUG;
+        $isParrallelExec = self::isParallelExec();
+
+        $outputLevel ??= $isParrallelExec ? OutLvl::DEBUG : OutLvl::INFO;
         if ($this->isDisplayProfiling()) {
             $outputLevel = OutLvl::DEFAULT;
         }
 
+        $profile = $this->getProfileInfo();
+
         $totalTime = \number_format(\microtime(true) - $this->getStartTime(), 3);
-        $curMemory = FS::format(\memory_get_usage(false));
-        $maxMemory = FS::format(\memory_get_peak_usage(true));
+        $curMemory = FS::format($profile['memory_usage']);
+        $maxMemory = FS::format($profile['memory_peak_real']);
+        $bootTime  = (int)$profile['time_bootstrap_ms'];
+
+        $showBootTime = $this->isDisplayProfiling() && $this->isDebugLevel();
 
         $this->_(
-            \implode('; ', [
-                "Memory Usage/Peak: <green>{$curMemory}</green>/<green>{$maxMemory}</green>",
-                "Execution Time: <green>{$totalTime} sec</green>",
-            ]),
+            "Memory: <green>{$curMemory}</green>; Real peak: <green>{$maxMemory}</green>; " .
+            "Time: <green>{$totalTime} sec</green>" .
+            ($showBootTime ? " <gray>+{$bootTime} ms (bootstrap)</gray>" : ''),
             $outputLevel,
         );
 
@@ -97,7 +103,25 @@ class Text extends AbstractOutputMode
         $formatter    = $output->getFormatter();
         $defaultColor = 'default';
 
-        $colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', $defaultColor];
+        $colors = [
+            'black',
+            'red',
+            'green',
+            'yellow',
+            'blue',
+            'magenta',
+            'cyan',
+            'white',
+            'gray',
+            'bright-red',
+            'bright-green',
+            'bright-yellow',
+            'bright-blue',
+            'bright-magenta',
+            'bright-cyan',
+            'bright-white',
+            $defaultColor,
+        ];
 
         foreach ($colors as $color) {
             $formatter->setStyle($color, new OutputFormatterStyle($color));
@@ -125,6 +149,7 @@ class Text extends AbstractOutputMode
 
     /**
      * Alias to write new line in std output.
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     protected function printMessage(
         string $message = '',
@@ -209,11 +234,46 @@ class Text extends AbstractOutputMode
 
         if ($executePrint && $printCallback !== null) {
             if ($this->isDisplayProfiling()) {
-                $profile    = $this->getProfileInfo();
-                $memoryDiff = FS::format($profile['memory_usage_diff']);
-                $totalTime  = \number_format($profile['time_diff_ms'] / 1000, 3);
-                $curMemory  = \str_pad($memoryDiff, 10, ' ', \STR_PAD_LEFT);
-                $profilePrefix .= "<green>[</green>+{$totalTime}s<green>/</green>{$curMemory}<green>]</green> ";
+                $profile = $this->getProfileInfo();
+
+                $timeDiff = \number_format($profile['time_diff_ms'] / 1000, 2);
+                $timeDiff = $timeDiff === '0.00' ? "<gray>{$timeDiff}s</gray>" : "{$timeDiff}s";
+
+                $timeTotal = \number_format($profile['time_total_ms'] / 1000, 2);
+
+                $memoryDiff = FS::format($profile['memory_usage_diff'], 0);
+                $memoryDiff = \str_pad($memoryDiff, 6, ' ', \STR_PAD_LEFT);
+                $memoryDiff = $profile['memory_usage_diff'] === 0 ? "<gray>{$memoryDiff}</gray>" : $memoryDiff;
+
+                $profilerData = [];
+                if ($this instanceof Cron) {
+                    $profilerData[] = $timeDiff;
+                    $profilerData[] = $memoryDiff;
+                } else {
+                    if ($this->showMessage(OutputInterface::VERBOSITY_DEBUG)) {
+                        $profilerData[] = $timeTotal;
+                        $profilerData[] = $timeDiff;
+                        $profilerData[] = $memoryDiff;
+                        $profilerData[] = FS::format($profile['memory_usage'], 0);
+                        $profilerData[] = 'Peak: ' . FS::format($profile['memory_peak'], 0);
+                    } elseif ($this->showMessage(OutputInterface::VERBOSITY_VERY_VERBOSE)) {
+                        $profilerData[] = $timeTotal;
+                        $profilerData[] = $timeDiff;
+                        $profilerData[] = $memoryDiff;
+                        $profilerData[] = FS::format($profile['memory_usage'], 0);
+                    } elseif ($this->showMessage(OutputInterface::VERBOSITY_VERBOSE)) {
+                        $profilerData[] = $timeDiff;
+                        $profilerData[] = $memoryDiff;
+                        $profilerData[] = FS::format($profile['memory_usage'], 0);
+                    } else {
+                        $profilerData[] = $timeDiff;
+                        $profilerData[] = $memoryDiff;
+                    }
+                }
+
+                $profilePrefix .= '<green>[</green>'
+                    . \implode(' <green>/</green> ', $profilerData)
+                    . '<green>]</green> ';
             }
             $printCallback($profilePrefix);
         }
@@ -234,5 +294,22 @@ class Text extends AbstractOutputMode
         $curVerbose = $this->getOutput()->getVerbosity();
 
         return $verbosity <= $curVerbose;
+    }
+
+    /**
+     * Weird hack... Need to be fixed in the future.
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    private static function isParallelExec(): bool
+    {
+        $argv = $_SERVER['argv'] ?? [];
+
+        foreach ($argv as $arg) {
+            if (\str_contains($arg, 'pm-max')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
