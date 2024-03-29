@@ -235,6 +235,7 @@ class Text extends AbstractOutputMode
         if ($executePrint && $printCallback !== null) {
             if ($this->isDisplayProfiling()) {
                 $profile = $this->getProfileInfo();
+                $oneKb   = 1024;
 
                 $timeTotal = \str_pad(\number_format($profile['time_total_ms'] / 1000, 2), 5, ' ', \STR_PAD_LEFT);
 
@@ -243,7 +244,7 @@ class Text extends AbstractOutputMode
 
                 $memoryDiff = FS::format($profile['memory_usage_diff'], 0);
                 $memoryDiff = \str_pad($memoryDiff, 6, ' ', \STR_PAD_LEFT);
-                if (\abs($profile['memory_usage_diff']) < 1024) {
+                if (\abs($profile['memory_usage_diff']) < $oneKb) {
                     $memoryDiff = '<gray>' . \str_pad($memoryDiff, 6, ' ', \STR_PAD_LEFT) . '</gray>';
                 } else {
                     $memoryDiff = $profile['memory_usage_diff'] > 0
