@@ -73,7 +73,7 @@ class Text extends AbstractOutputMode
             $outputLevel,
         );
 
-        $this->_("Exit Code is \"{$exitCode}\"", $outputLevel);
+        $this->_("Exit Code is \"{$exitCode}\"", OutLvl::DEBUG);
     }
 
     public function onExecException(\Exception $exception): void
@@ -236,15 +236,15 @@ class Text extends AbstractOutputMode
             if ($this->isDisplayProfiling()) {
                 $profile = $this->getProfileInfo();
 
-                $timeTotal = \number_format($profile['time_total_ms'] / 1000, 2);
+                $timeTotal = \str_pad(\number_format($profile['time_total_ms'] / 1000, 2), 5, ' ', \STR_PAD_LEFT);
 
-                $timeDiff = \number_format($profile['time_diff_ms'] / 1000, 2);
-                $timeDiff = $timeDiff === '0.00' ? '<gray>    -</gray>' : "{$timeDiff}s";
+                $timeDiff = \str_pad(\number_format($profile['time_diff_ms'] / 1000, 2), 5, ' ', \STR_PAD_LEFT);
+                $timeDiff = $timeDiff === ' 0.00' ? '<gray>    0</gray>' : $timeDiff;
 
                 $memoryDiff = FS::format($profile['memory_usage_diff'], 0);
                 $memoryDiff = \str_pad($memoryDiff, 6, ' ', \STR_PAD_LEFT);
-                if ($profile['memory_usage_diff'] === 0) {
-                    $memoryDiff = '<gray>' . \str_pad('0', 6, ' ', \STR_PAD_LEFT) . '</gray>';
+                if (\abs($profile['memory_usage_diff']) < 1024) {
+                    $memoryDiff = '<gray>' . \str_pad($memoryDiff, 6, ' ', \STR_PAD_LEFT) . '</gray>';
                 } else {
                     $memoryDiff = $profile['memory_usage_diff'] > 0
                         ? "<yellow>{$memoryDiff}</yellow>"
@@ -260,17 +260,17 @@ class Text extends AbstractOutputMode
                         $profilerData[] = $timeTotal;
                         $profilerData[] = $timeDiff;
                         $profilerData[] = $memoryDiff;
-                        $profilerData[] = FS::format($profile['memory_usage'], 0);
-                        $profilerData[] = 'P: ' . FS::format($profile['memory_peak'], 0);
+                        $profilerData[] = \str_pad(FS::format($profile['memory_usage'], 0), 7, ' ', \STR_PAD_LEFT);
+                        $profilerData[] = 'P:' . FS::format($profile['memory_peak'], 0);
                     } elseif ($this->showMessage(OutputInterface::VERBOSITY_VERY_VERBOSE)) {
                         $profilerData[] = $timeTotal;
                         $profilerData[] = $timeDiff;
                         $profilerData[] = $memoryDiff;
-                        $profilerData[] = FS::format($profile['memory_usage'], 0);
+                        $profilerData[] = \str_pad(FS::format($profile['memory_usage'], 0), 7, ' ', \STR_PAD_LEFT);
                     } elseif ($this->showMessage(OutputInterface::VERBOSITY_VERBOSE)) {
                         $profilerData[] = $timeDiff;
                         $profilerData[] = $memoryDiff;
-                        $profilerData[] = FS::format($profile['memory_usage'], 0);
+                        $profilerData[] = \str_pad(FS::format($profile['memory_usage'], 0), 7, ' ', \STR_PAD_LEFT);
                     } else {
                         $profilerData[] = $timeDiff;
                         $profilerData[] = $memoryDiff;
@@ -278,7 +278,7 @@ class Text extends AbstractOutputMode
                 }
 
                 $profilePrefix .= '<green>[</green>'
-                    . \implode(' <green>|</green> ', $profilerData)
+                    . \implode('<green>|</green>', $profilerData)
                     . '<green>]</green> ';
             }
             $printCallback($profilePrefix);
