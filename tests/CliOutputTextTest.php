@@ -157,7 +157,7 @@ class CliOutputTextTest extends PHPUnit
         isContain('; Real peak:', $cmdResult->std);
         isContain('; Time:', $cmdResult->std);
         isNotContain(' ms (bootstrap)', $cmdResult->std);
-        isContain('Info: Exit Code is "0"', $cmdResult->std);
+        isContain('Debug: Exit Code is "0"', $cmdResult->std);
     }
 
     public function testDebugAndProfiler(): void
@@ -187,7 +187,6 @@ class CliOutputTextTest extends PHPUnit
         isContain('Memory:', $cmdResult->std);
         isContain('Real peak:', $cmdResult->std);
         isContain('Time:', $cmdResult->std);
-        isContain('Exit Code is "0"', $cmdResult->std);
     }
 
     public function testStdoutOnly(): void

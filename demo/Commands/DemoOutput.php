@@ -58,6 +58,8 @@ class DemoOutput extends CliCommand
         // `cli($text)` is global alias for `$this->_();`
 
         \usleep(25000);
+        // \sleep(5);
+        $range = \range(1, 1000000);
 
         // Info output
         // ./my-app examples:output -v
@@ -74,6 +76,8 @@ class DemoOutput extends CliCommand
         if ($this->isWarningLevel()) {
             cli();
         }
+
+        unset($range);
 
         // Debug output
         // ./my-app examples:output -vvv
