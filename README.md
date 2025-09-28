@@ -9,7 +9,7 @@
    * [Live Demo](#live-demo)
       * [Output regular messages](#output-regular-messages)
       * [Progress Bar Demo](#progress-bar-demo)
-   * [Quck Start - Build your first CLI App](#quck-start---build-your-first-cli-app)
+   * [Quick Start - Build your first CLI App](#quick-start---build-your-first-cli-app)
       * [Installing](#installing)
       * [File Structure](#file-structure)
       * [Composer file](#composer-file)
@@ -24,7 +24,7 @@
       * [Simple example](#simple-example)
       * [Advanced usage](#advanced-usage)
    * [Helper Functions](#helper-functions)
-      * [Regualar question](#regualar-question)
+      * [Regular question](#regular-question)
       * [Ask user's password](#ask-users-password)
       * [Ask user to select the option](#ask-user-to-select-the-option)
       * [Represent a yes/no question](#represent-a-yesno-question)
@@ -32,7 +32,7 @@
    * [Easy logging](#easy-logging)
       * [Simple log](#simple-log)
       * [Crontab](#crontab)
-      * [Elatcisearch / Logstash (ELK)](#elatcisearch--logstash-elk)
+      * [Elasticsearch / Logstash (ELK)](#elasticsearch--logstash-elk)
    * [Multi processing](#multi-processing)
    * [Tips &amp; Tricks](#tips--tricks)
    * [Contributing](#contributing)
@@ -43,45 +43,40 @@
 
 ## Why?
 
-The library greatly extends the functionality of CLI App and helps make creating new console utilities in PHP quicker and easier. Here's a summary of why this library is essential:
+JBZoo CLI Framework is a powerful PHP library that significantly extends Symfony Console functionality, making it easier and faster to create robust command-line applications. Built for PHP 8.2+, it provides enhanced features for professional CLI development.
 
- * **Enhanced Functionality**
-   * The library supercharges [Symfony/Console](https://symfony.com/doc/current/components/console.html), facilitating a more streamlined development of console utilities.
+### Key Features
 
- * **Progress Bar Improvements**
-   * Developers gain a refined progress bar suited for loop actions and enhanced with debugging information. This makes tracking task progress and diagnosing issues a breeze. See [DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and see [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
-   * `$this->_($messages, $level, $context)` as part of CliCommand instead of Symfony/Console `$output->writeln()`.
-   * `cli($messages, $level, $context)` as alias for different classes.
-   * `$this->progressBar(iterable|int $listOrMax, \Closure $callback, string $title = '')` as part of CliCommand instead of Symfony/Console ProgressBar.
+**Enhanced Progress Bars**
+- Advanced progress bars with debugging information and profiling capabilities
+- Simple API: `$this->progressBar($items, $callback)` replaces complex Symfony ProgressBar setup
+- Real-time memory and performance monitoring during execution
+- See [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4)
 
- * **Strict Type Conversion**
-   * One notable feature allows for the strict conversion of option values, ensuring data integrity and reducing runtime errors. See [DemoOptionsStrictTypes.php](demo/Commands/DemoOptionsStrictTypes.php).
-   * Built-in validations for list of values. See [Sanitize input variables](#sanitize-input-variables).
+**Strict Type Conversion**
+- Type-safe option parsing with methods like `getOptInt()`, `getOptBool()`, `getOptString()`
+- Built-in validation for allowed values and data integrity
+- Eliminates common runtime errors from loose type handling
 
- * **Styling and Output Customization**
-   * With built-in styles and color schemes, developers can make their console outputs more readable and visually appealing. See [DemoStyles.php](demo/Commands/DemoStyles.php).
+**Professional Output System**
+- Simplified output API: `$this->_($message, $level, $context)` instead of verbose Symfony methods
+- Rich styling with HTML-like tags: `<red>Error</red>`, `<green-b>Success</green-b>`
+- Context-aware JSON logging for structured data
 
- * **Message Aliases**
-   * The library introduces powerful aliases for message outputs, allowing for concise and consistent command calls. This is especially helpful in maintaining clean code.
+**Multiple Output Modes**
+- `--output-mode=text` - User-friendly console output (default)
+- `--output-mode=cron` - Optimized for crontab logging with timestamps and profiling
+- `--output-mode=logstash` - JSON format for ELK Stack integration
 
- * **Advanced Options**
-   * Features such as profiling for performance, timestamping, error muting, and specialized output modes (like cron and logstash modes) empower developers to refine their console outputs and diagnostics according to their specific needs.
-   * Display timing and memory usage information with `--profile` option.
-   * Show timestamp at the beginning of each message with `--timestamp` option.
-   * Mute any sort of errors. So exit code will be always `0` (if it's possible) with `--mute-errors`.
-   * None-zero exit code on any StdErr message with `--non-zero-on-error` option.
-   * For any errors messages application will use StdOut instead of StdErr `--stdout-only` option (It's on your own risk!).
-   * Disable progress bar animation for logs with `--no-progress` option.
+**Performance & Debugging**
+- Built-in profiling with `--profile` flag showing memory usage and execution time
+- Timestamping with `--timestamp` for detailed logging
+- Verbosity levels from quiet (`-q`) to debug (`-vvv`)
 
- * **Versatile Output Modes**
-   * The library provides different output formats catering to various use cases. Whether you're focusing on user-friendly text, logs, or integration with tools like ELK Stack, there's an output mode tailored for you.
-   * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
-   * `--output-mode=cron`. It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
-   * `--output-mode=logstash`. It's basically focused on Logstash format for ELK Stack. Also, it means `--stdout-only --no-progress -vv`.
-
- * **Bonuses**
-   * There is a [multiprocess](#multi-processing) mode (please don't confuse it with multithreading) to speed up work with a monotonous dataset.
-   * Helper functions for [user input](#helper-functions) in interactive mode.
+**Advanced Features**
+- Multiprocessing support for parallel execution (not multithreading)
+- Interactive helpers for user input, confirmations, and selections
+- Error handling with configurable exit codes and output streams
 
 
 
@@ -99,7 +94,7 @@ The library greatly extends the functionality of CLI App and helps make creating
 
 
 
-## Quck Start - Build your first CLI App
+## Quick Start - Build your first CLI App
 
 ### Installing
 
@@ -114,7 +109,7 @@ The simplest CLI application has the following file structure. See the [Demo App
 ### File Structure
 ```
 /path/to/app/
-    my-app                      # Binrary file (See below)
+    my-app                      # Binary file (See below)
     composer.json               # Composer file
     /Commands/                  # Commands directory
         Simple.php              # One of the commands (See below)
@@ -139,8 +134,8 @@ The simplest CLI application has the following file structure. See the [Demo App
       "keywords"    : ["cli", "application", "example"],
 
       "require"     : {
-          "php"       : ">=8.1",
-          "jbzoo/cli" : "^7.1.0"
+          "php"       : "^8.2",
+          "jbzoo/cli" : "^7.0"
       },
 
       "autoload"    : {
@@ -192,7 +187,7 @@ $application->setLogo(
 
 // Scan directory to find commands.
 //  * It doesn't work recursively!
-//  * They must be inherited from the class \JBZoo\Cli\CliCommand
+//  * They must extend the class \JBZoo\Cli\CliCommand
 $application->registerCommandsByPath(__DIR__ . '/Commands', __NAMESPACE__);
 
 // Optional. Action name by default (if there is no arguments)
@@ -229,7 +224,7 @@ The simplest CLI action: [./demo/Commands/DemoSimple.php](demo/Commands/DemoSimp
           // Example: `./my-app simple`
           $this->setName('simple');
 
-          // Defined inhereted CLI options. See ./src/CliCommand.php for details.
+          // Define inherited CLI options. See ./src/CliCommand.php for details.
           parent::configure();
       }
 
@@ -323,7 +318,7 @@ There are list of predefined styles
 <bg>Change Background Only</bg>
 ```
 
-Also, you can combine colors ans styles.
+Also, you can combine colors and styles.
 
 ```html
 <magenta-bl>Blinked text in magenta color</magenta-bl>
@@ -348,14 +343,14 @@ And predefined shortcuts for standard styles of Symfony Console
 
 Console commands have different verbosity levels, which determine the messages displayed in their output.
 
-As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/DemoOutput.php). You can see [Demo video](https://asciinema.org/a/486674).
+For a live demonstration, see the demo application [./demo/Commands/DemoOutput.php](demo/Commands/DemoOutput.php) and watch the [Demo video](https://asciinema.org/a/486674).
 
 Example of usage of verbosity levels
 
 ![output-full-example](.github/assets/output-full-example.png)
 
 ```php
-// There two strictly(!) recommended output ways:
+// There are two recommended output methods:
 
 /**
  * Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
@@ -367,8 +362,8 @@ Example of usage of verbosity levels
 $this->_($messages, $verboseLevel, $context);
 
 /**
- * This is global alias function of `$this->_(...)`.
- * It's nice to have it if you want to display a text from not CliCommand class.
+ * This is a global alias function of `$this->_(...)`.
+ * Use this when you need to display text from classes that don't extend CliCommand.
  */
 JBZoo\Cli\cli($messages, $verboseLevel, $context);
 
@@ -452,7 +447,7 @@ JBZoo/Cli uses [Symfony Question Helper](https://symfony.com/doc/current/compone
 
 ![helpers](.github/assets/helpers.gif)
 
-### Regualar question
+### Regular question
 
 Ask any custom question and wait for a user's input. There is an option to set a default value.
 
@@ -538,7 +533,7 @@ Just add the `--output-mode=cron` flag and save the output to a file. Especially
 
 
 
-### Elatcisearch / Logstash (ELK)
+### Elasticsearch / Logstash (ELK)
 
 Just add the `--output-mode=logstash` flag and save the output to a file. Especially, this is very handy for saving logs for ELK Stack.
 
@@ -569,8 +564,8 @@ Notes:
 ## Tips & Tricks
 
  * Use class `\JBZoo\Cli\Codes` to get all available exit codes.
- * You can add extra context to any message. It will be serialized to JSON and displayed in the end of the message. Just use `CliHelper::getInstance()->appendExtraContext(['section' => ['var' => 'value']]);`
- * You can define constant `\JBZOO_CLI_TIMESTAMP_REAL=true` to add `timestamp_real` as exta context. Sometimes it's useful for logstash if default value `@timestamp` doesn't work for you.
+ * You can add extra context to any message. It will be serialized to JSON and displayed at the end of the message. Just use `CliHelper::getInstance()->appendExtraContext(['section' => ['var' => 'value']]);`
+ * You can define constant `\JBZOO_CLI_TIMESTAMP_REAL=true` to add `timestamp_real` as extra context. Sometimes it's useful for logstash if the default value `@timestamp` doesn't work for you.
 
 
 ## Contributing
@@ -584,7 +579,7 @@ make update
 # Run all tests and check code style
 make test-all
 
-# Create your pull request and check all tests on GithubActions page
+# Create your pull request and check all tests on GitHub Actions page
 ```
 
 
