@@ -20,8 +20,9 @@ use JBZoo\Cli\CliCommand;
 
 /**
  * @deprecated Use `$this->progressBar()` instead of ProgressBar::run()
+ * @psalm-suppress UnusedClass
  */
-class ProgressBar extends ProgressBarSymfony
+final class ProgressBar extends ProgressBarSymfony
 {
     public static function run(
         int|iterable $listOrMax,

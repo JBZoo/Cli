@@ -175,11 +175,11 @@ class CliProgressLogstashTest extends PHPUnit
         Helper::assertLogstash(
             [
                 'CRITICAL',
-                'Command Exception: BatchExceptions: ' .
-                '(Step=1/Max=10): Exception #0; ' .
-                '(Step=4/Max=10): Exception #3; ' .
-                '(Step=7/Max=10): Exception #6; ' .
-                '(Step=10/Max=10): Exception #9',
+                'Command Exception: BatchExceptions: '
+                . '(Step=1/Max=10): Exception #0; '
+                . '(Step=4/Max=10): Exception #3; '
+                . '(Step=7/Max=10): Exception #6; '
+                . '(Step=10/Max=10): Exception #9',
             ],
             $stdOutput[11],
         );

@@ -22,7 +22,7 @@ use JBZoo\Cli\OutputMods\AbstractOutputMode;
 use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProgressBarProcessManager extends AbstractSymfonyProgressBar
+final class ProgressBarProcessManager extends AbstractSymfonyProgressBar
 {
     private OutputInterface $output;
 

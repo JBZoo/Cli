@@ -43,6 +43,9 @@ abstract class CliCommand extends Command
 
     abstract protected function executeAction(): int;
 
+    /**
+     * @psalm-suppress PossiblyUnusedReturnValue
+     */
     public function progressBar(
         int|iterable $listOrMax,
         \Closure $callback,
@@ -86,15 +89,15 @@ abstract class CliCommand extends Command
                 'no-progress',
                 null,
                 InputOption::VALUE_NONE,
-                'Disable progress bar animation for logs. ' .
-                'It will be used only for <info>' . Text::getName() . '</info> output format.',
+                'Disable progress bar animation for logs. '
+                . 'It will be used only for <info>' . Text::getName() . '</info> output format.',
             )
             ->addOption(
                 'mute-errors',
                 null,
                 InputOption::VALUE_NONE,
-                "Mute any sort of errors. So exit code will be always \"0\" (if it's possible).\n" .
-                "It has major priority then <info>--non-zero-on-error</info>. It's on your own risk!",
+                "Mute any sort of errors. So exit code will be always \"0\" (if it's possible).\n"
+                . "It has major priority then <info>--non-zero-on-error</info>. It's on your own risk!",
             )
             ->addOption(
                 'stdout-only',
@@ -112,8 +115,8 @@ abstract class CliCommand extends Command
                 'timestamp',
                 null,
                 InputOption::VALUE_NONE,
-                'Show timestamp at the beginning of each message.' .
-                'It will be used only for <info>' . Text::getName() . '</info> output format.',
+                'Show timestamp at the beginning of each message.'
+                . 'It will be used only for <info>' . Text::getName() . '</info> output format.',
             )
             ->addOption(
                 'profile',
@@ -227,8 +230,8 @@ abstract class CliCommand extends Command
 
         if (\count($onlyExpectedOptions) > 0 && !\in_array($result, $onlyExpectedOptions, true)) {
             throw new Exception(
-                "Passed invalid value of option \"--{$optionName}={$result}\".\n" .
-                'Strict expected int-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
+                "Passed invalid value of option \"--{$optionName}={$result}\".\n"
+                . 'Strict expected int-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
             );
         }
 
@@ -245,8 +248,8 @@ abstract class CliCommand extends Command
 
         if (\count($onlyExpectedOptions) > 0 && !\in_array($result, $onlyExpectedOptions, true)) {
             throw new Exception(
-                "Passed invalid value of option \"--{$optionName}={$result}\".\n" .
-                'Strict expected float-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
+                "Passed invalid value of option \"--{$optionName}={$result}\".\n"
+                . 'Strict expected float-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
             );
         }
 
@@ -264,8 +267,8 @@ abstract class CliCommand extends Command
 
         if (\count($onlyExpectedOptions) > 0 && !\in_array($result, $onlyExpectedOptions, true)) {
             throw new Exception(
-                "Passed invalid value of option \"--{$optionName}={$result}\".\n" .
-                'Strict expected string-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
+                "Passed invalid value of option \"--{$optionName}={$result}\".\n"
+                . 'Strict expected string-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
             );
         }
 
@@ -292,8 +295,8 @@ abstract class CliCommand extends Command
 
         if (\count($onlyExpectedOptions) > 0 && !\in_array($result, $onlyExpectedOptions, true)) {
             throw new Exception(
-                "Passed invalid value of option {$optionName}={$result}. " .
-                'Strict expected string-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
+                "Passed invalid value of option {$optionName}={$result}. "
+                . 'Strict expected string-values are only: ' . CliHelper::renderExpectedValues($onlyExpectedOptions),
             );
         }
 
@@ -305,7 +308,7 @@ abstract class CliCommand extends Command
      * @SuppressWarnings(PHPMD.CamelCaseMethodName)
      */
     protected function _(
-        null|bool|float|int|iterable|string $messages = '',
+        bool|float|int|iterable|string|null $messages = '',
         string $verboseLevel = '',
         array $context = [],
     ): void {
@@ -332,6 +335,9 @@ abstract class CliCommand extends Command
         return $this->outputMode->isDisplayProfiling();
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedReturnValue
+     */
     protected function trigger(string $eventName, array $arguments = [], ?callable $continueCallback = null): int
     {
         $application = $this->getApplication();
@@ -402,7 +408,7 @@ abstract class CliCommand extends Command
     /**
      * @param string[] $options
      */
-    protected function askOption(string $question, array $options, null|float|int|string $default = null): string
+    protected function askOption(string $question, array $options, float|int|string|null $default = null): string
     {
         $question = '<yellow-r>Question:</yellow-r> ' . \trim($question);
 

@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
-use BluePsyduck\SymfonyProcessManager\ProcessManager;
+use JBZoo\Cli\ProcessManager\ProcessManager;
 use JBZoo\Cli\ProgressBars\ProgressBarProcessManager;
 use JBZoo\Utils\Cli as CliUtils;
 use JBZoo\Utils\Sys;
@@ -25,6 +25,9 @@ use Symfony\Component\Process\Process;
 
 use function JBZoo\Utils\int;
 
+/**
+ * @psalm-suppress UnusedClass
+ */
 abstract class CliCommandMultiProc extends CliCommand
 {
     private const PM_DEFAULT_INTERVAL    = 100;
@@ -98,6 +101,7 @@ abstract class CliCommandMultiProc extends CliCommand
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @phan-suppress PhanPluginPossiblyStaticProtectedMethod
      * @phan-suppress PhanUnusedProtectedNoOverrideMethodParameter
+     * @psalm-suppress PossiblyUnusedParam
      */
     protected function afterFinishAllProcesses(array $procPool): void
     {

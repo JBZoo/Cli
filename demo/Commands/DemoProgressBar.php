@@ -124,8 +124,8 @@ class DemoProgressBar extends CliCommand
         if ($caseName === self::CASE_MILLION) {
             $this->progressBar(
                 1_000_000,
-                static fn ($value, $key, $step) => '<c>Callback Args</c> ' .
-                    "\$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>",
+                static fn ($value, $key, $step) => '<c>Callback Args</c> '
+                    . "\$value=<i>{$value}</i>, \$key=<i>{$key}</i>, \$step=<i>{$step}</i>",
                 '1 000 000 items benchmark',
             );
         }

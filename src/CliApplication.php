@@ -25,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\isStrEmpty;
 
-class CliApplication extends Application
+final class CliApplication extends Application
 {
     private ?EventManager       $eventManager = null;
     private ?string             $logo         = null;
@@ -44,6 +44,9 @@ class CliApplication extends Application
         }
 
         $files = FS::ls($commandsDir);
+        $files = \array_filter($files, static function ($file) {
+            return \str_ends_with($file, '.php');
+        });
 
         if (\count($files) === 0) {
             return $this;
@@ -66,7 +69,6 @@ class CliApplication extends Application
             }
 
             if (!$reflection->isAbstract() && $reflection->isSubclassOf(CliCommand::class)) {
-                /** @var CliCommand $command */
                 $command = $reflection->newInstance();
                 $this->add($command);
             }

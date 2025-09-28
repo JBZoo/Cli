@@ -20,7 +20,7 @@ use JBZoo\Cli\CliApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Cron extends Text
+final class Cron extends Text
 {
     public function __construct(InputInterface $input, OutputInterface $output, CliApplication $application)
     {
