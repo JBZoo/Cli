@@ -67,9 +67,9 @@ class Text extends AbstractOutputMode
         $showBootTime = $this->isDisplayProfiling() && $this->isDebugLevel();
 
         $this->_(
-            "Memory: <green>{$curMemory}</green>; Real peak: <green>{$maxMemory}</green>; " .
-            "Time: <green>{$totalTime} sec</green>" .
-            ($showBootTime ? " <gray>+{$bootTime} ms (bootstrap)</gray>" : ''),
+            "Memory: <green>{$curMemory}</green>; Real peak: <green>{$maxMemory}</green>; "
+            . "Time: <green>{$totalTime} sec</green>"
+            . ($showBootTime ? " <gray>+{$bootTime} ms (bootstrap)</gray>" : ''),
             $outputLevel,
         );
 

@@ -16,6 +16,9 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli\OutputMods;
 
-class Exception extends \JBZoo\Cli\Exception
+/**
+ * @psalm-suppress UnusedClass
+ */
+final class Exception extends \JBZoo\Cli\Exception
 {
 }

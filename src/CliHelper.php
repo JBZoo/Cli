@@ -23,7 +23,7 @@ use JBZoo\Utils\Str;
 use function JBZoo\Utils\int;
 use function JBZoo\Utils\isStrEmpty;
 
-class CliHelper
+final class CliHelper
 {
     private static ?AbstractOutputMode $outputMode = null;
 

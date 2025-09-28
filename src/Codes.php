@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
-class Codes
+final class Codes
 {
     // General codes
     public const OK                       = 0;

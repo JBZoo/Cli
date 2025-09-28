@@ -18,7 +18,7 @@ namespace JBZoo\Cli\ProgressBars;
 
 use function JBZoo\Utils\isStrEmpty;
 
-class ProgressBarLight extends AbstractSymfonyProgressBar
+final class ProgressBarLight extends AbstractSymfonyProgressBar
 {
     public function execute(): bool
     {

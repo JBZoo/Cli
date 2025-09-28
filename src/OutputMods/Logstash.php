@@ -22,7 +22,6 @@ use JBZoo\Cli\OutLvl;
 use JBZoo\Cli\ProgressBars\AbstractProgressBar;
 use JBZoo\Cli\ProgressBars\ProgressBarLight;
 use JBZoo\Utils\Slug;
-use Monolog\DateTimeImmutable;
 use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
@@ -32,7 +31,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\bool;
 
-class Logstash extends AbstractOutputMode
+final class Logstash extends AbstractOutputMode
 {
     private Logger $logger;
 
@@ -142,7 +141,7 @@ class Logstash extends AbstractOutputMode
             && JBZOO_CLI_TIMESTAMP_REAL
             && !isset($context['timestamp_real'])
         ) {
-            $context['timestamp_real'] = new DateTimeImmutable(true, new \DateTimeZone(\date_default_timezone_get()));
+            $context['timestamp_real'] = new \DateTimeImmutable('now', new \DateTimeZone(\date_default_timezone_get()));
         }
 
         $newContext = [

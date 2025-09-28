@@ -1,6 +1,6 @@
 # JBZoo / Cli
 
-[![CI](https://github.com/JBZoo/Cli/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/JBZoo/Cli/actions/workflows/main.yml?query=branch%3Amaster)    [![Coverage Status](https://coveralls.io/repos/github/JBZoo/Cli/badge.svg?branch=master)](https://coveralls.io/github/JBZoo/Cli?branch=master)    [![Psalm Coverage](https://shepherd.dev/github/JBZoo/Cli/coverage.svg)](https://shepherd.dev/github/JBZoo/Cli)    [![Psalm Level](https://shepherd.dev/github/JBZoo/Cli/level.svg)](https://shepherd.dev/github/JBZoo/Cli)    [![CodeFactor](https://www.codefactor.io/repository/github/jbzoo/cli/badge)](https://www.codefactor.io/repository/github/jbzoo/cli/issues)    
+[![CI](https://github.com/JBZoo/Cli/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/JBZoo/Cli/actions/workflows/main.yml?query=branch%3Amaster)    [![Coverage Status](https://coveralls.io/repos/github/JBZoo/Cli/badge.svg?branch=master)](https://coveralls.io/github/JBZoo/Cli?branch=master)    [![Psalm Coverage](https://shepherd.dev/github/JBZoo/Cli/coverage.svg)](https://shepherd.dev/github/JBZoo/Cli)    [![Psalm Level](https://shepherd.dev/github/JBZoo/Cli/level.svg)](https://shepherd.dev/github/JBZoo/Cli)    [![CodeFactor](https://www.codefactor.io/repository/github/jbzoo/cli/badge)](https://www.codefactor.io/repository/github/jbzoo/cli/issues)
 [![Stable Version](https://poser.pugx.org/jbzoo/cli/version)](https://packagist.org/packages/jbzoo/cli/)    [![Total Downloads](https://poser.pugx.org/jbzoo/cli/downloads)](https://packagist.org/packages/jbzoo/cli/stats)    [![Dependents](https://poser.pugx.org/jbzoo/cli/dependents)](https://packagist.org/packages/jbzoo/cli/dependents?order_by=downloads)    [![GitHub License](https://img.shields.io/github/license/jbzoo/cli)](https://github.com/JBZoo/Cli/blob/master/LICENSE)
 
 
@@ -46,7 +46,7 @@
 The library greatly extends the functionality of CLI App and helps make creating new console utilities in PHP quicker and easier. Here's a summary of why this library is essential:
 
  * **Enhanced Functionality**
-   * The library supercharges [Symfony/Console](https://symfony.com/doc/current/components/console.html), facilitating a more streamlined development of console utilities. 
+   * The library supercharges [Symfony/Console](https://symfony.com/doc/current/components/console.html), facilitating a more streamlined development of console utilities.
 
  * **Progress Bar Improvements**
    * Developers gain a refined progress bar suited for loop actions and enhanced with debugging information. This makes tracking task progress and diagnosing issues a breeze. See [DemoProgressBar.php](demo/Commands/DemoProgressBar.php) and see [Live Demo](https://asciinema.org/a/601633?autoplay=1&startAt=4).
@@ -73,7 +73,7 @@ The library greatly extends the functionality of CLI App and helps make creating
    * For any errors messages application will use StdOut instead of StdErr `--stdout-only` option (It's on your own risk!).
    * Disable progress bar animation for logs with `--no-progress` option.
 
- * **Versatile Output Modes** 
+ * **Versatile Output Modes**
    * The library provides different output formats catering to various use cases. Whether you're focusing on user-friendly text, logs, or integration with tools like ELK Stack, there's an output mode tailored for you.
    * `--output-mode=text`. By default, text output format. Userfriendly and easy to read.
    * `--output-mode=cron`. It's basically focused on logs output. It's combination of `--timestamp --profile --stdout-only --no-progress -vv --no-ansi`.
@@ -137,16 +137,16 @@ The simplest CLI application has the following file structure. See the [Demo App
       "description" : "Example of CLI App based on JBZoo/CLI",
       "license"     : "MIT",
       "keywords"    : ["cli", "application", "example"],
-  
+
       "require"     : {
           "php"       : ">=8.1",
           "jbzoo/cli" : "^7.1.0"
       },
-  
+
       "autoload"    : {
           "psr-4" : {"DemoApp\\" : ""}
       },
-  
+
       "bin"         : ["my-app"]
   }
   ```
@@ -200,7 +200,7 @@ $application->setDefaultCommand('list');
 
 // Run application
 $application->run();
-  
+
   ```
 
 </details>
@@ -215,12 +215,12 @@ The simplest CLI action: [./demo/Commands/DemoSimple.php](demo/Commands/DemoSimp
 
   ```php
   <?php declare(strict_types=1);
-  
+
   namespace DemoApp\Commands;
-  
+
   use JBZoo\Cli\CliCommand;
   use JBZoo\Cli\Codes;
-  
+
   class Simple extends CliCommand
   {
       protected function configure(): void
@@ -228,16 +228,16 @@ The simplest CLI action: [./demo/Commands/DemoSimple.php](demo/Commands/DemoSimp
           // Action name. It will be used in command line.
           // Example: `./my-app simple`
           $this->setName('simple');
-  
+
           // Defined inhereted CLI options. See ./src/CliCommand.php for details.
           parent::configure();
       }
-  
+
       protected function executeAction(): int
       {
           // Your code here
           $this->_('Hello world!');
-  
+
           // Exit code. 0 - success, 1 - error.
           return self::SUCCESS;
       }
@@ -259,7 +259,7 @@ Try to launch `./my-app options-strict-types`.
 ```php
 // If the option has `InputOption::VALUE_NONE` it returns true/false.
 // --option-name
-$value = $this->getOpt('option-name'); // `$value === true` 
+$value = $this->getOpt('option-name'); // `$value === true`
 
 // --option-name="    123.6   "
 $value = $this->getOpt('option-name'); // Returns the value AS-IS. `$value ===  "   123.6   "`
@@ -346,7 +346,7 @@ And predefined shortcuts for standard styles of Symfony Console
 
 ### Verbosity Levels
 
-Console commands have different verbosity levels, which determine the messages displayed in their output. 
+Console commands have different verbosity levels, which determine the messages displayed in their output.
 
 As live-demo take a look at demo application - [./demo/Commands/ExamplesOutput.php](demo/Commands/DemoOutput.php). You can see [Demo video](https://asciinema.org/a/486674).
 
@@ -359,7 +359,7 @@ Example of usage of verbosity levels
 
 /**
  * Prints a message to the output in the command class which inherits from the class \JBZoo\Cli\CliCommand
- * 
+ *
  * @param string|string[] $messages     Output message(s). Can be an array of strings or a string. Array of strings will be imploded with new line.
  * @param string          $verboseLevel is one of value form the class \JBZoo\Cli\OutLvl::*
  * @param string          $context      is array of extra info. Will be serialized to JSON and displayed in the end of the message.
@@ -371,7 +371,7 @@ $this->_($messages, $verboseLevel, $context);
  * It's nice to have it if you want to display a text from not CliCommand class.
  */
 JBZoo\Cli\cli($messages, $verboseLevel, $context);
- 
+
 ```
 
 ```bash
@@ -380,7 +380,7 @@ JBZoo\Cli\cli($messages, $verboseLevel, $context);
 ./my-app output --quiet
 
 # Normal behavior, no option required. Only the most useful messages.
-./my-app output 
+./my-app output
 
 # Increase verbosity of messages
 ./my-app output -v
@@ -504,7 +504,7 @@ $this->_(CliRender::list([
     'Key' => 'Value',
     'Another Key #2' => 'Qwerty',
 ], '*')); // It's bullet character
-``` 
+```
 
 ```text
  * It's like a title
@@ -616,6 +616,6 @@ MIT
 - [Mermaid-PHP](https://github.com/JBZoo/Mermaid-PHP) - Generate diagrams and flowcharts with the help of the mermaid script language.
 - [Utils](https://github.com/JBZoo/Utils) - Collection of useful PHP functions, mini-classes, and snippets for every day.
 - [Image](https://github.com/JBZoo/Image) - Package provides object-oriented way to manipulate with images as simple as possible.
-- [Data](https://github.com/JBZoo/Data) - Extended implementation of ArrayObject. Use files as config/array. 
+- [Data](https://github.com/JBZoo/Data) - Extended implementation of ArrayObject. Use files as config/array.
 - [Retry](https://github.com/JBZoo/Retry) - Tiny PHP library providing retry/backoff functionality with multiple backoff strategies and jitter support.
 - [SimpleTypes](https://github.com/JBZoo/SimpleTypes) - Converting any values and measures - money, weight, exchange rates, length, ...

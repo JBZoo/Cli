@@ -203,8 +203,8 @@ class ProgressBarSymfony extends AbstractSymfonyProgressBar
                 $this->outputMode->_("Number of steps: <blue>{$this->max}</blue>.{$levelPostfix}");
             } else {
                 $this->outputMode->_(
-                    "Working on \"<blue>{$this->title}</blue>\". " .
-                    "Number of steps: <blue>{$this->max}</blue>.{$levelPostfix}",
+                    "Working on \"<blue>{$this->title}</blue>\". "
+                    . "Number of steps: <blue>{$this->max}</blue>.{$levelPostfix}",
                 );
             }
         }

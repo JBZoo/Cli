@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli;
 
-class Icons
+final class Icons
 {
     public const GROUP_PROGRESS = 'progress';
     public const GROUP_FINISH   = 'finish';

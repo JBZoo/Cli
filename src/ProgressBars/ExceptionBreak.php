@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli\ProgressBars;
 
-class ExceptionBreak extends \JBZoo\Cli\Exception
+final class ExceptionBreak extends \JBZoo\Cli\Exception
 {
     public const MESSAGE = 'Progress aborted.';
 }

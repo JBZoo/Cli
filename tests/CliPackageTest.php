@@ -29,7 +29,7 @@ final class CliPackageTest extends \JBZoo\Codestyle\PHPUnit\AbstractPackageTest
 
     protected static function phpVersions(): array
     {
-        return [8.1, 8.2, 8.3, 8.4];
+        return [8.2, 8.3, 8.4];
     }
 
     protected static function uploadArtifactsStep(string $stepName): array

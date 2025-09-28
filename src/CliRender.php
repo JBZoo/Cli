@@ -18,7 +18,7 @@ namespace JBZoo\Cli;
 
 use JBZoo\Utils\Str;
 
-class CliRender
+final class CliRender
 {
     public static function list(array $metrics, ?string $addDot = null): string
     {

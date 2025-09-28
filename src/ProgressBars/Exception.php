@@ -16,6 +16,6 @@ declare(strict_types=1);
 
 namespace JBZoo\Cli\ProgressBars;
 
-class Exception extends \JBZoo\Cli\Exception
+final class Exception extends \JBZoo\Cli\Exception
 {
 }

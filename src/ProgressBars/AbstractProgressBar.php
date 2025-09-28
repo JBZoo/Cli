@@ -34,6 +34,9 @@ abstract class AbstractProgressBar
     protected ?\Closure $callbackOnStart  = null;
     protected ?\Closure $callbackOnFinish = null;
 
+    /**
+     * @psalm-suppress PossiblyUnusedReturnValue
+     */
     abstract public function execute(): bool;
 
     public function __construct(AbstractOutputMode $outputMode)

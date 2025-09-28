@@ -20,7 +20,7 @@ use Monolog\Level;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class OutLvl
+final class OutLvl
 {
     public const Q       = 'q';
     public const DEFAULT = '';

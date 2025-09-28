@@ -18,9 +18,8 @@ namespace JBZoo\Cli;
 
 /**
  * Shortcut method.
- * @param mixed $messages
  */
-function cli($messages = '', string $verboseLevel = OutLvl::DEFAULT): void
+function cli(bool|float|int|iterable|string|null $messages = '', string $verboseLevel = OutLvl::DEFAULT): void
 {
     CliHelper::getInstance()->_($messages, $verboseLevel);
 }
