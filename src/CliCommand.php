@@ -44,7 +44,6 @@ abstract class CliCommand extends Command
     abstract protected function executeAction(): int;
 
     /**
-     * @psalm-suppress PossiblyUnusedReturnValue
      * @param int|iterable<mixed> $listOrMax
      */
     public function progressBar(
@@ -339,9 +338,6 @@ abstract class CliCommand extends Command
         return $this->outputMode->isDisplayProfiling();
     }
 
-    /**
-     * @psalm-suppress PossiblyUnusedReturnValue
-     */
     protected function trigger(string $eventName, array $arguments = [], ?callable $continueCallback = null): int
     {
         $application = $this->getApplication();

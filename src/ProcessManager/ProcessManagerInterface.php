@@ -28,13 +28,11 @@ interface ProcessManagerInterface
 {
     /**
      * Adds a process to the manager.
-     * @psalm-suppress PossiblyUnusedReturnValue
      */
     public function addProcess(Process $process, ?callable $callback = null, array $env = []): self;
 
     /**
      * Waits for all processes to be finished.
-     * @psalm-suppress PossiblyUnusedReturnValue
      */
     public function waitForAllProcesses(): self;
 

@@ -25,7 +25,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\isStrEmpty;
 
-final class CliApplication extends Application
+/**
+ * @psalm-suppress ClassMustBeFinal
+ */
+class CliApplication extends Application
 {
     private ?EventManager       $eventManager = null;
     private ?string             $logo         = null;
