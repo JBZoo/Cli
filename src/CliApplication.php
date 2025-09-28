@@ -25,7 +25,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function JBZoo\Utils\isStrEmpty;
 
-final class CliApplication extends Application
+/**
+ * @psalm-suppress ClassMustBeFinal
+ */
+class CliApplication extends Application
 {
     private ?EventManager       $eventManager = null;
     private ?string             $logo         = null;
@@ -99,6 +102,7 @@ final class CliApplication extends Application
 
     /**
      * @SuppressWarnings(ShortVariable)
+     * @psalm-suppress ParamNameMismatch
      */
     public function renderThrowable(\Throwable $e, OutputInterface $output): void
     {
