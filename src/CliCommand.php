@@ -45,6 +45,7 @@ abstract class CliCommand extends Command
 
     /**
      * @psalm-suppress PossiblyUnusedReturnValue
+     * @param int|iterable<mixed> $listOrMax
      */
     public function progressBar(
         int|iterable $listOrMax,
@@ -211,7 +212,7 @@ abstract class CliCommand extends Command
     }
 
     /**
-     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
+     * @SuppressWarnings(BooleanGetMethodName)
      */
     protected function getOptBool(string $optionName): bool
     {
@@ -275,6 +276,9 @@ abstract class CliCommand extends Command
         return $result;
     }
 
+    /**
+     * @return string[]
+     */
     protected function getOptArray(string $optionName): array
     {
         $list = $this->getOpt($optionName, false) ?? [];
@@ -305,10 +309,10 @@ abstract class CliCommand extends Command
 
     /**
      * Alias to write new line in std output.
-     * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+     * @SuppressWarnings(CamelCaseMethodName)
      */
     protected function _(
-        bool|float|int|iterable|string|null $messages = '',
+        array|bool|float|int|string|null $messages = '',
         string $verboseLevel = '',
         array $context = [],
     ): void {

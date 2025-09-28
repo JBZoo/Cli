@@ -43,8 +43,9 @@ final class CliApplication extends Application
             throw new Exception('First argument is not directory!');
         }
 
+        /** @var string[] $files */
         $files = FS::ls($commandsDir);
-        $files = \array_filter($files, static function ($file) {
+        $files = \array_filter($files, static function (string $file) {
             return \str_ends_with($file, '.php');
         });
 
@@ -96,13 +97,10 @@ final class CliApplication extends Application
         return $this;
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.ShortVariable)
-     */
-    public function renderThrowable(\Throwable $e, OutputInterface $output): void
+    public function renderThrowable(\Throwable $exception, OutputInterface $output): void
     {
         if ($this->outputMode === null || $this->outputMode instanceof Text) {
-            parent::renderThrowable($e, $output);
+            parent::renderThrowable($exception, $output);
         }
     }
 
