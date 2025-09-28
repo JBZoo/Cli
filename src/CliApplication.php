@@ -102,7 +102,6 @@ class CliApplication extends Application
 
     /**
      * @SuppressWarnings(ShortVariable)
-     * @psalm-suppress ParamNameMismatch
      */
     public function renderThrowable(\Throwable $e, OutputInterface $output): void
     {
