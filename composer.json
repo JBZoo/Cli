@@ -39,9 +39,10 @@
         "jbzoo/utils" :     "^7.3",
         "jbzoo/event" :     "^7.0.2",
 
-        "symfony/process" : ">=7.3.4",
-        "symfony/console" : ">=7.3.4",
-        "symfony/lock" :    ">=7.3.4",
+        "symfony/process" : "^7.3.4",
+        "symfony/console" : "^7.3.4",
+        "symfony/string"  : "^7.3.4",
+        "symfony/lock"    : "^7.3.4",
         "monolog/monolog" : "^3.9.0"
     },
 
