@@ -74,7 +74,8 @@ class CliApplication extends Application
 
             if (!$reflection->isAbstract() && $reflection->isSubclassOf(CliCommand::class)) {
                 $command = $reflection->newInstance();
-                $this->add($command);
+                // Symfony Console 8.0 removed Application::add(); addCommands() exists on 7.3+/8.x.
+                $this->addCommands([$command]);
             }
         }
 

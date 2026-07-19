@@ -27,9 +27,9 @@ use Symfony\Component\Console\Helper\ProgressBar as SymfonyProgressBar;
 abstract class AbstractSymfonyProgressBar extends AbstractProgressBar
 {
     /** @deprecated Use `throw new ExceptionBreak("Reason.")` */
-    public const BREAK = ExceptionBreak::MESSAGE;
+    public const string BREAK = ExceptionBreak::MESSAGE;
 
-    public const MAX_LINE_LENGTH = 120;
+    public const int MAX_LINE_LENGTH = 120;
 
     /** @var int[] */
     protected array $stepMemoryDiff = [];

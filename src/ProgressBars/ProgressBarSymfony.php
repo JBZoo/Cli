@@ -27,7 +27,7 @@ use function JBZoo\Utils\isStrEmpty;
 
 class ProgressBarSymfony extends AbstractSymfonyProgressBar
 {
-    private const LIMIT_ITEMT_FOR_PROFILING = 10;
+    private const int LIMIT_ITEMT_FOR_PROFILING = 10;
 
     private OutputInterface     $output;
     private ?SymfonyProgressBar $progressBar = null;

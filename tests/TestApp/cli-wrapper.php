@@ -21,6 +21,13 @@ use JBZoo\Utils\Sys;
 
 \define('PROJECT_ROOT', \dirname(__DIR__, 2));
 
+// This test entry point runs a CLI subprocess whose exact output the tests assert. On PHP 8.5 some
+// older transitive dev-tool deps (amphp / guzzle-promises / sabre-event via php-coveralls, surfaced
+// under --prefer-lowest) emit "implicitly nullable" E_DEPRECATED at load time that would otherwise
+// pollute that captured output. Silence deprecations for this test harness only; the app's own code
+// is checked for deprecated APIs by phan/psalm/phpstan.
+\error_reporting(\error_reporting() & ~\E_DEPRECATED);
+
 require_once PROJECT_ROOT . '/vendor/autoload.php';
 
 $cliIndexFile = PROJECT_ROOT . '/tests/TestApp/bin.php';

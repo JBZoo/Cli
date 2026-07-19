@@ -26,19 +26,4 @@ final class CliPackageTest extends \JBZoo\Codestyle\PHPUnit\AbstractPackageTest
 
         $this->excludePaths[] = '.github/assets';
     }
-
-    protected static function phpVersions(): array
-    {
-        return [8.2, 8.3, 8.4];
-    }
-
-    protected static function uploadArtifactsStep(string $stepName): array
-    {
-        return [
-            'name'              => 'Upload Artifacts',
-            'uses'              => 'actions/upload-artifact@v4',
-            'continue-on-error' => true,
-            'with'              => ['name' => $stepName, 'path' => 'build/'],
-        ];
-    }
 }

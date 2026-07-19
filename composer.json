@@ -34,20 +34,19 @@
     "prefer-stable" :     true,
 
     "require" :           {
-        "php" :             "^8.2",
+        "php" :             "^8.3",
 
-        "jbzoo/utils" :     "^7.3",
-        "jbzoo/event" :     "^7.0.2",
+        "jbzoo/utils" :     "^8.0",
+        "jbzoo/event" :     "^8.0",
 
-        "symfony/process" : "^7.3.4",
-        "symfony/console" : "^7.3.4",
-        "symfony/string"  : "^7.3.4",
-        "symfony/lock"    : "^7.3.4",
+        "symfony/process" : ">=7.3.4",
+        "symfony/console" : ">=7.3.4",
+        "symfony/lock" :    ">=7.3.4",
         "monolog/monolog" : "^3.9.0"
     },
 
     "require-dev" :       {
-        "jbzoo/toolbox-dev" : "^7.3"
+        "jbzoo/toolbox-dev" : "^8.0"
     },
 
     "autoload" :          {
@@ -66,7 +65,7 @@
 
     "extra" :             {
         "branch-alias" : {
-            "dev-master" : "7.x-dev"
+            "dev-master" : "8.x-dev"
         }
     }
 }
