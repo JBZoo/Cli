@@ -51,7 +51,7 @@
 
 ## Why?
 
-JBZoo CLI Framework is a powerful PHP library that significantly extends Symfony Console functionality, making it easier and faster to create robust command-line applications. Built for PHP 8.2+, it provides enhanced features for professional CLI development.
+JBZoo CLI Framework is a powerful PHP library that significantly extends Symfony Console functionality, making it easier and faster to create robust command-line applications. Built for PHP 8.3+, it provides enhanced features for professional CLI development.
 
 ### Key Features
 
@@ -143,7 +143,7 @@ The simplest CLI application has the following file structure. See the [Demo App
 
       "require"     : {
           "php"       : "^8.2",
-          "jbzoo/cli" : "^7.0"
+          "jbzoo/cli" : "^8.0"
       },
 
       "autoload"    : {
