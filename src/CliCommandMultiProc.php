@@ -30,9 +30,9 @@ use function JBZoo\Utils\int;
  */
 abstract class CliCommandMultiProc extends CliCommand
 {
-    private const PM_DEFAULT_INTERVAL    = 100;
-    private const PM_DEFAULT_START_DELAY = 1;
-    private const PM_DEFAULT_TIMEOUT     = 7200;
+    private const int PM_DEFAULT_INTERVAL    = 100;
+    private const int PM_DEFAULT_START_DELAY = 1;
+    private const int PM_DEFAULT_TIMEOUT     = 7200;
 
     private array                      $procPool    = [];
     private ?ProgressBarProcessManager $progressBar = null;
@@ -238,10 +238,8 @@ abstract class CliCommandMultiProc extends CliCommand
                 continue;
             }
 
-            /** @var string $argValue */
             if ($argKey !== 'command') {
-                /** @phan-suppress-next-line PhanPartialTypeMismatchArgumentInternal */
-                $argumentsList[] = '"' . \addcslashes($argValue, '"') . '"';
+                $argumentsList[] = '"' . \addcslashes((string)$argValue, '"') . '"';
             }
         }
 

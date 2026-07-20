@@ -72,11 +72,13 @@ class Helper
         \putenv("JBZOO_PATH_ROOT={$rootPath}/tests/TestApp");
 
         $application = new CliApplication();
-        $application->add(new TestCliOptions());
-        $application->add(new TestCliStdIn());
-        $application->add(new TestSleep());
-        $application->add(new TestSleepMulti());
-        $application->add(new TestProgress());
+        $application->addCommands([
+            new TestCliOptions(),
+            new TestCliStdIn(),
+            new TestSleep(),
+            new TestSleepMulti(),
+            new TestProgress(),
+        ]);
         $command = $application->find($command);
 
         $buffer      = new BufferedOutput();

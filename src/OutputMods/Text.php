@@ -95,7 +95,7 @@ class Text extends AbstractOutputMode
 
     public static function getDescription(): string
     {
-        return 'Default text output format, userfriendly and easy to read.';
+        return 'Default text output format, user-friendly and easy to read.';
     }
 
     public static function addOutputStyles(OutputInterface $output): void

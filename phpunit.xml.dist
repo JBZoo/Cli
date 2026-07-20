@@ -11,10 +11,7 @@
     @see        https://github.com/JBZoo/Cli
 -->
 <phpunit bootstrap="tests/autoload.php" colors="true">
-    <coverage processUncoveredFiles="true">
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
+    <coverage>
         <report>
             <clover outputFile="build/coverage_xml/main.xml"/>
             <html outputDirectory="build/coverage_html" lowUpperBound="75" highLowerBound="95"/>
@@ -32,4 +29,10 @@
     <logging>
         <junit outputFile="build/coverage_junit/main.xml"/>
     </logging>
+
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
 </phpunit>
